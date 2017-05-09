@@ -1,0 +1,20 @@
+<resources>
+  <string name="app_name">DigiSign</string>
+
+  <string name="drawer_open">Open navigation drawer</string>
+  <string name="drawer_close">Close navigation drawer</string>
+
+  <string name="hint_signer_name">Signer Name</string>
+  <string name="hint_signer_email">Signer Email</string>
+
+  <string name="title_menu_home">Home</string>
+  <string name="title_menu_alldoc">All Documents</string>
+  <string name="title_menu_sent">Sent Files</string>
+  <string name="title_menu_setting">Settings</string>
+
+  <string name="title_page_choose_signer">Choose Signer</string>
+  <string name="title_page_add_signer">Add Signer</string>
+
+  <string name="file_name">File name :</string>
+  <string name="size">Size :</string>
+</resources>

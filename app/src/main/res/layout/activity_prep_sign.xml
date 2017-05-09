@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.impl.PrepSignActivity"
+    >
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_v10"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.1"
+      />
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_v90"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.9"
+      />
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_h20"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.15"
+      />
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_h80"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.8"
+      />
+
+  <include layout="@layout/toolbar"/>
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Preview"
+      android:textColor="@color/colorAccent"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@id/guide_h20"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintTop_toBottomOf="@id/toolbar"
+      />
+
+  <TextView
+      android:id="@+id/title_file_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:text="@string/file_name"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintTop_toBottomOf="@id/guide_h80"
+      />
+
+  <TextView
+      android:id="@+id/title_size"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="-- KB"
+      app:layout_constraintBaseline_toBaselineOf="@id/title_file_name"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      />
+
+  <ImageView
+      android:id="@+id/iv_file_preview"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toTopOf="@id/guide_h80"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/guide_h20"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_self_signing"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="20dp"
+      android:paddingRight="20dp"
+      android:paddingTop="10dp"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/title_file_name"
+      fancy:fb_borderColor="@android:color/darker_gray"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="@color/yellow_default"
+      fancy:fb_focusColor="@color/yellow_focus"
+      fancy:fb_radius="12dp"
+      fancy:fb_text="Self Signing"
+      fancy:fb_textColor="#000000"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_add_signer"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="20dp"
+      android:paddingRight="20dp"
+      android:paddingTop="10dp"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintTop_toBottomOf="@id/title_file_name"
+      fancy:fb_borderColor="@android:color/darker_gray"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="@color/yellow_default"
+      fancy:fb_focusColor="@color/yellow_focus"
+      fancy:fb_radius="12dp"
+      fancy:fb_text="Add Signer"
+      fancy:fb_textColor="#000000"
+      />
+
+
+</android.support.constraint.ConstraintLayout>

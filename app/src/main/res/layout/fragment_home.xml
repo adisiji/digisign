@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.impl.HomeFragment"
+    >
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_h50"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.5"
+      />
+
+  <nb.scode.digisign.custom_font.TextViewMagneto
+      android:id="@+id/title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/app_name"
+      android:textSize="60sp"
+      app:layout_constraintBottom_toTopOf="@+id/btn_sign_file"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_sign_file"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="12dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="40dp"
+      android:paddingRight="40dp"
+      android:paddingTop="10dp"
+      app:layout_constraintBottom_toTopOf="@id/guide_h50"
+      app:layout_constraintLeft_toLeftOf="@id/title"
+      app:layout_constraintRight_toRightOf="@id/title"
+      fancy:fb_borderColor="#000000"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="#f9f9f9"
+      fancy:fb_focusColor="#bdbdbd"
+      fancy:fb_radius="30dp"
+      fancy:fb_text="Sign a File"
+      fancy:fb_textColor="#424242"
+      fancy:fb_textSize="21sp"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_send_file"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="40dp"
+      android:paddingRight="40dp"
+      android:paddingTop="10dp"
+      app:layout_constraintLeft_toLeftOf="@id/title"
+      app:layout_constraintRight_toRightOf="@id/title"
+      app:layout_constraintTop_toBottomOf="@id/guide_h50"
+      fancy:fb_borderColor="#000000"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="#f9f9f9"
+      fancy:fb_focusColor="#bdbdbd"
+      fancy:fb_radius="30dp"
+      fancy:fb_text="Send a File"
+      fancy:fb_textColor="#424242"
+      fancy:fb_textSize="21sp"
+      />
+</android.support.constraint.ConstraintLayout>

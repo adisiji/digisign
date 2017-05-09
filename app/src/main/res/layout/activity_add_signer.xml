@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.impl.AddSignerActivity"
+    >
+
+  <include layout="@layout/toolbar"/>
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_v10"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.1"
+      />
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_v90"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.9"
+      />
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_h20"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.15"
+      />
+
+  <android.support.constraint.Guideline
+      android:id="@+id/guide_h80"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.8"
+      />
+
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/input_name_signer"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/guide_v10"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/guide_h20"
+      >
+    <EditText
+        android:id="@+id/et_name_signer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_signer_name"
+        android:inputType="textPersonName"
+        />
+  </android.support.design.widget.TextInputLayout>
+
+  <android.support.design.widget.TextInputLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/input_name_signer"
+      >
+    <EditText
+        android:id="@+id/et_email_signer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_signer_email"
+        android:inputType="textEmailAddress"
+        />
+  </android.support.design.widget.TextInputLayout>
+
+</android.support.constraint.ConstraintLayout>
