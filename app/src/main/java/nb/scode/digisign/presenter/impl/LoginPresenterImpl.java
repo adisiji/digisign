@@ -2,26 +2,26 @@ package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
 import javax.inject.Inject;
-import nb.scode.digisign.interactor.HomeInteractor;
-import nb.scode.digisign.presenter.HomePresenter;
-import nb.scode.digisign.view.HomeView;
-import timber.log.Timber;
+import nb.scode.digisign.interactor.LoginInteractor;
+import nb.scode.digisign.presenter.LoginPresenter;
+import nb.scode.digisign.view.LoginView;
 
-public final class HomePresenterImpl extends BasePresenterImpl<HomeView> implements HomePresenter {
+public final class LoginPresenterImpl extends BasePresenterImpl<LoginView>
+    implements LoginPresenter {
   /**
    * The interactor
    */
-  @NonNull private final HomeInteractor mInteractor;
+  @NonNull private final LoginInteractor mInteractor;
 
   // The view is available using the mView variable
 
-  @Inject public HomePresenterImpl(@NonNull HomeInteractor interactor) {
+  @Inject public LoginPresenterImpl(@NonNull LoginInteractor interactor) {
     mInteractor = interactor;
   }
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-    getCertificate();
+
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -38,21 +38,5 @@ public final class HomePresenterImpl extends BasePresenterImpl<HomeView> impleme
          */
 
     super.onPresenterDestroyed();
-  }
-
-  @Override public void getCertificate() {
-    mInteractor.getCert(new HomeInteractor.GetCertListener() {
-      @Override public void onProcess() {
-        Timber.d("onProcess(): getCertificate");
-      }
-
-      @Override public void onFinished() {
-        Timber.d("onFinished(): getCertificate");
-      }
-
-      @Override public void onError(String message) {
-
-      }
-    });
   }
 }

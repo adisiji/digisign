@@ -27,6 +27,13 @@
         android:name=".view.impl.AddSignerActivity"
         android:parentActivityName=".view.impl.PrepSignActivity">
     </activity>
+    <activity android:name=".view.impl.LoginActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
   </application>
 
 </manifest>

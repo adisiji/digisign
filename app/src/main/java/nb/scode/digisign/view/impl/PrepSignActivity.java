@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import java.io.File;
 import java.io.IOException;
 import javax.inject.Inject;
@@ -209,5 +210,10 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
 
   @Override public void setFileSize(String fileSize) {
     tvFileSize.setText(fileSize);
+  }
+
+  @OnClick(R.id.btn_add_signer) void addSigner() {
+    Intent i = new Intent(this, AddSignerActivity.class);
+    startActivity(i);
   }
 }

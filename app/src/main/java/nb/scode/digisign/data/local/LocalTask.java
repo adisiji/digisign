@@ -26,6 +26,8 @@ public interface LocalTask {
    */
   void setNotFirstUse();
 
+  void getCert(CommonListener listener);
+
   void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf);
 
   interface ListenerPrepPdf {
@@ -38,5 +40,13 @@ public interface LocalTask {
     void onGoing();
 
     void onError(String message);
+  }
+
+  interface CommonListener {
+    void onFinished();
+
+    void onError(String message);
+
+    void onProcess();
   }
 }

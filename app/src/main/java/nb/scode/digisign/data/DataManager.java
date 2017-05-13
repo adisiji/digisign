@@ -40,4 +40,8 @@ import nb.scode.digisign.data.remote.ApiTask;
   @Override public void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf) {
     localTask.getPrepFilePdf(uri, listenerPrepPdf);
   }
+
+  @Override public void getCert(CommonListener listener) {
+    localTask.getCert(listener);
+  }
 }
