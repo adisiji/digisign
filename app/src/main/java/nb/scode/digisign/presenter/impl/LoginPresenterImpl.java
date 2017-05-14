@@ -1,7 +1,9 @@
 package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import javax.inject.Inject;
+import nb.scode.digisign.interactor.CommonDListener;
 import nb.scode.digisign.interactor.LoginInteractor;
 import nb.scode.digisign.presenter.LoginPresenter;
 import nb.scode.digisign.view.LoginView;
@@ -38,5 +40,46 @@ public final class LoginPresenterImpl extends BasePresenterImpl<LoginView>
          */
 
     super.onPresenterDestroyed();
+  }
+
+  @Override public void login() {
+    mInteractor.login(mView.getEmail(), mView.getPassword(), new CommonDListener() {
+      @Override public void onProccess() {
+        mView.showProgress();
+      }
+
+      @Override public void onSuccess() {
+        mView.hideProgress();
+        mView.gotoMain();
+      }
+
+      @Override public void onFailed(String message) {
+        mView.hideProgress();
+        mView.showToast(message);
+      }
+    });
+  }
+
+  @Override public void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+    mInteractor.authWithGoogle(account, new CommonDListener() {
+      @Override public void onProccess() {
+        mView.showProgress();
+      }
+
+      @Override public void onSuccess() {
+        mView.gotoMain();
+      }
+
+      @Override public void onFailed(String message) {
+        mView.hideProgress();
+        mView.showToast(message);
+      }
+    });
+  }
+
+  @Override public void checkUserSignedIn() {
+    if (mInteractor.isUserSignedIn()) {
+      mView.gotoMain();
+    }
   }
 }

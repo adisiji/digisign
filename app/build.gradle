@@ -28,7 +28,7 @@ ext {
   jsoupVersion = '1.10.2'
   leakVersion = '1.5'
   okhtppVersion = '3.6.0'
-  playServicesVersion = '10.2.1'
+  playServicesVersion = '10.2.4'
   retrofitVersion = '2.2.0'
   rxBindingVersion = '2.0.0'
   rxjavaVersion = '2.0.9'
@@ -49,7 +49,8 @@ dependencies {
   compile "com.android.support:design:$supportLibraryVersion"
   compile "com.android.support.constraint:constraint-layout:1.0.2"
 
-  compile "com.google.firebase:firebase-auth:10.0.1"
+  compile "com.google.firebase:firebase-auth:$playServicesVersion"
+  compile "com.google.android.gms:play-services-auth:$playServicesVersion"
   testCompile 'junit:junit:4.12'
 
   //Butterknife for View Injection

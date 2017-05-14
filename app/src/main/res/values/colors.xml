@@ -6,4 +6,5 @@
 
   <color name="yellow_default">#FBE83C</color>
   <color name="yellow_focus">#afb42b</color>
+  <color name="white">#FEFEFE</color>
 </resources>

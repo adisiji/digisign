@@ -3,6 +3,7 @@
     package="nb.scode.digisign">
 
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
 
   <application
       android:name=".App"
@@ -13,11 +14,6 @@
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
     <activity android:name=".view.impl.MainActivity">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
     </activity>
     <activity
         android:name=".view.impl.PrepSignActivity"
@@ -27,12 +23,18 @@
         android:name=".view.impl.AddSignerActivity"
         android:parentActivityName=".view.impl.PrepSignActivity">
     </activity>
-    <activity android:name=".view.impl.LoginActivity">
+    <activity
+        android:name=".view.impl.LoginActivity"
+        android:launchMode="singleTask">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+    </activity>
+    <activity
+        android:name=".view.impl.SignUpActivity"
+        android:launchMode="singleTask">
     </activity>
   </application>
 

@@ -2,11 +2,7 @@ package nb.scode.digisign.view;
 
 import android.support.annotation.UiThread;
 
-@UiThread public interface LoginView {
-
-  void gotoMain();
-
-  void showToast(String message);
+@UiThread public interface SignUpView {
 
   String getEmail();
 
@@ -16,4 +12,7 @@ import android.support.annotation.UiThread;
 
   void hideProgress();
 
+  void showToast(String message);
+
+  void gotoMain();
 }

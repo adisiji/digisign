@@ -1,6 +1,7 @@
 package nb.scode.digisign.data;
 
 import android.net.Uri;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.local.LocalTask;
@@ -43,5 +44,22 @@ import nb.scode.digisign.data.remote.ApiTask;
 
   @Override public void getCert(CommonListener listener) {
     localTask.getCert(listener);
+  }
+
+  @Override public void register(String email, String pass, CommonAListener listener) {
+    apiTask.register(email, pass, listener);
+  }
+
+  @Override public void login(String email, String pass, CommonAListener listener) {
+    apiTask.login(email, pass, listener);
+  }
+
+  @Override public void firebaseAuthWithGoogle(GoogleSignInAccount account,
+      CommonAListener aListener) {
+    apiTask.firebaseAuthWithGoogle(account, aListener);
+  }
+
+  @Override public boolean isUserSignedIn() {
+    return apiTask.isUserSignedIn();
   }
 }

@@ -1,9 +1,17 @@
 <resources>
   <string name="app_name">DigiSign</string>
 
+  <string name="btn_login">Login</string>
+  <string name="btn_register">Register</string>
+  <string name="btn_forgot_password">Forgot Your Password?</string>
+  <string name="btn_link_to_register">Not a member? Get your account now!</string>
+  <string name="btn_link_to_login">Already a member? Login here</string>
+
   <string name="drawer_open">Open navigation drawer</string>
   <string name="drawer_close">Close navigation drawer</string>
 
+  <string name="hint_email">Email</string>
+  <string name="hint_password">Password</string>
   <string name="hint_signer_name">Signer Name</string>
   <string name="hint_signer_email">Signer Email</string>
 
