@@ -15,6 +15,8 @@ public interface ApiTask {
 
   boolean isUserSignedIn();
 
+  void getPhotoUri();
+
   interface CommonAListener {
     void onProcess();
 
@@ -22,5 +24,4 @@ public interface ApiTask {
 
     void onFailed(String message);
   }
-
 }

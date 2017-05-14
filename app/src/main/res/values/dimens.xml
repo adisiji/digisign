@@ -11,4 +11,5 @@
   <dimen name="slide_desc">16sp</dimen>
   <dimen name="desc_padding">40dp</dimen>
   <dimen name="logo_w_h">100dp</dimen>
+  <dimen name="navigation_header_height">150dp</dimen>
 </resources>

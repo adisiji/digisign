@@ -62,4 +62,8 @@ import nb.scode.digisign.data.remote.ApiTask;
   @Override public boolean isUserSignedIn() {
     return apiTask.isUserSignedIn();
   }
+
+  @Override public void getPhotoUri() {
+    apiTask.getPhotoUri();
+  }
 }

@@ -38,4 +38,8 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
     super.onPresenterDestroyed();
   }
+
+  @Override public void getPhotoUri() {
+    mInteractor.getPhotoUri();
+  }
 }

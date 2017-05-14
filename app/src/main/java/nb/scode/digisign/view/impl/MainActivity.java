@@ -1,25 +1,35 @@
 package nb.scode.digisign.view.impl;
 
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.Glide;
+import de.hdodenhof.circleimageview.CircleImageView;
 import javax.inject.Inject;
 import nb.scode.digisign.R;
+import nb.scode.digisign.data.remote.model.UserBusPost;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerMainViewComponent;
 import nb.scode.digisign.injection.MainViewModule;
 import nb.scode.digisign.presenter.MainPresenter;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.MainView;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     implements MainView, NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +41,10 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   private ActionBarDrawerToggle drawerToggle;
 
   // Your presenter is available using the mPresenter variable
+
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onUserBusEvent(UserBusPost userBusPost) {
+    setHeaderProfile(userBusPost);
+  }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -47,6 +61,17 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     drawerToggle = setupDrawerToggle();
     // Tie DrawerLayout events to the ActionBarToggle
     drawerLayout.addDrawerListener(drawerToggle);
+  }
+
+  @Override protected void onStart() {
+    super.onStart();
+    EventBus.getDefault().register(this);
+    mPresenter.getPhotoUri();
+  }
+
+  @Override protected void onStop() {
+    super.onStop();
+    EventBus.getDefault().unregister(this);
   }
 
   @Override protected void setupComponent(@NonNull AppComponent parentComponent) {
@@ -126,5 +151,27 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     super.onConfigurationChanged(newConfig);
     // Pass any configuration change to the drawer toggles
     drawerToggle.onConfigurationChanged(newConfig);
+  }
+
+  private void setHeaderProfile(UserBusPost busPost) {
+    View view = nvDrawer.getHeaderView(0);
+    CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.civ_profile_header);
+    Uri uri = busPost.getUri();
+    if (uri != null) {
+      Glide.with(this).load(uri).asBitmap().into(circleImageView);
+    } else {
+      circleImageView.setImageDrawable(
+          ContextCompat.getDrawable(this, R.drawable.ic_account_circle_lime_700_36dp));
+    }
+
+    TextView tvEmail = (TextView) view.findViewById(R.id.tv_email_header);
+    TextView tvName = (TextView) view.findViewById(R.id.tv_display_name);
+
+    if (busPost.getDisplayName() != null) {
+      tvEmail.setText(busPost.getEmail());
+      tvName.setText(busPost.getDisplayName());
+    } else {
+      tvName.setText(busPost.getEmail());
+    }
   }
 }

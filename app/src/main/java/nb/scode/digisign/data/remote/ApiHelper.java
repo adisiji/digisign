@@ -1,5 +1,6 @@
 package nb.scode.digisign.data.remote;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -12,6 +13,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import nb.scode.digisign.data.remote.model.UserBusPost;
+import org.greenrobot.eventbus.EventBus;
 import timber.log.Timber;
 
 /**
@@ -21,6 +24,7 @@ import timber.log.Timber;
 
   private final ApiService apiService;
   private FirebaseAuth auth;
+  private FirebaseUser user;
 
   /**
    * Instantiates a new Api helper.
@@ -55,7 +59,7 @@ import timber.log.Timber;
   }
 
   private void sendEmailVerification(final CommonAListener listener) {
-    final FirebaseUser user = auth.getCurrentUser();
+    user = auth.getCurrentUser();
     if (user != null && !user.isEmailVerified()) {
       user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override public void onComplete(@NonNull Task<Void> task) {
@@ -78,6 +82,7 @@ import timber.log.Timber;
           @Override public void onComplete(@NonNull Task<AuthResult> task) {
             FirebaseUser user = auth.getCurrentUser();
             if (user != null && user.isEmailVerified()) {
+
               listener.onSuccess();
             } else {
               listener.onFailed("Please verify your email first");
@@ -101,7 +106,7 @@ import timber.log.Timber;
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
           @Override public void onComplete(@NonNull Task<AuthResult> task) {
             if (task.isSuccessful()) {
-              FirebaseUser user = auth.getCurrentUser();
+              user = auth.getCurrentUser();
               if (user.isEmailVerified()) {
                 listener.onSuccess();
               } else {
@@ -120,6 +125,20 @@ import timber.log.Timber;
   }
 
   @Override public boolean isUserSignedIn() {
-    return (auth.getCurrentUser() != null);
+    user = auth.getCurrentUser();
+    return (user != null);
+  }
+
+  @Override public void getPhotoUri() {
+    Uri uri = user.getPhotoUrl();
+    String email = user.getEmail();
+    String name = user.getDisplayName();
+
+    UserBusPost busPost = new UserBusPost();
+    busPost.setDisplayName(name);
+    busPost.setEmail(email);
+    busPost.setUri(uri);
+    Timber.d("getPhotoUri(): email %s , name %s", busPost.getEmail(), busPost.getDisplayName());
+    EventBus.getDefault().post(busPost);
   }
 }

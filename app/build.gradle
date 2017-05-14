@@ -57,6 +57,9 @@ dependencies {
   compile "com.jakewharton:butterknife:$butterVersion"
   annotationProcessor "com.jakewharton:butterknife-compiler:$butterVersion"
 
+  // Circle Image View
+  compile "de.hdodenhof:circleimageview:2.1.0"
+
   //Dagger for injection
   annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
   compile "com.google.dagger:dagger:$daggerVersion"
