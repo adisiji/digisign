@@ -1,5 +1,6 @@
 package nb.scode.digisign.view.impl;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +17,12 @@ import android.view.View;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 import javax.inject.Inject;
 import nb.scode.digisign.R;
+import nb.scode.digisign.data.remote.model.SignOutEvent;
 import nb.scode.digisign.data.remote.model.UserBusPost;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerMainViewComponent;
@@ -44,6 +47,10 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
 
   @Subscribe(threadMode = ThreadMode.MAIN) public void onUserBusEvent(UserBusPost userBusPost) {
     setHeaderProfile(userBusPost);
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onLogoutEvent(SignOutEvent event) {
+    gotoLogin();
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -173,5 +180,15 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     } else {
       tvName.setText(busPost.getEmail());
     }
+  }
+
+  @OnClick(R.id.btn_logout) void logout() {
+    mPresenter.logout();
+  }
+
+  @Override public void gotoLogin() {
+    Intent i = new Intent(this, LoginActivity.class);
+    startActivity(i);
+    finish();
   }
 }

@@ -15,4 +15,14 @@ public final class MainInteractorImpl implements MainInteractor {
   @Override public void getPhotoUri() {
     dataTask.getPhotoUri();
   }
+
+  @Override public void logout() {
+    dataTask.logout();
+  }
+
+  /*
+  @Override public void createRootCert() {
+    dataTask.createRootCert();
+  }
+  */
 }

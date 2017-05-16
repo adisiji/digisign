@@ -48,5 +48,31 @@
       android:background="@android:color/white"
       app:headerLayout="@layout/header_drawer"
       app:menu="@menu/drawer_view"
-      />
+      >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        >
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="0.5dp"
+          android:background="@android:color/darker_gray"
+          />
+
+      <mehdi.sakout.fancybuttons.FancyButton
+          android:id="@+id/btn_logout"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingBottom="12dp"
+          android:paddingTop="12dp"
+          app:fb_ghost="true"
+          app:fb_text="Sign Out"
+          app:fb_textColor="@android:color/black"
+          />
+
+    </LinearLayout>
+  </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

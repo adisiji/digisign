@@ -20,7 +20,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-
+    //mInteractor.createRootCert();
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -41,5 +41,9 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void getPhotoUri() {
     mInteractor.getPhotoUri();
+  }
+
+  @Override public void logout() {
+    mInteractor.logout();
   }
 }

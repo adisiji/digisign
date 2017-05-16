@@ -2,10 +2,12 @@ package nb.scode.digisign.data;
 
 import android.net.Uri;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import java.security.cert.X509Certificate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
+import timber.log.Timber;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -26,6 +28,43 @@ import nb.scode.digisign.data.remote.ApiTask;
     this.apiTask = apiTask;
   }
 
+  @Override public void checkKeyStore(final CertCheckListener listener) {
+    listener.onProgress();
+    if (isKeyStoreExist()) {
+      listener.onSuccess();
+    } else {
+      getRootCertificate(new CommonAListener() {
+        @Override public void onProcess() {
+
+        }
+
+        @Override public void onSuccess() {
+          createUserCertificate(new CommonListener() {
+            @Override public void onFinished() {
+              listener.onSuccess();
+            }
+
+            @Override public void onError(String message) {
+              listener.onFailed(message);
+            }
+
+            @Override public void onProcess() {
+
+            }
+          });
+        }
+
+        @Override public void onFailed(String message) {
+          listener.onFailed(message);
+        }
+      });
+    }
+  }
+
+  @Override public boolean isKeyStoreExist() {
+    return localTask.isKeyStoreExist();
+  }
+
   @Override public void clear() {
 
   }
@@ -42,8 +81,8 @@ import nb.scode.digisign.data.remote.ApiTask;
     localTask.getPrepFilePdf(uri, listenerPrepPdf);
   }
 
-  @Override public void getCert(CommonListener listener) {
-    localTask.getCert(listener);
+  @Override public X509Certificate getRootCertificate() {
+    return localTask.getRootCertificate();
   }
 
   @Override public void register(String email, String pass, CommonAListener listener) {
@@ -66,4 +105,35 @@ import nb.scode.digisign.data.remote.ApiTask;
   @Override public void getPhotoUri() {
     apiTask.getPhotoUri();
   }
+
+  @Override public void logout() {
+    apiTask.logout();
+  }
+
+  /**
+   * Get Root Certificate from Server
+   *
+   * @param listener to Connect here
+   */
+  @Override public void getRootCertificate(CommonAListener listener) {
+    apiTask.getRootCertificate(listener);
+  }
+
+  @Override public void createUserCertificate(CommonListener listener) {
+    try {
+      localTask.createUserCertificate(listener);
+    } catch (Exception e) {
+      Timber.e("createUserCertificate(): " + e.toString());
+    }
+  }
+
+  @Override public void createSignature(Uri uri, CommonListener listener) {
+    localTask.createSignature(uri, listener);
+  }
+
+  /*
+  @Override public void createRootCert() {
+    localTask.createRootCert();
+  }
+  */
 }

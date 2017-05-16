@@ -25,6 +25,7 @@ ext {
   eventbusVersion = '3.0.0'
   glideVersion = '3.7.0'
   guavaVersion = '20.0'
+  itextVersion = '5.5.11'
   jsoupVersion = '1.10.2'
   leakVersion = '1.5'
   okhtppVersion = '3.6.0'
@@ -80,6 +81,9 @@ dependencies {
 
   //Guava
   compile "com.google.guava:guava:$guavaVersion"
+
+  // iText pdf
+  compile "com.itextpdf:itextpdf:$itextVersion"
 
   //Retrofit 2 for consuming API
   compile "com.squareup.retrofit2:retrofit:$retrofitVersion"

@@ -6,4 +6,6 @@ public interface MainPresenter extends BasePresenter<MainView> {
 
   void getPhotoUri();
 
+  void logout();
+
 }

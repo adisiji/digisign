@@ -17,6 +17,10 @@ public interface ApiTask {
 
   void getPhotoUri();
 
+  void logout();
+
+  void getRootCertificate(CommonAListener listener);
+
   interface CommonAListener {
     void onProcess();
 

@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import nb.scode.digisign.data.remote.model.SignOutEvent;
 import nb.scode.digisign.data.remote.model.UserBusPost;
 import org.greenrobot.eventbus.EventBus;
 import timber.log.Timber;
@@ -138,7 +139,15 @@ import timber.log.Timber;
     busPost.setDisplayName(name);
     busPost.setEmail(email);
     busPost.setUri(uri);
-    Timber.d("getPhotoUri(): email %s , name %s", busPost.getEmail(), busPost.getDisplayName());
     EventBus.getDefault().post(busPost);
+  }
+
+  @Override public void logout() {
+    auth.signOut();
+    EventBus.getDefault().post(new SignOutEvent());
+  }
+
+  @Override public void getRootCertificate(CommonAListener listener) {
+
   }
 }
