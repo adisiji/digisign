@@ -2,6 +2,7 @@ package nb.scode.digisign.data;
 
 import android.net.Uri;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import java.io.File;
 import java.security.cert.X509Certificate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,37 +29,45 @@ import timber.log.Timber;
     this.apiTask = apiTask;
   }
 
-  @Override public void checkKeyStore(final CertCheckListener listener) {
-    listener.onProgress();
-    if (isKeyStoreExist()) {
-      listener.onSuccess();
+  @Override public void initKeyCert(final InitListener listener) {
+    listener.onStartInit();
+    if (localTask.isKeyStoreExist()) {
+      listener.onFinishInit();
     } else {
-      getRootCertificate(new CommonAListener() {
-        @Override public void onProcess() {
+      if (getRootCertificate() == null) {
+        getRootCertificate(getCertRootDest(), new CommonAListener() {
+          @Override public void onProcess() {
+            listener.onGetRootCert();
+          }
 
-        }
+          @Override public void onSuccess() {
+            createUserCertificate(listener);
+          }
 
-        @Override public void onSuccess() {
-          createUserCertificate(new CommonListener() {
-            @Override public void onFinished() {
-              listener.onSuccess();
-            }
+          @Override public void onFailed(String message) {
 
-            @Override public void onError(String message) {
-              listener.onFailed(message);
-            }
-
-            @Override public void onProcess() {
-
-            }
-          });
-        }
-
-        @Override public void onFailed(String message) {
-          listener.onFailed(message);
-        }
-      });
+          }
+        });
+      } else {
+        createUserCertificate(listener);
+      }
     }
+  }
+
+  private void createUserCertificate(final InitListener listener) {
+    createUserCertificate(new CommonListener() {
+      @Override public void onFinished() {
+        listener.onFinishInit();
+      }
+
+      @Override public void onError(String message) {
+
+      }
+
+      @Override public void onProcess() {
+
+      }
+    });
   }
 
   @Override public boolean isKeyStoreExist() {
@@ -110,25 +119,25 @@ import timber.log.Timber;
     apiTask.logout();
   }
 
-  /**
-   * Get Root Certificate from Server
-   *
-   * @param listener to Connect here
-   */
-  @Override public void getRootCertificate(CommonAListener listener) {
-    apiTask.getRootCertificate(listener);
-  }
-
   @Override public void createUserCertificate(CommonListener listener) {
     try {
       localTask.createUserCertificate(listener);
     } catch (Exception e) {
-      Timber.e("createUserCertificate(): " + e.toString());
+      Throwable e1 = e.fillInStackTrace();
+      Timber.e(e1, "Ooops! An exception happened");
     }
   }
 
   @Override public void createSignature(Uri uri, CommonListener listener) {
     localTask.createSignature(uri, listener);
+  }
+
+  @Override public void getRootCertificate(File file, CommonAListener listener) {
+    apiTask.getRootCertificate(file, listener);
+  }
+
+  @Override public File getCertRootDest() {
+    return localTask.getCertRootDest();
   }
 
   /*

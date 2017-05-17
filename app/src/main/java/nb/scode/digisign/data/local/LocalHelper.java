@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -29,6 +29,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -37,14 +38,24 @@ import javax.inject.Singleton;
 import org.spongycastle.asn1.x500.X500Name;
 import org.spongycastle.asn1.x500.X500NameBuilder;
 import org.spongycastle.asn1.x500.style.BCStyle;
+import org.spongycastle.asn1.x509.AlgorithmIdentifier;
+import org.spongycastle.asn1.x509.AuthorityKeyIdentifier;
+import org.spongycastle.asn1.x509.Extension;
+import org.spongycastle.asn1.x509.SubjectKeyIdentifier;
 import org.spongycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.spongycastle.cert.X509CertificateHolder;
+import org.spongycastle.cert.X509ExtensionUtils;
 import org.spongycastle.cert.X509v3CertificateBuilder;
+import org.spongycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.spongycastle.jce.ECNamedCurveTable;
+import org.spongycastle.jce.X509KeyUsage;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.jce.spec.ECParameterSpec;
 import org.spongycastle.operator.ContentSigner;
-import org.spongycastle.operator.OperatorCreationException;
+import org.spongycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
+import org.spongycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
+import org.spongycastle.operator.DigestCalculator;
+import org.spongycastle.operator.bc.BcDigestCalculatorProvider;
 import org.spongycastle.operator.jcajce.JcaContentSignerBuilder;
 import timber.log.Timber;
 
@@ -56,6 +67,8 @@ import timber.log.Timber;
   private static final String PREF_FILE_NAME = "android_pref_file";
   private static final String PREF_FIRST_USE = "first_use";
   private static final String CERT_PATH_USER = "certuser.cer";
+  private static final String CERT_PATH_ROOT = "certroot.cer";
+  private static final String PRIVATE_KEY_CERT_ROOT = "privkeycert.ppk";
   private static final String KEY_CERT_NAME = "MyDigiSignCert";
 
   private final SharedPreferences mPref;
@@ -71,6 +84,7 @@ import timber.log.Timber;
     this.context = context;
     Security.removeProvider("BC");
     Security.addProvider(new BouncyCastleProvider());
+    //createRootCert();
   }
 
   @Override public void clear() {
@@ -83,6 +97,12 @@ import timber.log.Timber;
     KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", "SC");
     g.initialize(ecSpec, random);
     return g.generateKeyPair();
+  }
+
+  private KeyPair generateRSAKeyPair() throws Exception {
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    keyPairGenerator.initialize(1024);
+    return keyPairGenerator.generateKeyPair();
   }
 
   @Override public boolean isFirstUse() {
@@ -171,7 +191,7 @@ import timber.log.Timber;
   }
 
   @Override public X509Certificate getRootCertificate() {
-    File file = new File(context.getFilesDir(), CERT_PATH_USER);
+    File file = new File(context.getFilesDir(), CERT_PATH_ROOT);
     X509Certificate cert = null;
 
     if (file.exists()) {
@@ -214,29 +234,30 @@ import timber.log.Timber;
     fos.close();
   }
 
-  private void createKeyValuePair(X509Certificate certificate) throws Exception {
+  private void createKeyValuePair(X509Certificate root, X509Certificate userCert) throws Exception {
     // Get Android KeyStore
     KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-
-    KeyPair pair = generateKeyPair();
+    keyStore.load(null, null);
+    KeyPair pair = generateRSAKeyPair();
     PublicKey publicKey = pair.getPublic();
     Timber.d("My public key => " + publicKey.toString());
     PrivateKey privateKey = pair.getPrivate();
     Timber.d("My private key => " + privateKey.toString());
-    keyStore.setKeyEntry(KEY_CERT_NAME, privateKey, null, new Certificate[] { certificate });
+    keyStore.setKeyEntry(KEY_CERT_NAME, privateKey, null, new Certificate[] { userCert, root });
   }
 
   @Override public boolean isKeyStoreExist() {
     try {
       KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+      keyStore.load(null, null);
       Enumeration<String> enumeration = keyStore.aliases();
       while (enumeration.hasMoreElements()) {
         if (enumeration.nextElement().equals(KEY_CERT_NAME)) {
           return true;
         }
       }
-    } catch (KeyStoreException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      Timber.e("isKeyStoreExist(): " + e.getMessage());
     }
     return false;
   }
@@ -280,7 +301,9 @@ import timber.log.Timber;
     X509CertificateHolder x509CertificateHolder = v1CertGen.build(sigGen);
     try {
       byte[] bytes = x509CertificateHolder.getEncoded();
-      saveFile(bytes, CERT_PATH_USER);
+      byte[] privkey = keyPair.getPrivate().getEncoded();
+      saveFile(privkey, PRIVATE_KEY_CERT_ROOT);
+      saveFile(bytes, CERT_PATH_ROOT);
       Timber.d("createRootCertificate(): finished");
     } catch (IOException | CertificateEncodingException e) {
       e.printStackTrace();
@@ -293,59 +316,83 @@ import timber.log.Timber;
      * Self Sign Certificate
      */
     final int VALIDITY_IN_YEARS = 5;
-    X509Certificate rootCertificate = getRootCertificate();
+    final X509Certificate rootCertificate = getRootCertificate();
+    X500Name issuer = new JcaX509CertificateHolder(rootCertificate).getSubject();
+
     Calendar calendar = Calendar.getInstance();
     Date startDate = calendar.getTime();
     calendar.add(Calendar.YEAR, VALIDITY_IN_YEARS);
     Date endDate = calendar.getTime();
     final String oTAG = "SCODE";
-    final String ouTAG = "Android Sign";
+    final String ouTAG = "Digi Sign";
     final String lTAG = "ID";
+    final String username = "User";
     X500NameBuilder nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
     nameBuilder.addRDN(BCStyle.O, oTAG);
     nameBuilder.addRDN(BCStyle.OU, ouTAG);
     nameBuilder.addRDN(BCStyle.L, lTAG);
-
-    X500Name x500Name = nameBuilder.build();
-    SecureRandom random = new SecureRandom();
+    nameBuilder.addRDN(BCStyle.NAME, username);
+    X500Name subject = nameBuilder.build();
 
     // Generate Key Pair
-    KeyPair pair = null;
-    try {
-      pair = generateKeyPair();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    KeyPair pair = generateRSAKeyPair();
+    SecureRandom random = new SecureRandom();
     PublicKey publicKey = pair.getPublic();
     Timber.d("Certificate public key => " + publicKey.toString());
     PrivateKey privateKey = pair.getPrivate();
     Timber.d("Certificate private key => " + privateKey.toString());
     SubjectPublicKeyInfo subjectPublicKeyInfo =
         SubjectPublicKeyInfo.getInstance(publicKey.getEncoded());
-    X509v3CertificateBuilder v1CertGen =
-        new X509v3CertificateBuilder(x500Name, BigInteger.valueOf(random.nextLong()), startDate,
-            endDate, x500Name, subjectPublicKeyInfo);
+    X509v3CertificateBuilder v3CertGen =
+        new X509v3CertificateBuilder(issuer, BigInteger.valueOf(random.nextLong()), startDate,
+            endDate, subject, subjectPublicKeyInfo);
+
+    // Add Extension to Certificate
+    String sigAlgName = rootCertificate.getSigAlgName();
+    Timber.d("createUserCertificate(): sigALgId " + sigAlgName);
+    AlgorithmIdentifier algorithmIdentifier =
+        new DefaultSignatureAlgorithmIdentifierFinder().find(sigAlgName);
+    AlgorithmIdentifier digAlg =
+        new DefaultDigestAlgorithmIdentifierFinder().find(algorithmIdentifier);
+    DigestCalculator digestCalculator = new BcDigestCalculatorProvider().get(digAlg);
+    X509ExtensionUtils utils = new X509ExtensionUtils(digestCalculator);
+    AuthorityKeyIdentifier authorityKeyIdentifier =
+        utils.createAuthorityKeyIdentifier(new JcaX509CertificateHolder(rootCertificate));
+    SubjectPublicKeyInfo subjectPublicKeyInfoRoot =
+        SubjectPublicKeyInfo.getInstance(rootCertificate.getPublicKey().getEncoded());
+    SubjectKeyIdentifier subjectKeyIdentifier =
+        utils.createSubjectKeyIdentifier(subjectPublicKeyInfoRoot);
+    // The Key Usage extension:
+    X509KeyUsage keyuse = new X509KeyUsage(X509KeyUsage.digitalSignature
+        | X509KeyUsage.nonRepudiation
+        | X509KeyUsage.keyEncipherment
+        | X509KeyUsage.dataEncipherment);
+    Extension keyUsageExt = new Extension(Extension.keyUsage, true, keyuse.getEncoded());
+    Extension authorityExt =
+        new Extension(Extension.authorityKeyIdentifier, true, authorityKeyIdentifier.getEncoded());
+    Extension subjectKeyExt =
+        new Extension(Extension.subjectKeyIdentifier, true, subjectKeyIdentifier.getEncoded());
+    v3CertGen.addExtension(keyUsageExt);
+    v3CertGen.addExtension(authorityExt);
+    v3CertGen.addExtension(subjectKeyExt);
 
     // Prepare Signature:
-    ContentSigner sigGen = null;
-    try {
-      sigGen = new JcaContentSignerBuilder("SHA512WithECDSA").setProvider("SC").build(privateKey);
-    } catch (OperatorCreationException e) {
-      e.printStackTrace();
-    }
+    ContentSigner sigGen =
+        new JcaContentSignerBuilder("SHA512WithRSA").setProvider("SC").build(privateKey);
+
     // Self sign :
-    X509CertificateHolder x509CertificateHolder = v1CertGen.build(sigGen);
+    X509CertificateHolder x509CertificateHolder = v3CertGen.build(sigGen);
     CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
     InputStream in = new ByteArrayInputStream(x509CertificateHolder.getEncoded());
     // Convert Certificate Holder to X509Certificate
     X509Certificate cert = (X509Certificate) certFactory.generateCertificate(in);
-    X509Certificate[] x509Certificates = new X509Certificate[] { cert, rootCertificate };
     saveFile(cert.getEncoded(), CERT_PATH_USER);
+    createKeyValuePair(rootCertificate, cert);
 
     Timber.d("createUserCertificate(): finished");
   }
 
-  private byte[] getBytes(Uri uri) throws IOException {
+  private byte[] getBytesFromUri(Uri uri) throws IOException {
     InputStream inputStream = context.getContentResolver().openInputStream(uri);
     ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
 
@@ -366,14 +413,14 @@ import timber.log.Timber;
   @Override public void createSignature(Uri uri, CommonListener listener) {
     try {
       listener.onProcess();
-      byte[] source = getBytes(uri);
+      byte[] source = getBytesFromUri(uri);
       KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
       keyStore.load(null);
       KeyStore.Entry entry = keyStore.getEntry(KEY_CERT_NAME, null);
       PrivateKey privateKey = ((KeyStore.PrivateKeyEntry) entry).getPrivateKey();
       PublicKey publicKey = keyStore.getCertificate(KEY_CERT_NAME).getPublicKey();
 
-      Signature signature = Signature.getInstance("SHA256withECDSA", "SC");
+      Signature signature = Signature.getInstance("SHA512withECDSA", "SC");
       signature.initSign(privateKey);
 
       byte[] result;
@@ -385,5 +432,21 @@ import timber.log.Timber;
       Timber.e("createSignature(): " + e.toString());
       listener.onError(e.getMessage());
     }
+  }
+
+  @Override public File getCertRootDest() {
+    return new File(context.getFilesDir(), CERT_PATH_ROOT);
+  }
+
+  private PrivateKey getRootPrivateKey() {
+    try {
+      File file = new File(context.getFilesDir(), PRIVATE_KEY_CERT_ROOT);
+      byte[] privateKeyBytes = getBytesFromFile(file);
+      KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "SC");
+      return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+    } catch (Exception e) {
+      Timber.e("getRootPrivateKey(): " + e.getMessage());
+    }
+    return null;
   }
 }

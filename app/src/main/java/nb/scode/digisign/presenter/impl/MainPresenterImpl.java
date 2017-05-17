@@ -20,7 +20,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-    //mInteractor.createRootCert();
+    initCertKey();
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -45,5 +45,29 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void logout() {
     mInteractor.logout();
+  }
+
+  private void initCertKey() {
+    mInteractor.initKeyCert(new MainInteractor.InitListener() {
+      @Override public void onStartInit() {
+
+      }
+
+      @Override public void onGetRootCert() {
+
+      }
+
+      @Override public void onCreateKey() {
+
+      }
+
+      @Override public void onUploadKey() {
+
+      }
+
+      @Override public void onFinishInit() {
+
+      }
+    });
   }
 }

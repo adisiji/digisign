@@ -1,6 +1,7 @@
 package nb.scode.digisign.data.remote;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import java.io.File;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -19,7 +20,7 @@ public interface ApiTask {
 
   void logout();
 
-  void getRootCertificate(CommonAListener listener);
+  void getRootCertificate(File file, CommonAListener listener);
 
   interface CommonAListener {
     void onProcess();

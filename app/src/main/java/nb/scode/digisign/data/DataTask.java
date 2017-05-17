@@ -10,13 +10,19 @@ import nb.scode.digisign.data.remote.ApiTask;
  */
 public interface DataTask extends LocalTask, ApiTask {
 
-  void checkKeyStore(CertCheckListener listener);
+  void initKeyCert(InitListener listener);
 
-  interface CertCheckListener {
-    void onProgress();
+  interface InitListener {
 
-    void onSuccess();
+    void onStartInit();
 
-    void onFailed(String message);
+    void onGetRootCert();
+
+    void onCreateKey();
+
+    void onUploadKey();
+
+    void onFinishInit();
+
   }
 }

@@ -37,6 +37,8 @@ public interface LocalTask {
 
   void createSignature(Uri uri, CommonListener listener);
 
+  File getCertRootDest();
+
   //void createRootCert();
 
   interface ListenerPrepPdf {

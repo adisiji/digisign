@@ -51,6 +51,7 @@ dependencies {
   compile "com.android.support.constraint:constraint-layout:1.0.2"
 
   compile "com.google.firebase:firebase-auth:$playServicesVersion"
+  compile "com.google.firebase:firebase-storage:$playServicesVersion"
   compile "com.google.android.gms:play-services-auth:$playServicesVersion"
   testCompile 'junit:junit:4.12'
 

@@ -5,12 +5,17 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.remote.model.SignOutEvent;
@@ -24,8 +29,10 @@ import timber.log.Timber;
 @Singleton public class ApiHelper implements ApiTask {
 
   private final ApiService apiService;
+  private final String ROOT_CERT_PATH = "core/rootcert.cer";
   private FirebaseAuth auth;
   private FirebaseUser user;
+  private StorageReference storageRef;
 
   /**
    * Instantiates a new Api helper.
@@ -36,6 +43,7 @@ import timber.log.Timber;
   @Inject ApiHelper(ApiService apiService) {
     this.apiService = apiService;
     auth = FirebaseAuth.getInstance();
+    storageRef = FirebaseStorage.getInstance().getReference();
   }
 
   @Override public void register(String email, String pass, final CommonAListener listener) {
@@ -147,7 +155,21 @@ import timber.log.Timber;
     EventBus.getDefault().post(new SignOutEvent());
   }
 
-  @Override public void getRootCertificate(CommonAListener listener) {
-
+  @SuppressWarnings("VisibleForTests") @Override public void getRootCertificate(File file,
+      final CommonAListener listener) {
+    listener.onProcess();
+    storageRef.child(ROOT_CERT_PATH)
+        .getFile(file)
+        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+          @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            listener.onSuccess();
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override public void onFailure(@NonNull Exception e) {
+            listener.onFailed(e.getMessage());
+            Timber.e("onFailure(): " + e.getMessage());
+          }
+        });
   }
 }
