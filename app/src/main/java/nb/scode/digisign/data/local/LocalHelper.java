@@ -49,21 +49,6 @@ import timber.log.Timber;
   private final SharedPreferences mPref;
   private final Context context;
 
-  /**
-   * Instantiates a new Preferences helper.
-   *
-   * @param context the context
-   */
-  @Inject public LocalHelper(Context context) {
-    mPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-    this.context = context;
-    //testKunci();
-  }
-
-  @Override public void clear() {
-    mPref.edit().clear().apply();
-  }
-
   /*
   private KeyPair generateKeyPair() throws Exception {
     ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp521r1");
@@ -79,6 +64,21 @@ import timber.log.Timber;
     return keyPairGenerator.generateKeyPair();
   }
   */
+
+  /**
+   * Instantiates a new Preferences helper.
+   *
+   * @param context the context
+   */
+  @Inject public LocalHelper(Context context) {
+    mPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+    this.context = context;
+    //testKunci();
+  }
+
+  @Override public void clear() {
+    mPref.edit().clear().apply();
+  }
 
   @Override public boolean isFirstUse() {
     return mPref.getBoolean(PREF_FIRST_USE, true);
@@ -100,116 +100,114 @@ import timber.log.Timber;
     listener.onProcess();
 
     // Setup for P-384 curve params
-    BigInteger p384_p = new BigInteger("ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "fffffffe"
-        + "ffffffff"
-        + "ffffffff"
+    BigInteger P_384_Q = new BigInteger("FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFE"
+        + "FFFFFFFF"
         + "00000000"
         + "00000000"
-        + "ffffffff", 16);
+        + "FFFFFFFF", 16);
+    BigInteger P_384_A = new BigInteger("FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFE"
+        + "FFFFFFFF"
+        + "00000000"
+        + "00000000"
+        + "FFFFFFFC", 16);
+    BigInteger P_384_B = new BigInteger("B3312FA7"
+        + "E23EE7E4"
+        + "988E056B"
+        + "E3F82D19"
+        + "181D9C6E"
+        + "FE814112"
+        + "0314088F"
+        + "5013875A"
+        + "C656398D"
+        + "8A2ED19D"
+        + "2A85C8ED"
+        + "D3EC2AEF", 16);
 
-    BigInteger p384_a = new BigInteger("ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "fffffffe"
-        + "ffffffff"
-        + "ffffffff"
-        + "00000000"
-        + "00000000"
-        + "fffffffc", 16);
-    BigInteger p384_b = new BigInteger("b3312fa7"
-        + "e23ee734"
-        + "988e056b"
-        + "e3f82d19"
-        + "181d9c6e"
-        + "fe814112"
-        + "0314088f"
-        + "5013875a"
-        + "c656398d"
-        + "8a2ed19d"
-        + "2a85c8ed"
-        + "d3ec2aef", 16);
     byte[] p384_seed = {
         (byte) 0xa3, (byte) 0x35, (byte) 0x92, (byte) 0x6a, (byte) 0xa3, (byte) 0x19, (byte) 0xa2,
         (byte) 0x7a, (byte) 0x1d, (byte) 0x00, (byte) 0x89, (byte) 0x6a, (byte) 0x67, (byte) 0x73,
         (byte) 0xa4, (byte) 0x82, (byte) 0x7a, (byte) 0xcd, (byte) 0xac, (byte) 0x73
     };
 
-    // Base Point xG
-    BigInteger p384_xg = new BigInteger("aa87ca22"
-        + "be8b0537"
-        + "8eb1c71e"
-        + "f320ad74"
-        + "6e1d3b62"
-        + "8ba79b98"
-        + "59f741e0"
-        + "82542a38"
-        + "5502f25d"
-        + "bf55296c"
-        + "3a545e38"
-        + "72760ab7", 16);
-    // Base Point yG
-    BigInteger p384_yg = new BigInteger("3617de4a"
-        + "96262c6f"
-        + "5d9e98bf"
-        + "9292dc29"
-        + "f8f41dbd"
-        + "289a147c"
-        + "e9da3113"
-        + "b5f0b8c0"
-        + "0a60b1ce"
-        + "1d7e819d"
-        + "7a431d7c"
-        + "90ea0e5f", 16);
+    // Base Point Gx
+    BigInteger P_384_G_X = new BigInteger("AA87CA22"
+        + "BE8B0537"
+        + "8EB1C71E"
+        + "F320AD74"
+        + "6E1D3B62"
+        + "8BA79B98"
+        + "59F741E0"
+        + "82542A38"
+        + "5502F25D"
+        + "BF55296C"
+        + "3A545E38"
+        + "72760AB7", 16);
+
+    // Base Point Gy
+    BigInteger P_384_G_Y = new BigInteger("3617DE4A"
+        + "96262C6F"
+        + "5D9E98BF"
+        + "9292DC29"
+        + "F8F41DBD"
+        + "289A147C"
+        + "E9DA3113"
+        + "B5F0B8C0"
+        + "0A60B1CE"
+        + "1D7E819D"
+        + "7A431D7C"
+        + "90EA0E5F", 16);
+
     // The order n of G
-    BigInteger p384_n = new BigInteger("ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "c7634d81"
-        + "f4372ddf"
-        + "581a0db2"
-        + "48b0a77a"
-        + "ecec196a"
-        + "ccc52973", 16);
+    BigInteger P_384_N = new BigInteger("FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "FFFFFFFF"
+        + "C7634D81"
+        + "F4372DDF"
+        + "581A0DB2"
+        + "48B0A77A"
+        + "ECEC196A"
+        + "CCC52973", 16);
 
     // Construct prime field
-    ECFieldFp p384_field = new ECFieldFp(p384_p);
+    ECFieldFp p384_field = new ECFieldFp(P_384_Q);
 
     // Construct curve from parameters
-    EllipticCurve p384 = new EllipticCurve(p384_field, p384_a, p384_b, p384_seed);
+    EllipticCurve p384 = new EllipticCurve(p384_field, P_384_A, P_384_B, p384_seed);
 
     // Construct base point for curve
-    ECPoint p384_base = new ECPoint(p384_xg, p384_yg);
+    ECPoint p384_base = new ECPoint(P_384_G_X, P_384_G_Y);
 
     // Construct curve parameter specifications object
     ECParameterSpec p384spec =
-        new ECParameterSpec(p384, p384_base, p384_n, 1); // Co-factor 1 for prime curves
+        new ECParameterSpec(p384, p384_base, P_384_N, 1); // Co-factor 1 for prime curves
 
     // ------------------------------------------------------------- //
-
     // Generate KeyPair
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
     keyPairGenerator.initialize(p384spec, new SecureRandom());
 
     KeyPair keyPair = keyPairGenerator.genKeyPair();
-    PrivateKey privateKey = keyPair.getPrivate();
-    byte[] privKey = privateKey.getEncoded();
-    /*
+    byte[] privKey = keyPair.getPrivate().getEncoded();
     byte[] publicKey = keyPair.getPublic().getEncoded();
     saveFile(privKey, PRIVATE_KEY);
     saveFile(publicKey, PUBLIC_KEY);
-    */
     listener.onFinished();
   }
 
@@ -267,26 +265,15 @@ import timber.log.Timber;
     try {
       InputStream input = context.getContentResolver().openInputStream(uri);
       File file = new File(context.getCacheDir(), "cache.pdf");
-      try {
-        OutputStream output = new FileOutputStream(file);
-        try {
-          try {
-            byte[] buffer = new byte[4 * 1024]; // or other buffer size
-            int read;
-
-            while ((read = input.read(buffer)) != -1) {
-              output.write(buffer, 0, read);
-            }
-            output.flush();
-          } finally {
-            output.close();
-          }
-        } catch (NullPointerException e) {
-          e.printStackTrace();
-        }
-      } finally {
-        input.close();
+      OutputStream output = new FileOutputStream(file);
+      byte[] buffer = new byte[4 * 1024]; // or other buffer size
+      int read;
+      while ((read = input.read(buffer)) != -1) {
+        output.write(buffer, 0, read);
       }
+      output.flush();
+      output.close();
+      input.close();
       listenerPrepPdf.onComplete(file);
     } catch (IOException e) {
       listenerPrepPdf.onError(e.getMessage());
