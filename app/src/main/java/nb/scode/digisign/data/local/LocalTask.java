@@ -2,7 +2,6 @@ package nb.scode.digisign.data.local;
 
 import android.net.Uri;
 import java.io.File;
-import java.security.cert.X509Certificate;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -10,6 +9,11 @@ import java.security.cert.X509Certificate;
  * PreferencesTask define the tasks for SharedPreferences
  */
 public interface LocalTask {
+
+  int USER = 1;
+
+  int ROOT = 0;
+
   /**
    * Clear.
    */
@@ -27,9 +31,15 @@ public interface LocalTask {
    */
   void setNotFirstUse();
 
-  X509Certificate getRootCertificate();
+  boolean isKeyPairAvailable();
+
+  void createKey(CommonListener listener) throws Exception;
+
+  File getPublicKey();
 
   void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf);
+  /*
+  X509Certificate getCertificate(int owner);
 
   void createUserCertificate(CommonListener listener) throws Exception;
 
@@ -39,7 +49,10 @@ public interface LocalTask {
 
   File getCertRootDest();
 
-  //void createRootCert();
+  File getCertPrivKeyDest();
+
+  void createRootCert();
+  */
 
   interface ListenerPrepPdf {
     void setFileName(String fileName);

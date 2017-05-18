@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import nb.scode.digisign.interactor.MainInteractor;
 import nb.scode.digisign.presenter.MainPresenter;
 import nb.scode.digisign.view.MainView;
+import timber.log.Timber;
 
 public final class MainPresenterImpl extends BasePresenterImpl<MainView> implements MainPresenter {
   /**
@@ -20,7 +21,9 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-    initCertKey();
+    if (!mInteractor.isKeyPairAvailable()) {
+      initKeyPair();
+    }
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -47,26 +50,26 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
     mInteractor.logout();
   }
 
-  private void initCertKey() {
-    mInteractor.initKeyCert(new MainInteractor.InitListener() {
+  private void initKeyPair() {
+    mInteractor.initKeyPair(new MainInteractor.InitCListener() {
       @Override public void onStartInit() {
-
-      }
-
-      @Override public void onGetRootCert() {
-
+        Timber.d("onStartInit(): Good");
       }
 
       @Override public void onCreateKey() {
-
+        Timber.d("onCreateKey(): Good");
       }
 
       @Override public void onUploadKey() {
-
+        Timber.d("onUploadKey(): Good");
       }
 
       @Override public void onFinishInit() {
+        Timber.d("onFinishInit(): Good");
+      }
 
+      @Override public void onError(String message) {
+        Timber.d("onError(): GOOO");
       }
     });
   }

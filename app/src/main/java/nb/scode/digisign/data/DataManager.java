@@ -3,12 +3,10 @@ package nb.scode.digisign.data;
 import android.net.Uri;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import java.io.File;
-import java.security.cert.X509Certificate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
-import timber.log.Timber;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -29,53 +27,54 @@ import timber.log.Timber;
     this.apiTask = apiTask;
   }
 
-  @Override public void initKeyCert(final InitListener listener) {
+  @Override public void clear() {
+
+  }
+
+  @Override public boolean isKeyPairAvailable() {
+    return localTask.isKeyPairAvailable();
+  }
+
+  @Override public void createKey(CommonListener listener) throws Exception {
+    localTask.createKey(listener);
+  }
+
+  @Override public void initKeyPair(final InitListener listener) {
     listener.onStartInit();
-    if (localTask.isKeyStoreExist()) {
-      listener.onFinishInit();
-    } else {
-      if (getRootCertificate() == null) {
-        getRootCertificate(getCertRootDest(), new CommonAListener() {
-          @Override public void onProcess() {
-            listener.onGetRootCert();
-          }
+    try {
+      createKey(new CommonListener() {
+        @Override public void onFinished() {
+          File file = getPublicKey();
+          uploadPublicKey(file, listener);
+        }
 
-          @Override public void onSuccess() {
-            createUserCertificate(listener);
-          }
+        @Override public void onError(String message) {
 
-          @Override public void onFailed(String message) {
+        }
 
-          }
-        });
-      } else {
-        createUserCertificate(listener);
-      }
+        @Override public void onProcess() {
+
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
-  private void createUserCertificate(final InitListener listener) {
-    createUserCertificate(new CommonListener() {
-      @Override public void onFinished() {
+  private void uploadPublicKey(File publicKey, final InitListener listener) {
+    uploadPublicKey(publicKey, new CommonAListener() {
+      @Override public void onProcess() {
+        listener.onUploadKey();
+      }
+
+      @Override public void onSuccess() {
         listener.onFinishInit();
       }
 
-      @Override public void onError(String message) {
-
-      }
-
-      @Override public void onProcess() {
-
+      @Override public void onFailed(String message) {
+        listener.onError(message);
       }
     });
-  }
-
-  @Override public boolean isKeyStoreExist() {
-    return localTask.isKeyStoreExist();
-  }
-
-  @Override public void clear() {
-
   }
 
   @Override public boolean isFirstUse() {
@@ -90,8 +89,8 @@ import timber.log.Timber;
     localTask.getPrepFilePdf(uri, listenerPrepPdf);
   }
 
-  @Override public X509Certificate getRootCertificate() {
-    return localTask.getRootCertificate();
+  @Override public File getPublicKey() {
+    return null;
   }
 
   @Override public void register(String email, String pass, CommonAListener listener) {
@@ -119,6 +118,7 @@ import timber.log.Timber;
     apiTask.logout();
   }
 
+  /*
   @Override public void createUserCertificate(CommonListener listener) {
     try {
       localTask.createUserCertificate(listener);
@@ -131,18 +131,13 @@ import timber.log.Timber;
   @Override public void createSignature(Uri uri, CommonListener listener) {
     localTask.createSignature(uri, listener);
   }
-
-  @Override public void getRootCertificate(File file, CommonAListener listener) {
-    apiTask.getRootCertificate(file, listener);
-  }
-
-  @Override public File getCertRootDest() {
-    return localTask.getCertRootDest();
-  }
-
-  /*
-  @Override public void createRootCert() {
-    localTask.createRootCert();
-  }
   */
+
+  @Override public void getRootCertificate(File fileroot, File privkey, CommonAListener listener) {
+    apiTask.getRootCertificate(fileroot, privkey, listener);
+  }
+
+  @Override public void uploadPublicKey(File publickey, CommonAListener listener) {
+    apiTask.uploadPublicKey(publickey, listener);
+  }
 }

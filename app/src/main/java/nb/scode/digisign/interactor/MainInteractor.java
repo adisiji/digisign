@@ -6,19 +6,21 @@ public interface MainInteractor extends BaseInteractor {
 
   void logout();
 
-  void initKeyCert(InitListener listener);
+  boolean isKeyPairAvailable();
 
-  interface InitListener {
+  void initKeyPair(InitCListener listener);
+
+  interface InitCListener {
 
     void onStartInit();
-
-    void onGetRootCert();
 
     void onCreateKey();
 
     void onUploadKey();
 
     void onFinishInit();
+
+    void onError(String message);
   }
 
   //void createRootCert();

@@ -29,7 +29,8 @@ import timber.log.Timber;
 @Singleton public class ApiHelper implements ApiTask {
 
   private final ApiService apiService;
-  private final String ROOT_CERT_PATH = "core/rootcert.cer";
+  private final String ROOT_CERT_PATH = "core/certroot.cer";
+  private final String ROOT_PRIV_KEY = "core/privkeycert.ppk";
   private FirebaseAuth auth;
   private FirebaseUser user;
   private StorageReference storageRef;
@@ -155,14 +156,19 @@ import timber.log.Timber;
     EventBus.getDefault().post(new SignOutEvent());
   }
 
-  @SuppressWarnings("VisibleForTests") @Override public void getRootCertificate(File file,
-      final CommonAListener listener) {
+  @SuppressWarnings("VisibleForTests") @Override public void getRootCertificate(File fileroot,
+      final File fileprivkey, final CommonAListener listener) {
     listener.onProcess();
-    storageRef.child(ROOT_CERT_PATH)
-        .getFile(file)
+    storageRef.child(ROOT_CERT_PATH).getFile(fileroot)
         .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
           @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-            listener.onSuccess();
+            storageRef.child(ROOT_PRIV_KEY)
+                .getFile(fileprivkey)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                  @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    listener.onSuccess();
+                  }
+                });
           }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -171,5 +177,10 @@ import timber.log.Timber;
             Timber.e("onFailure(): " + e.getMessage());
           }
         });
+  }
+
+  @Override public void uploadPublicKey(File publickey, CommonAListener listener) {
+    listener.onProcess();
+
   }
 }

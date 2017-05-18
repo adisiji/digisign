@@ -20,28 +20,36 @@ public final class MainInteractorImpl implements MainInteractor {
     dataTask.logout();
   }
 
-  @Override public void initKeyCert(final InitListener listener) {
-    dataTask.initKeyCert(new DataTask.InitListener() {
-      @Override public void onStartInit() {
-        listener.onStartInit();
-      }
+  @Override public boolean isKeyPairAvailable() {
+    return dataTask.isKeyPairAvailable();
+  }
 
-      @Override public void onGetRootCert() {
-        listener.onGetRootCert();
-      }
+  @Override public void initKeyPair(final InitCListener listener) {
+    try {
+      dataTask.initKeyPair(new DataTask.InitListener() {
+        @Override public void onStartInit() {
+          listener.onStartInit();
+        }
 
-      @Override public void onCreateKey() {
-        listener.onCreateKey();
-      }
+        @Override public void onCreateKey() {
+          listener.onCreateKey();
+        }
 
-      @Override public void onUploadKey() {
-        listener.onUploadKey();
-      }
+        @Override public void onUploadKey() {
+          listener.onUploadKey();
+        }
 
-      @Override public void onFinishInit() {
-        listener.onFinishInit();
-      }
-    });
+        @Override public void onFinishInit() {
+          listener.onFinishInit();
+        }
+
+        @Override public void onError(String message) {
+          listener.onError(message);
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   /*
