@@ -100,43 +100,12 @@ import timber.log.Timber;
     listener.onProcess();
 
     // Setup for P-384 curve params
-    BigInteger p384_p = new BigInteger("ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "fffffffe"
-        + "ffffffff"
-        + "ffffffff"
-        + "00000000"
-        + "00000000"
-        + "ffffffff", 16);
-
-    BigInteger p384_a = new BigInteger("ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "fffffffe"
-        + "ffffffff"
-        + "ffffffff"
-        + "00000000"
-        + "00000000"
-        + "fffffffc", 16);
-    BigInteger p384_b = new BigInteger("b3312fa7"
-        + "e23ee734"
-        + "988e056b"
-        + "e3f82d19"
-        + "181d9c6e"
-        + "fe814112"
-        + "0314088f"
-        + "5013875a"
-        + "c656398d"
-        + "8a2ed19d"
-        + "2a85c8ed"
-        + "d3ec2aef", 16);
+    BigInteger p384_p = new BigInteger("39402006196394479212279040100143613805079739270465"
+        + "446667948293404245721771496870329047266088258938001861606973112319");
+    BigInteger p384_a = new BigInteger("39402006196394479212279040100143613805079739270465"
+        + "446667948293404245721771496870329047266088258938001861606973112316");
+    BigInteger p384_b = new BigInteger("27580193559959705877849011840389048093056905856361"
+        + "568521428707301988689241309860865136260764883745107765439761230575");
     byte[] p384_seed = {
         (byte) 0xa3, (byte) 0x35, (byte) 0x92, (byte) 0x6a, (byte) 0xa3, (byte) 0x19, (byte) 0xa2,
         (byte) 0x7a, (byte) 0x1d, (byte) 0x00, (byte) 0x89, (byte) 0x6a, (byte) 0x67, (byte) 0x73,
@@ -144,44 +113,14 @@ import timber.log.Timber;
     };
 
     // Base Point xG
-    BigInteger p384_xg = new BigInteger("aa87ca22"
-        + "be8b0537"
-        + "8eb1c71e"
-        + "f320ad74"
-        + "6e1d3b62"
-        + "8ba79b98"
-        + "59f741e0"
-        + "82542a38"
-        + "5502f25d"
-        + "bf55296c"
-        + "3a545e38"
-        + "72760ab7", 16);
+    BigInteger p384_xg = new BigInteger("26247035095799689268623156744566981891852923491109"
+        + "213387815615900925518854738050089022388053975719786650872476732087");
     // Base Point yG
-    BigInteger p384_yg = new BigInteger("3617de4a"
-        + "96262c6f"
-        + "5d9e98bf"
-        + "9292dc29"
-        + "f8f41dbd"
-        + "289a147c"
-        + "e9da3113"
-        + "b5f0b8c0"
-        + "0a60b1ce"
-        + "1d7e819d"
-        + "7a431d7c"
-        + "90ea0e5f", 16);
+    BigInteger p384_yg = new BigInteger("83257109614890299855467512895201081792878530488613"
+        + "15594709205902480503199884419224438643760392947333078086511627871");
     // The order n of G
-    BigInteger p384_n = new BigInteger("ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "ffffffff"
-        + "c7634d81"
-        + "f4372ddf"
-        + "581a0db2"
-        + "48b0a77a"
-        + "ecec196a"
-        + "ccc52973", 16);
+    BigInteger p384_n = new BigInteger("394020061963944792122790401001436138050797392704654"
+        + "46667946905279627659399113263569398956308152294913554433653942643");
 
     // Construct prime field
     ECFieldFp p384_field = new ECFieldFp(p384_p);
