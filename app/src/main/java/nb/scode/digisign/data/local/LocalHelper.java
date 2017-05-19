@@ -212,7 +212,7 @@ import timber.log.Timber;
   }
 
   @Override public File getPublicKey() {
-    return null;
+    return new File(context.getFilesDir(), PUBLIC_KEY);
   }
 
   @Override public void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf) {

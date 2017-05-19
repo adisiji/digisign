@@ -12,9 +12,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,11 +26,12 @@ import timber.log.Timber;
 /**
  * Created by neobyte on 4/28/2017.
  */
+
 @Singleton public class ApiHelper implements ApiTask {
 
+  private final String PUBLIC_KEY = "pubkey.pbk";
   private final ApiService apiService;
-  private final String ROOT_CERT_PATH = "core/certroot.cer";
-  private final String ROOT_PRIV_KEY = "core/privkeycert.ppk";
+  private final String USER_STORAGE_REF = "/users/";
   private FirebaseAuth auth;
   private FirebaseUser user;
   private StorageReference storageRef;
@@ -156,19 +157,16 @@ import timber.log.Timber;
     EventBus.getDefault().post(new SignOutEvent());
   }
 
-  @SuppressWarnings("VisibleForTests") @Override public void getRootCertificate(File fileroot,
-      final File fileprivkey, final CommonAListener listener) {
+  @Override public void uploadPublicKey(File publickey, final CommonAListener listener) {
     listener.onProcess();
-    storageRef.child(ROOT_CERT_PATH).getFile(fileroot)
-        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-          @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-            storageRef.child(ROOT_PRIV_KEY)
-                .getFile(fileprivkey)
-                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                  @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    listener.onSuccess();
-                  }
-                });
+    Uri uri = Uri.fromFile(publickey);
+    String folderRef = USER_STORAGE_REF + user.getUid() + "/" + PUBLIC_KEY;
+    Timber.d("uploadPublicKey(): " + folderRef);
+    storageRef.child(folderRef)
+        .putFile(uri)
+        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            listener.onSuccess();
           }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -177,10 +175,5 @@ import timber.log.Timber;
             Timber.e("onFailure(): " + e.getMessage());
           }
         });
-  }
-
-  @Override public void uploadPublicKey(File publickey, CommonAListener listener) {
-    listener.onProcess();
-
   }
 }

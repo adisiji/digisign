@@ -53,6 +53,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   private void initKeyPair() {
     mInteractor.initKeyPair(new MainInteractor.InitCListener() {
       @Override public void onStartInit() {
+        mView.showProgressDialog("Initialize Key");
         Timber.d("onStartInit(): Good");
       }
 
@@ -61,14 +62,19 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
 
       @Override public void onUploadKey() {
+        mView.showProgressDialog("Uploading Key");
         Timber.d("onUploadKey(): Good");
       }
 
       @Override public void onFinishInit() {
+        mView.hideProgressDialog();
+        mView.showToast("You can sign document now");
         Timber.d("onFinishInit(): Good");
       }
 
       @Override public void onError(String message) {
+        mView.hideProgressDialog();
+        mView.showToast(message);
         Timber.d("onError(): GOOO");
       }
     });

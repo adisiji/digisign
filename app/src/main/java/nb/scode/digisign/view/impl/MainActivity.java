@@ -1,5 +1,6 @@
 package nb.scode.digisign.view.impl;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -42,6 +44,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   @BindView(R.id.toolbar) Toolbar toolbar;
   @BindView(R.id.nvView) NavigationView nvDrawer;
   private ActionBarDrawerToggle drawerToggle;
+  private ProgressDialog progressDialog;
 
   // Your presenter is available using the mPresenter variable
 
@@ -68,6 +71,12 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     drawerToggle = setupDrawerToggle();
     // Tie DrawerLayout events to the ActionBarToggle
     drawerLayout.addDrawerListener(drawerToggle);
+    setupProgress();
+  }
+
+  private void setupProgress() {
+    progressDialog = new ProgressDialog(this);
+    progressDialog.setIndeterminate(true);
   }
 
   @Override protected void onStart() {
@@ -190,5 +199,21 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     Intent i = new Intent(this, LoginActivity.class);
     startActivity(i);
     finish();
+  }
+
+  @Override public void showProgressDialog(String message) {
+    if (progressDialog.isShowing()) {
+      progressDialog.dismiss();
+    }
+    progressDialog.setMessage(message);
+    progressDialog.show();
+  }
+
+  @Override public void hideProgressDialog() {
+    progressDialog.dismiss();
+  }
+
+  @Override public void showToast(String message) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
   }
 }

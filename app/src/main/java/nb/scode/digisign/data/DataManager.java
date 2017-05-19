@@ -2,6 +2,10 @@ package nb.scode.digisign.data;
 
 import android.net.Uri;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,8 +39,12 @@ import nb.scode.digisign.data.remote.ApiTask;
     return localTask.isKeyPairAvailable();
   }
 
-  @Override public void createKey(CommonListener listener) throws Exception {
-    localTask.createKey(listener);
+  @Override public void createKey(final CommonListener listener) throws Exception {
+    Completable.fromAction(new Action() {
+      @Override public void run() throws Exception {
+        localTask.createKey(listener);
+      }
+    }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe();
   }
 
   @Override public void initKeyPair(final InitListener listener) {
@@ -49,11 +57,11 @@ import nb.scode.digisign.data.remote.ApiTask;
         }
 
         @Override public void onError(String message) {
-
+          listener.onError(message);
         }
 
         @Override public void onProcess() {
-
+          listener.onCreateKey();
         }
       });
     } catch (Exception e) {
@@ -85,12 +93,16 @@ import nb.scode.digisign.data.remote.ApiTask;
     localTask.setNotFirstUse();
   }
 
-  @Override public void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf) {
-    localTask.getPrepFilePdf(uri, listenerPrepPdf);
+  @Override public void getPrepFilePdf(final Uri uri, final ListenerPrepPdf listenerPrepPdf) {
+    Completable.fromAction(new Action() {
+      @Override public void run() throws Exception {
+        localTask.getPrepFilePdf(uri, listenerPrepPdf);
+      }
+    }).subscribeOn(Schedulers.io()).subscribe();
   }
 
   @Override public File getPublicKey() {
-    return null;
+    return localTask.getPublicKey();
   }
 
   @Override public void register(String email, String pass, CommonAListener listener) {
@@ -116,25 +128,6 @@ import nb.scode.digisign.data.remote.ApiTask;
 
   @Override public void logout() {
     apiTask.logout();
-  }
-
-  /*
-  @Override public void createUserCertificate(CommonListener listener) {
-    try {
-      localTask.createUserCertificate(listener);
-    } catch (Exception e) {
-      Throwable e1 = e.fillInStackTrace();
-      Timber.e(e1, "Ooops! An exception happened");
-    }
-  }
-
-  @Override public void createSignature(Uri uri, CommonListener listener) {
-    localTask.createSignature(uri, listener);
-  }
-  */
-
-  @Override public void getRootCertificate(File fileroot, File privkey, CommonAListener listener) {
-    apiTask.getRootCertificate(fileroot, privkey, listener);
   }
 
   @Override public void uploadPublicKey(File publickey, CommonAListener listener) {

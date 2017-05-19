@@ -67,6 +67,7 @@ public final class LoginPresenterImpl extends BasePresenterImpl<LoginView>
       }
 
       @Override public void onSuccess() {
+        mView.hideProgress();
         mView.gotoMain();
       }
 

@@ -6,4 +6,10 @@ import android.support.annotation.UiThread;
 
   void gotoLogin();
 
+  void showProgressDialog(String message);
+
+  void hideProgressDialog();
+
+  void showToast(String message);
+
 }

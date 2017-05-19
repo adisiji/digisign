@@ -1,9 +1,9 @@
 package nb.scode.digisign.view.impl;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -35,6 +35,7 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
   @BindView(R.id.password) EditText etPassword;
   @BindView(R.id.progressBar) ProgressBar progressBar;
   private GoogleApiClient googleApiClient;
+  private ProgressDialog progressDialog;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -49,8 +50,14 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
     googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this)
         .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
         .build();
-
+    setupProgress();
     // Do not call mPresenter from here, it will be null! Wait for onStart or onPostCreate.
+  }
+
+  private void setupProgress() {
+    progressDialog = new ProgressDialog(this);
+    progressDialog.setIndeterminate(true);
+    progressDialog.setMessage("Loading...");
   }
 
   @Override protected void onStart() {
@@ -121,10 +128,10 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
   }
 
   @Override public void showProgress() {
-    progressBar.setVisibility(View.VISIBLE);
+    progressDialog.show();
   }
 
   @Override public void hideProgress() {
-    progressBar.setVisibility(View.GONE);
+    progressDialog.dismiss();
   }
 }

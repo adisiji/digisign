@@ -20,8 +20,6 @@ public interface ApiTask {
 
   void logout();
 
-  void getRootCertificate(File fileroot, File filePrivkey, CommonAListener listener);
-
   void uploadPublicKey(File publickey, CommonAListener listener);
 
   interface CommonAListener {
