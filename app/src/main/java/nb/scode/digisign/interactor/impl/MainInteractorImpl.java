@@ -5,7 +5,10 @@ import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
+import nb.scode.digisign.data.remote.BusModel.SignOutEvent;
+import nb.scode.digisign.data.remote.BusModel.UserBusPost;
 import nb.scode.digisign.interactor.MainInteractor;
+import org.greenrobot.eventbus.EventBus;
 
 public final class MainInteractorImpl implements MainInteractor {
 
@@ -15,12 +18,14 @@ public final class MainInteractorImpl implements MainInteractor {
     this.dataTask = dataTask;
   }
 
-  @Override public void getPhotoUri() {
-    dataTask.getUserProfile();
+  @Override public void getUser() {
+    UserBusPost busPost = dataTask.getUserProfile();
+    EventBus.getDefault().post(busPost);
   }
 
   @Override public void logout() {
     dataTask.logout();
+    EventBus.getDefault().post(new SignOutEvent());
   }
 
   @Override public boolean isRecentEmailSame() {
@@ -31,7 +36,7 @@ public final class MainInteractorImpl implements MainInteractor {
   @Override public void downloadKeyPair(final MainListener listener) {
     File privkey = dataTask.getPrivateKey();
     File pubkey = dataTask.getPublicKey();
-    dataTask.uploadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
+    dataTask.downloadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProcess();
       }

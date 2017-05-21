@@ -42,7 +42,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   }
 
   @Override public void getPhotoUri() {
-    mInteractor.getPhotoUri();
+    mInteractor.getUser();
   }
 
   @Override public void logout() {

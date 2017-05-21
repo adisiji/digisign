@@ -1,16 +1,14 @@
 package nb.scode.digisign.data;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import io.reactivex.Completable;
-import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
 import java.io.File;
-import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
-import nb.scode.digisign.data.remote.FireModel.ListUid;
+import nb.scode.digisign.data.remote.BusModel.UserBusPost;
+import nb.scode.digisign.data.remote.FireModel.User;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -52,11 +50,7 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
   }
 
   @Override public void createKey(final CommonListener listener) throws Exception {
-    Completable.fromAction(new Action() {
-      @Override public void run() throws Exception {
-        localTask.createKey(listener);
-      }
-    }).subscribeOn(Schedulers.computation()).subscribe();
+    localTask.createKey(listener);
   }
 
   @Override public boolean isFirstUse() {
@@ -96,8 +90,8 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
     return apiTask.isUserSignedIn();
   }
 
-  @Override public void getUserProfile() {
-    apiTask.getUserProfile();
+  @Override public UserBusPost getUserProfile() {
+    return apiTask.getUserProfile();
   }
 
   @Override public void logout() {
@@ -112,8 +106,8 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
     apiTask.getUserPost();
   }
 
-  @Override public List<ListUid> getListUid() {
-    return apiTask.getListUid();
+  @Override public Map<String, User> getListUser() {
+    return apiTask.getListUser();
   }
 
   @Override public void checkRemoteKeyPair(CommonAListener listener) {

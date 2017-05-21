@@ -17,20 +17,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import durdinapps.rxfirebase2.RxFirebaseStorage;
+import io.reactivex.Maybe;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import nb.scode.digisign.data.remote.BusModel.SignOutEvent;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
-import nb.scode.digisign.data.remote.FireModel.ListUid;
 import nb.scode.digisign.data.remote.FireModel.User;
-import org.greenrobot.eventbus.EventBus;
 import timber.log.Timber;
 
 /**
@@ -45,8 +47,9 @@ import timber.log.Timber;
   private final String USER_STORAGE_REF = "/users/";
   private FirebaseAuth auth;
   private FirebaseUser user;
+  private FirebaseDatabase database;
   private StorageReference storageRef;
-  private int init = 0;
+  private Map<String, User> userMap;
 
   /**
    * Instantiates a new Api helper.
@@ -57,7 +60,10 @@ import timber.log.Timber;
   @Inject ApiHelper(ApiService apiService) {
     this.apiService = apiService;
     auth = FirebaseAuth.getInstance();
+    database = FirebaseDatabase.getInstance();
     storageRef = FirebaseStorage.getInstance().getReference();
+    userMap = new HashMap<>();
+    activateUsersListener();
   }
 
   @Override public void register(String email, String pass, final CommonAListener listener) {
@@ -147,49 +153,65 @@ import timber.log.Timber;
     return user.getEmail();
   }
 
-  @Override public void downloadKeyPair(File publickey, File privatekey, CommonAListener listener) {
-    init = 0;
+  @Override public void downloadKeyPair(File publickey, File privatekey,
+      final CommonAListener listener) {
+    listener.onProcess();
+    Timber.d("downloadKeyPair(): OK");
+    String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
+    StorageReference refpub = storageRef.child(publicFolderRef);
+    Maybe<FileDownloadTask.TaskSnapshot> obs1 = RxFirebaseStorage.getFile(refpub, publickey);
+
+    String privateFolderRef = USER_STORAGE_REF + user.getUid() + "/" + PRIVATE_KEY;
+    StorageReference refPriv = storageRef.child(privateFolderRef);
+    Maybe<FileDownloadTask.TaskSnapshot> obs2 = RxFirebaseStorage.getFile(refPriv, privatekey);
+
+    Maybe.concat(obs1, obs2)
+        .subscribeOn(Schedulers.io())
+        .subscribe(new Consumer<FileDownloadTask.TaskSnapshot>() {
+          @Override public void accept(
+              @io.reactivex.annotations.NonNull FileDownloadTask.TaskSnapshot taskSnapshot)
+              throws Exception {
+            Timber.d("accept(): good");
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+              throws Exception {
+            Timber.e("accept(): error " + throwable.getMessage());
+            listener.onFailed(throwable.getMessage());
+          }
+        }, new Action() {
+          @Override public void run() throws Exception {
+            listener.onSuccess();
+          }
+        });
   }
 
   @Override public void checkRemoteKeyPair(final CommonAListener listener) {
-    init = 0;
+    listener.onProcess();
+
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
-    storageRef.child(publicFolderRef)
-        .getDownloadUrl()
-        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-          @Override public void onSuccess(Uri uri) {
-            if (init != 1) {
-              init++;
-            } else {
-              listener.onSuccess();
-            }
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override public void onFailure(@NonNull Exception e) {
-            listener.onFailed(e.getMessage());
-            Timber.d("onFailure(): Key Pair Not available");
-          }
-        });
+    StorageReference refpub = storageRef.child(publicFolderRef);
+    Maybe<Uri> obs1 = RxFirebaseStorage.getDownloadUrl(refpub);
 
     String privateFolderRef = USER_STORAGE_REF + user.getUid() + "/" + PRIVATE_KEY;
-    storageRef.child(privateFolderRef)
-        .getDownloadUrl()
-        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-          @Override public void onSuccess(Uri uri) {
-            if (init != 1) {
-              init++;
-            } else {
-              listener.onSuccess();
-            }
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override public void onFailure(@NonNull Exception e) {
-            listener.onFailed(e.getMessage());
-            Timber.d("onFailure(): Key Pair Not available");
-          }
-        });
+    StorageReference refPriv = storageRef.child(privateFolderRef);
+    Maybe<Uri> obs2 = RxFirebaseStorage.getDownloadUrl(refPriv);
+
+    Maybe.concat(obs1, obs2).subscribeOn(Schedulers.io()).subscribe(new Consumer<Uri>() {
+      @Override public void accept(@io.reactivex.annotations.NonNull Uri uri) throws Exception {
+
+      }
+    }, new Consumer<Throwable>() {
+      @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+          throws Exception {
+        Timber.e("accept(): error " + throwable.getMessage());
+        listener.onFailed(throwable.getMessage());
+      }
+    }, new Action() {
+      @Override public void run() throws Exception {
+        listener.onSuccess();
+      }
+    });
   }
 
   @Override public boolean isUserSignedIn() {
@@ -197,7 +219,7 @@ import timber.log.Timber;
     return (user != null);
   }
 
-  @Override public void getUserProfile() {
+  @Override public UserBusPost getUserProfile() {
     Uri uri = user.getPhotoUrl();
     String email = user.getEmail();
     String name = user.getDisplayName();
@@ -206,98 +228,58 @@ import timber.log.Timber;
     busPost.setDisplayName(name);
     busPost.setEmail(email);
     busPost.setUri(uri);
-    EventBus.getDefault().post(busPost);
+    return busPost;
   }
 
   @Override public void logout() {
     auth.signOut();
-    EventBus.getDefault().post(new SignOutEvent());
   }
 
   @Override public void uploadKeyPair(File publickey, File privatekey,
       final CommonAListener listener) {
     listener.onProcess();
-    init = 0;
+
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
     Uri uri = Uri.fromFile(publickey);
-    Timber.d("uploadKeyPair(): " + publicFolderRef);
-    storageRef.child(publicFolderRef)
-        .putFile(uri)
-        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-            if (init != 1) {
-              init++;
-            } else {
-              insertUserData(listener);
-            }
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override public void onFailure(@NonNull Exception e) {
-            listener.onFailed(e.getMessage());
-            Timber.e("onFailure(): " + e.getMessage());
-          }
-        });
+    storageRef.child(publicFolderRef);
+    Maybe<UploadTask.TaskSnapshot> obs1 = RxFirebaseStorage.putFile(storageRef, uri);
 
     String privateFolderRef = USER_STORAGE_REF + user.getUid() + "/" + PRIVATE_KEY;
     Uri uri1 = Uri.fromFile(privatekey);
-    storageRef.child(privateFolderRef)
-        .putFile(uri1)
-        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-            if (init != 1) {
-              init++;
-            } else {
-              insertUserData(listener);
-            }
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override public void onFailure(@NonNull Exception e) {
+    storageRef.child(privateFolderRef);
+    Maybe<UploadTask.TaskSnapshot> obs2 = RxFirebaseStorage.putFile(storageRef, uri1);
 
+    Maybe.concat(obs1, obs2)
+        .subscribeOn(Schedulers.io())
+        .subscribe(new Consumer<UploadTask.TaskSnapshot>() {
+          @Override public void accept(
+              @io.reactivex.annotations.NonNull UploadTask.TaskSnapshot taskSnapshot)
+              throws Exception {
+
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+              throws Exception {
+            listener.onFailed(throwable.getMessage());
+          }
+        }, new Action() {
+          @Override public void run() throws Exception {
+            insertUserData(listener);
           }
         });
   }
 
   private void insertUserData(final CommonAListener listener) {
-    FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference reference1 = mDatabase.getReference("users");
-    // Creating new user node, which returns the unique key value
     // new user node would be /users/$userid/
+    DatabaseReference reference1 = database.getReference("users").child(user.getUid());
 
     // creating user object
     User userd = new User(user.getDisplayName(), user.getEmail());
-    init = 0;
+
     // pushing user to 'users' node using the userId
-    reference1.child(user.getUid())
-        .setValue(userd)
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-          @Override public void onSuccess(Void aVoid) {
-            if (init != 1) {
-              init++;
-            } else {
-              listener.onSuccess();
-            }
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override public void onFailure(@NonNull Exception e) {
-            listener.onFailed(e.getMessage());
-            Timber.e("onFailure(): " + e.getMessage());
-          }
-        });
-    // Insert to list uid
-    DatabaseReference reference2 = mDatabase.getReference("listuid");
-    Map<String, String> uidMap = new HashMap<>();
-    uidMap.put(user.getUid(), user.getEmail());
-    reference2.setValue(uidMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+    reference1.setValue(userd).addOnSuccessListener(new OnSuccessListener<Void>() {
       @Override public void onSuccess(Void aVoid) {
-        if (init != 1) {
-          init++;
-        } else {
-          getListUid();
-          listener.onSuccess();
-        }
+        listener.onSuccess();
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override public void onFailure(@NonNull Exception e) {
@@ -305,13 +287,11 @@ import timber.log.Timber;
         Timber.e("onFailure(): " + e.getMessage());
       }
     });
-
-    //Observable.merge()
   }
 
   @Override public void getUserPost() {
     // First get User Data
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+    DatabaseReference mDatabase = database.getReference("users");
     String uid = user.getUid();
 
     mDatabase.child(uid).addValueEventListener(new ValueEventListener() {
@@ -327,15 +307,17 @@ import timber.log.Timber;
     });
   }
 
-  @Override public List<ListUid> getListUid() {
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("listuid");
+  private void activateUsersListener() {
+    DatabaseReference mDatabase = database.getReference("users");
     mDatabase.addValueEventListener(new ValueEventListener() {
       @Override public void onDataChange(DataSnapshot dataSnapshot) {
         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+          User user = childDataSnapshot.getValue(User.class);
+          userMap.put(childDataSnapshot.getKey(), user);
           Timber.d("onDataChange(): key => "
-              + childDataSnapshot.getKey()); //displays the key for the node
+              + childDataSnapshot.getKey()); //displays the key for the node (uid)
           Timber.d("onDataChange(): value => "
-              + childDataSnapshot.getValue());   //gives the value for given keyname
+              + childDataSnapshot.getValue());   //gives the value for given keyname (User)
         }
         Timber.d("onDataChange(): finished");
       }
@@ -344,6 +326,9 @@ import timber.log.Timber;
 
       }
     });
-    return null;
+  }
+
+  @Override public Map<String, User> getListUser() {
+    return userMap;
   }
 }
