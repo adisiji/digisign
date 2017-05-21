@@ -21,9 +21,8 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-    if (!mInteractor.isKeyPairAvailable()) {
-      initKeyPair();
-    }
+    mainStarter();
+
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -48,6 +47,76 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
   @Override public void logout() {
     mInteractor.logout();
+  }
+
+  private void downloadKeyPair() {
+    mInteractor.downloadKeyPair(new MainInteractor.MainListener() {
+      @Override public void onSuccess() {
+        Timber.d("mainStarter(): finish");
+      }
+
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onFailed(String message) {
+
+      }
+    });
+  }
+
+  private void uploadKeyPair() {
+    mInteractor.uploadKeyPair(new MainInteractor.MainListener() {
+      @Override public void onSuccess() {
+        Timber.d("onSuccess(): Ok we can start sign");
+      }
+
+      @Override public void onProcess() {
+        Timber.d("onProcess(): Process Upload KeyPair");
+      }
+
+      @Override public void onFailed(String message) {
+        mView.showToast(message);
+      }
+    });
+  }
+
+  private void mainStarter() {
+    if (mInteractor.isRecentEmailSame()) {
+      if (mInteractor.isKeyPairAvailable()) {
+        mInteractor.isRemoteKeyPairAvail(new MainInteractor.MainListener() {
+          @Override public void onSuccess() {
+            Timber.d("onSuccess(): Ok we can start sign");
+          }
+
+          @Override public void onProcess() {
+            Timber.d("onProcess(): Good get RemoteKeyPair");
+          }
+
+          @Override public void onFailed(String message) {
+            Timber.d("onFailed(): lets upload the keypair");
+            uploadKeyPair();
+          }
+        });
+      } else {
+        downloadKeyPair();
+      }
+    } else {
+      mInteractor.setRecentEmail();
+      mInteractor.isRemoteKeyPairAvail(new MainInteractor.MainListener() {
+        @Override public void onSuccess() {
+          downloadKeyPair();
+        }
+
+        @Override public void onProcess() {
+          Timber.d("onProcess(): getting remote KeyPair");
+        }
+
+        @Override public void onFailed(String message) {
+          initKeyPair();
+        }
+      });
+    }
   }
 
   private void initKeyPair() {

@@ -2,6 +2,7 @@ package nb.scode.digisign.interactor.impl;
 
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
+import nb.scode.digisign.data.remote.ApiTask;
 import nb.scode.digisign.interactor.MainInteractor;
 
 public final class MainInteractorImpl implements MainInteractor {
@@ -13,15 +14,55 @@ public final class MainInteractorImpl implements MainInteractor {
   }
 
   @Override public void getPhotoUri() {
-    dataTask.getPhotoUri();
+    dataTask.getUserProfile();
   }
 
   @Override public void logout() {
     dataTask.logout();
   }
 
+  @Override public boolean isRecentEmailSame() {
+    return dataTask.isRecentEmailSame();
+  }
+
+  @Override public void downloadKeyPair(final MainListener listener) {
+    dataTask.downloadKeyPair(new DataTask.DataListener() {
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
+
+  @Override public void setRecentEmail() {
+    dataTask.setRecentEmail();
+  }
+
   @Override public boolean isKeyPairAvailable() {
-    return dataTask.isKeyPairAvailable();
+    return dataTask.isLocalKeyPairAvailable();
+  }
+
+  @Override public void isRemoteKeyPairAvail(final MainListener listener) {
+    dataTask.checkRemoteKeyPair(new ApiTask.CommonAListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
   }
 
   @Override public void initKeyPair(final InitCListener listener) {
@@ -50,6 +91,22 @@ public final class MainInteractorImpl implements MainInteractor {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  @Override public void uploadKeyPair(final MainListener listener) {
+    dataTask.uploadKeyPair(new DataTask.DataListener() {
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
   }
 
   /*

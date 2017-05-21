@@ -35,16 +35,10 @@ import timber.log.Timber;
  */
 @Singleton public class LocalHelper implements LocalTask {
 
-  private static final String PREF_FILE_NAME = "android_pref_file";
+  private static final String PREF_FILE_NAME = "digi_sign_pref";
   private static final String PREF_FIRST_USE = "first_use";
   private static final String PRIVATE_KEY = "privkey.ppk";
   private static final String PUBLIC_KEY = "pubkey.pbk";
-  /*
-  private static final String CERT_PATH_USER = "certuser.cer";
-  private static final String CERT_PATH_ROOT = "certroot.cer";
-  private static final String PRIVATE_KEY_CERT_ROOT = "privkeycert.ppk";
-  private static final String KEY_CERT_NAME = "MyDigiSignCert";
-  */
 
   private final SharedPreferences mPref;
   private final Context context;
@@ -88,12 +82,24 @@ import timber.log.Timber;
     mPref.edit().putBoolean(PREF_FIRST_USE, false).apply();
   }
 
-  @Override public boolean isKeyPairAvailable() {
+  @Override public boolean isLocalKeyPairAvailable() {
     File file = new File(context.getFilesDir(), PRIVATE_KEY);
-    if (file.exists()) {
+    File file1 = new File(context.getFilesDir(), PUBLIC_KEY);
+    if (file.exists() && file1.exists()) {
       testKunci();
+      return true;
+    } else {
+      return false;
     }
-    return file.exists();
+  }
+
+  @Override public boolean isEmailSame(String email) {
+    String res = mPref.getString("EMAIL", "A");
+    return res.equals(email);
+  }
+
+  @Override public void setEmailPref(String email) {
+    mPref.edit().putString("EMAIL", email).apply();
   }
 
   @Override public void createKey(CommonListener listener) throws Exception {
@@ -213,6 +219,10 @@ import timber.log.Timber;
 
   @Override public File getPublicKey() {
     return new File(context.getFilesDir(), PUBLIC_KEY);
+  }
+
+  @Override public File getPrivateKey() {
+    return new File(context.getFilesDir(), PRIVATE_KEY);
   }
 
   @Override public void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf) {

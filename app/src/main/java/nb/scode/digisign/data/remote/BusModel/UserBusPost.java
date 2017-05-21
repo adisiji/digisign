@@ -1,4 +1,4 @@
-package nb.scode.digisign.data.remote.model;
+package nb.scode.digisign.data.remote.BusModel;
 
 import android.net.Uri;
 

@@ -12,6 +12,23 @@ public interface DataTask extends LocalTask, ApiTask {
 
   void initKeyPair(InitListener listener);
 
+  boolean isRecentEmailSame();
+
+  void setRecentEmail();
+
+  void uploadKeyPair(DataListener listener);
+
+  void downloadKeyPair(DataListener listener);
+
+  interface DataListener {
+
+    void onSuccess();
+
+    void onProcess();
+
+    void onFailed(String message);
+  }
+
   interface InitListener {
 
     void onStartInit();

@@ -31,11 +31,17 @@ public interface LocalTask {
    */
   void setNotFirstUse();
 
-  boolean isKeyPairAvailable();
+  boolean isEmailSame(String email);
+
+  void setEmailPref(String email);
+
+  boolean isLocalKeyPairAvailable();
 
   void createKey(CommonListener listener) throws Exception;
 
   File getPublicKey();
+
+  File getPrivateKey();
 
   void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf);
   /*

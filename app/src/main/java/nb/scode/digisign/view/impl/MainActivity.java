@@ -24,8 +24,8 @@ import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 import javax.inject.Inject;
 import nb.scode.digisign.R;
-import nb.scode.digisign.data.remote.model.SignOutEvent;
-import nb.scode.digisign.data.remote.model.UserBusPost;
+import nb.scode.digisign.data.remote.BusModel.SignOutEvent;
+import nb.scode.digisign.data.remote.BusModel.UserBusPost;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerMainViewComponent;
 import nb.scode.digisign.injection.MainViewModule;
@@ -35,6 +35,7 @@ import nb.scode.digisign.view.MainView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import timber.log.Timber;
 
 public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     implements MainView, NavigationView.OnNavigationItemSelectedListener {
@@ -205,6 +206,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     if (progressDialog.isShowing()) {
       progressDialog.dismiss();
     }
+    Timber.d("showProgressDialog(): " + message);
     progressDialog.setMessage(message);
     progressDialog.show();
   }

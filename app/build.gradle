@@ -29,7 +29,7 @@ ext {
   jsoupVersion = '1.10.2'
   leakVersion = '1.5'
   okhtppVersion = '3.6.0'
-  playServicesVersion = '10.2.4'
+  playServicesVersion = '10.2.6'
   retrofitVersion = '2.2.0'
   rxBindingVersion = '2.0.0'
   rxjavaVersion = '2.0.9'
@@ -52,6 +52,7 @@ dependencies {
 
   compile "com.google.firebase:firebase-auth:$playServicesVersion"
   compile "com.google.firebase:firebase-storage:$playServicesVersion"
+  compile "com.google.firebase:firebase-database:$playServicesVersion"
   compile "com.google.android.gms:play-services-auth:$playServicesVersion"
   testCompile 'junit:junit:4.12'
 

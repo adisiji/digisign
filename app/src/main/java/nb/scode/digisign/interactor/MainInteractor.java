@@ -8,7 +8,25 @@ public interface MainInteractor extends BaseInteractor {
 
   boolean isKeyPairAvailable();
 
+  void isRemoteKeyPairAvail(MainListener listener);
+
+  void uploadKeyPair(MainListener listener);
+
+  boolean isRecentEmailSame();
+
+  void downloadKeyPair(MainListener listener);
+
+  void setRecentEmail();
+
   void initKeyPair(InitCListener listener);
+
+  interface MainListener {
+    void onSuccess();
+
+    void onProcess();
+
+    void onFailed(String message);
+  }
 
   interface InitCListener {
 
@@ -24,5 +42,4 @@ public interface MainInteractor extends BaseInteractor {
   }
 
   //void createRootCert();
-
 }

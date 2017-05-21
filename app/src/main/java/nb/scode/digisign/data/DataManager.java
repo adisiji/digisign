@@ -3,14 +3,15 @@ package nb.scode.digisign.data;
 import android.net.Uri;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import io.reactivex.Completable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import java.io.File;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
+import nb.scode.digisign.data.remote.FireModel.ListUid;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -35,8 +36,30 @@ import nb.scode.digisign.data.remote.ApiTask;
 
   }
 
-  @Override public boolean isKeyPairAvailable() {
-    return localTask.isKeyPairAvailable();
+  @Override public String getEmailUser() {
+    return apiTask.getEmailUser();
+  }
+
+  @Override public boolean isEmailSame(String email) {
+    return localTask.isEmailSame(email);
+  }
+
+  @Override public boolean isRecentEmailSame() {
+    String email = getEmailUser();
+    return isEmailSame(email);
+  }
+
+  @Override public void setEmailPref(String email) {
+    localTask.setEmailPref(email);
+  }
+
+  @Override public void setRecentEmail() {
+    String email = getEmailUser();
+    setEmailPref(email);
+  }
+
+  @Override public boolean isLocalKeyPairAvailable() {
+    return localTask.isLocalKeyPairAvailable();
   }
 
   @Override public void createKey(final CommonListener listener) throws Exception {
@@ -44,7 +67,7 @@ import nb.scode.digisign.data.remote.ApiTask;
       @Override public void run() throws Exception {
         localTask.createKey(listener);
       }
-    }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+    }).subscribeOn(Schedulers.computation()).subscribe();
   }
 
   @Override public void initKeyPair(final InitListener listener) {
@@ -53,7 +76,8 @@ import nb.scode.digisign.data.remote.ApiTask;
       createKey(new CommonListener() {
         @Override public void onFinished() {
           File file = getPublicKey();
-          uploadPublicKey(file, listener);
+          File file1 = getPrivateKey();
+          uploadKeyPair(file, file1, listener);
         }
 
         @Override public void onError(String message) {
@@ -69,8 +93,8 @@ import nb.scode.digisign.data.remote.ApiTask;
     }
   }
 
-  private void uploadPublicKey(File publicKey, final InitListener listener) {
-    uploadPublicKey(publicKey, new CommonAListener() {
+  private void uploadKeyPair(File publicKey, File privatekey, final InitListener listener) {
+    uploadKeyPair(publicKey, privatekey, new CommonAListener() {
       @Override public void onProcess() {
         listener.onUploadKey();
       }
@@ -94,15 +118,15 @@ import nb.scode.digisign.data.remote.ApiTask;
   }
 
   @Override public void getPrepFilePdf(final Uri uri, final ListenerPrepPdf listenerPrepPdf) {
-    Completable.fromAction(new Action() {
-      @Override public void run() throws Exception {
-        localTask.getPrepFilePdf(uri, listenerPrepPdf);
-      }
-    }).subscribeOn(Schedulers.io()).subscribe();
+    localTask.getPrepFilePdf(uri, listenerPrepPdf);
   }
 
   @Override public File getPublicKey() {
     return localTask.getPublicKey();
+  }
+
+  @Override public File getPrivateKey() {
+    return localTask.getPrivateKey();
   }
 
   @Override public void register(String email, String pass, CommonAListener listener) {
@@ -122,15 +146,67 @@ import nb.scode.digisign.data.remote.ApiTask;
     return apiTask.isUserSignedIn();
   }
 
-  @Override public void getPhotoUri() {
-    apiTask.getPhotoUri();
+  @Override public void getUserProfile() {
+    apiTask.getUserProfile();
   }
 
   @Override public void logout() {
     apiTask.logout();
   }
 
-  @Override public void uploadPublicKey(File publickey, CommonAListener listener) {
-    apiTask.uploadPublicKey(publickey, listener);
+  @Override public void uploadKeyPair(File publickey, File privatekey, CommonAListener listener) {
+    apiTask.uploadKeyPair(publickey, privatekey, listener);
+  }
+
+  @Override public void uploadKeyPair(final DataListener listener) {
+    File pubk = getPublicKey();
+    File privk = getPrivateKey();
+    uploadKeyPair(pubk, privk, new CommonAListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
+
+  @Override public void getUserPost() {
+    apiTask.getUserPost();
+  }
+
+  @Override public List<ListUid> getListUid() {
+    return apiTask.getListUid();
+  }
+
+  @Override public void checkRemoteKeyPair(CommonAListener listener) {
+    apiTask.checkRemoteKeyPair(listener);
+  }
+
+  @Override public void downloadKeyPair(File publickey, File privatekey, CommonAListener listener) {
+    apiTask.downloadKeyPair(publickey, privatekey, listener);
+  }
+
+  @Override public void downloadKeyPair(final DataListener listener) {
+    File file = getPublicKey();
+    File file1 = getPrivateKey();
+    downloadKeyPair(file, file1, new CommonAListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
   }
 }
