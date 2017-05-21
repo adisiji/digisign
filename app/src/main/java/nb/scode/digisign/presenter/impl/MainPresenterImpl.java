@@ -52,6 +52,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   private void downloadKeyPair() {
     mInteractor.downloadKeyPair(new MainInteractor.MainListener() {
       @Override public void onSuccess() {
+        mView.hideProgressDialog();
         Timber.d("mainStarter(): finish");
       }
 
@@ -68,6 +69,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   private void uploadKeyPair() {
     mInteractor.uploadKeyPair(new MainInteractor.MainListener() {
       @Override public void onSuccess() {
+        mView.hideProgressDialog();
         Timber.d("onSuccess(): Ok we can start sign");
       }
 
@@ -82,10 +84,13 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   }
 
   private void mainStarter() {
+    mView.showProgressDialog("Loading...");
     if (mInteractor.isRecentEmailSame()) {
       if (mInteractor.isKeyPairAvailable()) {
         mInteractor.isRemoteKeyPairAvail(new MainInteractor.MainListener() {
           @Override public void onSuccess() {
+            mView.hideProgressDialog();
+            mView.showToast("You can sign document now");
             Timber.d("onSuccess(): Ok we can start sign");
           }
 
