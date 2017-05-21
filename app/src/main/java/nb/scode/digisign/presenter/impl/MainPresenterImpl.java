@@ -120,7 +120,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   }
 
   private void initKeyPair() {
-    mInteractor.initKeyPair(new MainInteractor.InitCListener() {
+    mInteractor.initKeyPair(new MainInteractor.MainInitListener() {
       @Override public void onStartInit() {
         mView.showProgressDialog("Initialize Key");
         Timber.d("onStartInit(): Good");

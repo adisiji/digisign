@@ -18,7 +18,7 @@ public interface MainInteractor extends BaseInteractor {
 
   void setRecentEmail();
 
-  void initKeyPair(InitCListener listener);
+  void initKeyPair(MainInitListener listener);
 
   interface MainListener {
     void onSuccess();
@@ -28,7 +28,7 @@ public interface MainInteractor extends BaseInteractor {
     void onFailed(String message);
   }
 
-  interface InitCListener {
+  interface MainInitListener {
 
     void onStartInit();
 

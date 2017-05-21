@@ -44,18 +44,8 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
     return localTask.isEmailSame(email);
   }
 
-  @Override public boolean isRecentEmailSame() {
-    String email = getEmailUser();
-    return isEmailSame(email);
-  }
-
   @Override public void setEmailPref(String email) {
     localTask.setEmailPref(email);
-  }
-
-  @Override public void setRecentEmail() {
-    String email = getEmailUser();
-    setEmailPref(email);
   }
 
   @Override public boolean isLocalKeyPairAvailable() {
@@ -68,45 +58,6 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
         localTask.createKey(listener);
       }
     }).subscribeOn(Schedulers.computation()).subscribe();
-  }
-
-  @Override public void initKeyPair(final InitListener listener) {
-    listener.onStartInit();
-    try {
-      createKey(new CommonListener() {
-        @Override public void onFinished() {
-          File file = getPublicKey();
-          File file1 = getPrivateKey();
-          uploadKeyPair(file, file1, listener);
-        }
-
-        @Override public void onError(String message) {
-          listener.onError(message);
-        }
-
-        @Override public void onProcess() {
-          listener.onCreateKey();
-        }
-      });
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void uploadKeyPair(File publicKey, File privatekey, final InitListener listener) {
-    uploadKeyPair(publicKey, privatekey, new CommonAListener() {
-      @Override public void onProcess() {
-        listener.onUploadKey();
-      }
-
-      @Override public void onSuccess() {
-        listener.onFinishInit();
-      }
-
-      @Override public void onFailed(String message) {
-        listener.onError(message);
-      }
-    });
   }
 
   @Override public boolean isFirstUse() {
@@ -158,24 +109,6 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
     apiTask.uploadKeyPair(publickey, privatekey, listener);
   }
 
-  @Override public void uploadKeyPair(final DataListener listener) {
-    File pubk = getPublicKey();
-    File privk = getPrivateKey();
-    uploadKeyPair(pubk, privk, new CommonAListener() {
-      @Override public void onProcess() {
-        listener.onProcess();
-      }
-
-      @Override public void onSuccess() {
-        listener.onSuccess();
-      }
-
-      @Override public void onFailed(String message) {
-        listener.onFailed(message);
-      }
-    });
-  }
-
   @Override public void getUserPost() {
     apiTask.getUserPost();
   }
@@ -192,21 +125,4 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
     apiTask.downloadKeyPair(publickey, privatekey, listener);
   }
 
-  @Override public void downloadKeyPair(final DataListener listener) {
-    File file = getPublicKey();
-    File file1 = getPrivateKey();
-    downloadKeyPair(file, file1, new CommonAListener() {
-      @Override public void onProcess() {
-        listener.onProcess();
-      }
-
-      @Override public void onSuccess() {
-        listener.onSuccess();
-      }
-
-      @Override public void onFailed(String message) {
-        listener.onFailed(message);
-      }
-    });
-  }
 }

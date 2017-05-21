@@ -1,7 +1,9 @@
 package nb.scode.digisign.interactor.impl;
 
+import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
+import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
 import nb.scode.digisign.interactor.MainInteractor;
 
@@ -22,17 +24,20 @@ public final class MainInteractorImpl implements MainInteractor {
   }
 
   @Override public boolean isRecentEmailSame() {
-    return dataTask.isRecentEmailSame();
+    String email = dataTask.getEmailUser();
+    return dataTask.isEmailSame(email);
   }
 
   @Override public void downloadKeyPair(final MainListener listener) {
-    dataTask.downloadKeyPair(new DataTask.DataListener() {
-      @Override public void onSuccess() {
-        listener.onSuccess();
-      }
-
+    File privkey = dataTask.getPrivateKey();
+    File pubkey = dataTask.getPublicKey();
+    dataTask.uploadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
       }
 
       @Override public void onFailed(String message) {
@@ -42,7 +47,8 @@ public final class MainInteractorImpl implements MainInteractor {
   }
 
   @Override public void setRecentEmail() {
-    dataTask.setRecentEmail();
+    String email = dataTask.getEmailUser();
+    dataTask.setEmailPref(email);
   }
 
   @Override public boolean isKeyPairAvailable() {
@@ -65,27 +71,20 @@ public final class MainInteractorImpl implements MainInteractor {
     });
   }
 
-  @Override public void initKeyPair(final InitCListener listener) {
+  @Override public void initKeyPair(final MainInitListener listener) {
     try {
-      dataTask.initKeyPair(new DataTask.InitListener() {
-        @Override public void onStartInit() {
-          listener.onStartInit();
-        }
-
-        @Override public void onCreateKey() {
-          listener.onCreateKey();
-        }
-
-        @Override public void onUploadKey() {
-          listener.onUploadKey();
-        }
-
-        @Override public void onFinishInit() {
-          listener.onFinishInit();
+      listener.onStartInit();
+      dataTask.createKey(new LocalTask.CommonListener() {
+        @Override public void onFinished() {
+          uploadKeyPair(listener);
         }
 
         @Override public void onError(String message) {
-          listener.onError(message);
+
+        }
+
+        @Override public void onProcess() {
+          listener.onCreateKey();
         }
       });
     } catch (Exception e) {
@@ -93,14 +92,34 @@ public final class MainInteractorImpl implements MainInteractor {
     }
   }
 
-  @Override public void uploadKeyPair(final MainListener listener) {
-    dataTask.uploadKeyPair(new DataTask.DataListener() {
-      @Override public void onSuccess() {
-        listener.onSuccess();
+  private void uploadKeyPair(final MainInitListener listener) {
+    File privkey = dataTask.getPrivateKey();
+    File pubkey = dataTask.getPublicKey();
+    dataTask.uploadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
+      @Override public void onProcess() {
+        listener.onUploadKey();
       }
 
+      @Override public void onSuccess() {
+        listener.onFinishInit();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onError(message);
+      }
+    });
+  }
+
+  @Override public void uploadKeyPair(final MainListener listener) {
+    File privkey = dataTask.getPrivateKey();
+    File pubkey = dataTask.getPublicKey();
+    dataTask.uploadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
       }
 
       @Override public void onFailed(String message) {
@@ -109,9 +128,4 @@ public final class MainInteractorImpl implements MainInteractor {
     });
   }
 
-  /*
-  @Override public void createRootCert() {
-    dataTask.createRootCert();
-  }
-  */
 }
