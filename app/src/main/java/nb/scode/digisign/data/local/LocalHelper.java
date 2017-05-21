@@ -225,7 +225,9 @@ import timber.log.Timber;
     return new File(context.getFilesDir(), PRIVATE_KEY);
   }
 
-  @Override public void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf) {
+  @Override public void getPrepFilePdf(String uripdf, ListenerPrepPdf listenerPrepPdf) {
+
+    Uri uri = Uri.parse(uripdf);
 
     // The query, since it only applies to a single document, will only return one row.
     // no need to filter, sort, or select fields, since we want all fields for one

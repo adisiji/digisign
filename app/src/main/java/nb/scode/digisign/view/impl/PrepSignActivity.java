@@ -154,7 +154,7 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
   private void openRenderer(Uri uri) {
     // Since PdfRenderer cannot handle the compressed file directly, we copy it into
     // the cache directory.
-    mPresenter.getFilePdf(uri);
+    mPresenter.getFilePdf(uri.toString());
   }
 
   @Override public void setPdfRenderer(File file) {

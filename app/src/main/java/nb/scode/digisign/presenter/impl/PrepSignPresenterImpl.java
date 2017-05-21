@@ -1,6 +1,5 @@
 package nb.scode.digisign.presenter.impl;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import java.io.File;
 import javax.inject.Inject;
@@ -41,8 +40,8 @@ public final class PrepSignPresenterImpl extends BasePresenterImpl<PrepSignView>
     super.onPresenterDestroyed();
   }
 
-  @Override public void getFilePdf(Uri uri) {
-    mInteractor.getFilePdf(uri, new PrepSignInteractor.GetPdfListener() {
+  @Override public void getFilePdf(String uripdf) {
+    mInteractor.getFilePdf(uripdf, new PrepSignInteractor.GetPdfListener() {
       @Override public void onComplete(File file) {
         mView.setPdfRenderer(file);
       }

@@ -1,6 +1,5 @@
 package nb.scode.digisign.data.local;
 
-import android.net.Uri;
 import java.io.File;
 
 /**
@@ -43,7 +42,7 @@ public interface LocalTask {
 
   File getPrivateKey();
 
-  void getPrepFilePdf(Uri uri, ListenerPrepPdf listenerPrepPdf);
+  void getPrepFilePdf(String uripdf, ListenerPrepPdf listenerPrepPdf);
   /*
   X509Certificate getCertificate(int owner);
 

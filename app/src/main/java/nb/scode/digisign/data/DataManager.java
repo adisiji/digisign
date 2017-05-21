@@ -1,6 +1,5 @@
 package nb.scode.digisign.data;
 
-import android.net.Uri;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import io.reactivex.Completable;
 import io.reactivex.functions.Action;
@@ -68,8 +67,8 @@ import nb.scode.digisign.data.remote.FireModel.ListUid;
     localTask.setNotFirstUse();
   }
 
-  @Override public void getPrepFilePdf(final Uri uri, final ListenerPrepPdf listenerPrepPdf) {
-    localTask.getPrepFilePdf(uri, listenerPrepPdf);
+  @Override public void getPrepFilePdf(final String uripdf, final ListenerPrepPdf listenerPrepPdf) {
+    localTask.getPrepFilePdf(uripdf, listenerPrepPdf);
   }
 
   @Override public File getPublicKey() {
