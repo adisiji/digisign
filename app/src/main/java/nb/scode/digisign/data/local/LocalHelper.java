@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import io.reactivex.Completable;
 import io.reactivex.functions.Action;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +20,7 @@ import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -28,6 +31,9 @@ import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Calendar;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import timber.log.Timber;
@@ -42,24 +48,11 @@ import timber.log.Timber;
   private static final String PRIVATE_KEY = "privkey.ppk";
   private static final String PUBLIC_KEY = "pubkey.pbk";
 
+  private static final String FILE_SIGNATURE_RESULT = "result.sig";
+  private static final String FOLDER_PROCESS = "process";
   private final SharedPreferences mPref;
   private final Context context;
-
-  /*
-  private KeyPair generateKeyPair() throws Exception {
-    ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp521r1");
-    SecureRandom random = new SecureRandom();
-    KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", "SC");
-    g.initialize(ecSpec, random);
-    return g.generateKeyPair();
-  }
-
-  private KeyPair generateRSAKeyPair() throws Exception {
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA", "SC");
-    keyPairGenerator.initialize(2048, new SecureRandom());
-    return keyPairGenerator.generateKeyPair();
-  }
-  */
+  private String tempFolder;
 
   /**
    * Instantiates a new Preferences helper.
@@ -323,6 +316,17 @@ import timber.log.Timber;
     fos.close();
   }
 
+  private void saveFiletoCache(byte[] bytes, String parent, String file) throws IOException {
+    File file1 = context.getCacheDir();
+    File newTempFolder = new File(file1, File.separator + parent);
+    if (!newTempFolder.exists()) {
+      newTempFolder.mkdirs();
+    }
+    FileOutputStream fos = new FileOutputStream(new File(newTempFolder, file));
+    fos.write(bytes);
+    fos.close();
+  }
+
   private void testKunci() {
     try {
       byte[] privBytes = getBytesFromFile(new File(context.getFilesDir(), PRIVATE_KEY));
@@ -354,5 +358,101 @@ import timber.log.Timber;
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  /*
+ * gets the last path component
+ *
+ * Example: getLastPathComponent("downloads/example/fileToZip");
+ * Result: "fileToZip"
+ */
+  public String getLastPathComponent(String filePath) {
+    String[] segments = filePath.split("/");
+    if (segments.length == 0) return "";
+    return segments[segments.length - 1];
+  }
+
+/*
+ *
+ * Zips a file at a location and places the resulting zip file at the toLocation
+ * Example: zipFileAtPath("downloads/myfolder", "downloads/myFolder.zip");
+ */
+
+  public boolean zipFileAtPath(String sourcePath, String toLocation) {
+    final int BUFFER = 2048;
+    File folder = new File(sourcePath);
+    File[] fileList = folder.listFiles();
+    BufferedInputStream origin = null;
+    int basePathLength = folder.getParent().length();
+    try {
+      FileOutputStream dest = new FileOutputStream(toLocation);
+      ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+      for (File file : fileList) {
+        byte data[] = new byte[BUFFER];
+        String unmodifiedFilePath = file.getPath();
+        String relativePath = unmodifiedFilePath.substring(basePathLength);
+        FileInputStream fi = new FileInputStream(unmodifiedFilePath);
+        origin = new BufferedInputStream(fi, BUFFER);
+        ZipEntry entry = new ZipEntry(relativePath);
+        out.putNextEntry(entry);
+        int count;
+        while ((count = origin.read(data, 0, BUFFER)) != -1) {
+          out.write(data, 0, count);
+        }
+        origin.close();
+      }
+      out.close();
+      dest.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  @Override public void createSignFile(String uripdf, CommonListener listener) {
+    listener.onProcess();
+    tempFolder = String.valueOf(Calendar.getInstance().getTimeInMillis());
+    Timber.d("createSignFile(): tempFolder => " + tempFolder);
+    File pdfFile = new File(context.getCacheDir(), "cache.pdf");
+
+    try {
+      byte[] pdfBytes = getBytesFromFile(pdfFile);
+      MessageDigest digest = MessageDigest.getInstance("SHA-512");
+      // Generate Pdf Digest
+      byte[] pdfDigest = digest.digest(pdfBytes);
+
+      byte[] privBytes = getBytesFromFile(new File(context.getFilesDir(), PRIVATE_KEY));
+      PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(privBytes);
+
+      KeyFactory kf = KeyFactory.getInstance("EC");
+      PrivateKey pvt = kf.generatePrivate(ks);
+      Signature signature = Signature.getInstance("SHA384withECDSA");
+      // Initialize Signature with private key
+      signature.initSign(pvt, new SecureRandom());
+      // Update the signature with digest content
+      signature.update(pdfDigest);
+
+      // Signing
+      byte[] signBytes = signature.sign();
+      Timber.d("createSignFile(): signBytes => " + signBytes.toString());
+      // Save Signature
+      saveFiletoCache(signBytes, tempFolder, FILE_SIGNATURE_RESULT);
+      // Save PDF to one Folder
+      saveFiletoCache(pdfBytes, tempFolder, getLastPathComponent(uripdf));
+      listener.onFinished();
+    } catch (Exception e) {
+      e.printStackTrace();
+      listener.onError(e.getMessage());
+    }
+  }
+
+  @Override public void createZip(CommonListener listener) {
+    listener.onProcess();
+    File file = new File(context.getCacheDir(), File.separator + tempFolder);
+    String source = file.getPath();
+    String dest = source + File.separator + tempFolder + ".zip";
+    zipFileAtPath(source, dest);
+    listener.onFinished();
   }
 }

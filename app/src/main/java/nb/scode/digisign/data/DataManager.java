@@ -121,4 +121,12 @@ import nb.scode.digisign.data.remote.FireModel.KeyUser;
   @Override public List<KeyUser> getListUser() {
     return apiTask.getListUser();
   }
+
+  @Override public void createZip(CommonListener listener) {
+    localTask.createZip(listener);
+  }
+
+  @Override public void createSignFile(String uripdf, CommonListener listener) {
+    localTask.createSignFile(uripdf, listener);
+  }
 }

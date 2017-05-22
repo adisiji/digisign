@@ -43,21 +43,10 @@ public interface LocalTask {
   File getPrivateKey();
 
   void getPrepFilePdf(String uripdf, ListenerPrepPdf listenerPrepPdf);
-  /*
-  X509Certificate getCertificate(int owner);
 
-  void createUserCertificate(CommonListener listener) throws Exception;
+  void createZip(CommonListener listener);
 
-  boolean isKeyStoreExist();
-
-  void createSignature(Uri uri, CommonListener listener);
-
-  File getCertRootDest();
-
-  File getCertPrivKeyDest();
-
-  void createRootCert();
-  */
+  void createSignFile(String uripdf, CommonListener listener);
 
   interface ListenerPrepPdf {
     void setFileName(String fileName);

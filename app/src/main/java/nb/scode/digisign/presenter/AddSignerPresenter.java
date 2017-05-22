@@ -10,4 +10,6 @@ public interface AddSignerPresenter extends BasePresenter<AddSignerView> {
 
   void getUserName(int pos);
 
+  void sendDoc();
+
 }

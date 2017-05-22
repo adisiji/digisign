@@ -34,6 +34,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   @BindView(R.id.btn_self_signature) FancyButton btnSelf;
   @BindView(R.id.et_email_signer) AutoCompleteTextView etEmail;
   @BindView(R.id.et_name_signer) EditText etName;
+  private String uri;
 
   // Your presenter is available using the mPresenter variable
 
@@ -43,7 +44,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     ButterKnife.bind(this);
     Intent intent = getIntent();
     if (intent != null) {
-      String uri = intent.getStringExtra(URI_BUNDLE_KEY);
+      uri = intent.getStringExtra(URI_BUNDLE_KEY);
       Timber.d("onCreate(): uri => " + uri);
     } else {
       onBackPressed();
@@ -84,6 +85,14 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     mPresenter.getUserList();
   }
 
+  @OnClick(R.id.btn_send_doc) void sendDoc() {
+    mPresenter.sendDoc();
+  }
+
+  @Override public String getPdfUri() {
+    return uri;
+  }
+
   @Override public void showListEmailUser(List<String> listEmail) {
     AddSignerAdapter adapter = new AddSignerAdapter(this, listEmail);
     etEmail.setAdapter(adapter);
@@ -108,5 +117,13 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
 
   @Override public void showOwnerName(String name) {
     etName.setText(name);
+  }
+
+  @Override public String getEmail() {
+    return etEmail.getText().toString();
+  }
+
+  @Override public boolean isOwner() {
+    return (btnOther.getVisibility() == View.VISIBLE);
   }
 }

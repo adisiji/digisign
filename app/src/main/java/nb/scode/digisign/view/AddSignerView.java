@@ -11,4 +11,10 @@ import java.util.List;
 
   void showOwnerName(String name);
 
+  String getPdfUri();
+
+  String getEmail();
+
+  boolean isOwner();
+
 }

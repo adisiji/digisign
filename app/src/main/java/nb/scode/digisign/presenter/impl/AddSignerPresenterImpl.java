@@ -8,6 +8,7 @@ import nb.scode.digisign.data.remote.FireModel.KeyUser;
 import nb.scode.digisign.interactor.AddSignerInteractor;
 import nb.scode.digisign.presenter.AddSignerPresenter;
 import nb.scode.digisign.view.AddSignerView;
+import timber.log.Timber;
 
 public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerView>
     implements AddSignerPresenter {
@@ -16,7 +17,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
    * The interactor
    */
   @NonNull private final AddSignerInteractor mInteractor;
-  List<KeyUser> keyUserList;
+  private List<KeyUser> keyUserList;
 
   // The view is available using the mView variable
 
@@ -67,5 +68,28 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
     mView.showOwnerEmail(email);
     String name = keyUser.getUser().getName();
     mView.showOwnerName(name);
+  }
+
+  @Override public void sendDoc() {
+    String uripdf = mView.getPdfUri();
+    String keyuser;
+    for (KeyUser keyUser : keyUserList) {
+      if (keyUser.getUser().getEmail().equals(uripdf)) {
+        keyuser = keyUser.getKey();
+      }
+    }
+    mInteractor.createSignFile(uripdf, new AddSignerInteractor.CommonIListener() {
+      @Override public void onProcess() {
+        Timber.d("onProcess(): good");
+      }
+
+      @Override public void onSuccess() {
+        Timber.d("onSuccess(): good");
+      }
+
+      @Override public void onFailed(String message) {
+        Timber.e("onFailed(): " + message);
+      }
+    });
   }
 }

@@ -8,4 +8,15 @@ public interface AddSignerInteractor extends BaseInteractor {
   List<KeyUser> getListUser();
 
   KeyUser getOwnerKey();
+
+  void createSignFile(String uripdf, CommonIListener listener);
+
+  interface CommonIListener {
+
+    void onProcess();
+
+    void onSuccess();
+
+    void onFailed(String message);
+  }
 }
