@@ -2,9 +2,9 @@ package nb.scode.digisign.data.remote;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import java.io.File;
-import java.util.Map;
+import java.util.List;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
-import nb.scode.digisign.data.remote.FireModel.User;
+import nb.scode.digisign.data.remote.FireModel.KeyUser;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -29,7 +29,9 @@ public interface ApiTask {
 
   void getUserPost();
 
-  Map<String, User> getListUser();
+  KeyUser getOwnerKey();
+
+  List<KeyUser> getListUser();
 
   void downloadKeyPair(File publickey, File privatekey, CommonAListener listener);
 

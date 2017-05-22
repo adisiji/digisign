@@ -30,17 +30,21 @@ import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.PrepSignView;
 import timber.log.Timber;
 
+import static nb.scode.digisign.view.impl.Constants.URI_BUNDLE_KEY;
+
 public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, PrepSignView>
     implements PrepSignView {
   // A request code's purpose is to match the result of a "startActivityForResult" with
   // the type of the original request.  Choose any value.
   private static final int READ_REQUEST_CODE = 1337;
   private static final int PERMISSIONS_REQUEST_EXT_STORAGE = 212;
+  private final String BUNDLE_KEY = "PREP_PDF_KEY";
   @Inject PresenterFactory<PrepSignPresenter> mPresenterFactory;
   @BindView(R.id.iv_file_preview) ImageView ivPreview;
   @BindView(R.id.title_file_name) TextView tvFileName;
   @BindView(R.id.title_size) TextView tvFileSize;
   @BindView(R.id.toolbar) Toolbar toolbar;
+  private String uripdf = null;
   /**
    * File descriptor of the PDF.
    */
@@ -61,10 +65,20 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_prep_sign);
     ButterKnife.bind(this);
-    checkPermission();
     // Setup toolbar
     setSupportActionBar(toolbar);
     setupToolbar(getString(R.string.title_page_choose_signer));
+    Timber.d("onCreate(): bjbjb");
+    /*
+    if(savedInstanceState != null){
+      String uri = savedInstanceState.getString(BUNDLE_KEY);
+      openRenderer(Uri.parse(uri));
+    }
+    else {
+
+    }
+    */
+    checkPermission();
     // Do not call mPresenter from here, it will be null! Wait for onStart or onPostCreate.
   }
 
@@ -113,6 +127,11 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
     }
   }
 
+  @Override public void onBackPressed() {
+    super.onBackPressed();
+    finish();
+  }
+
   private void performSearch() {
     // BEGIN_INCLUDE (use_open_document_intent)
     // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser.
@@ -144,17 +163,14 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
       // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
       if (resultData != null) {
         Uri uri = resultData.getData();
-        Timber.i("onActivityResult(): URI > " + uri.toString());
-        openRenderer(uri);
+        uripdf = uri.toString();
       }
       // END_INCLUDE (parse_open_document_response)
     }
   }
 
   private void openRenderer(Uri uri) {
-    // Since PdfRenderer cannot handle the compressed file directly, we copy it into
-    // the cache directory.
-    mPresenter.getFilePdf(uri.toString());
+    mPresenter.getFilePdf(uripdf);
   }
 
   @Override public void setPdfRenderer(File file) {
@@ -191,8 +207,22 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
     if (null != mCurrentPage) {
       mCurrentPage.close();
     }
-    mPdfRenderer.close();
-    mFileDescriptor.close();
+
+    if (mPdfRenderer != null) {
+      mPdfRenderer.close();
+    }
+
+    if (mFileDescriptor != null) {
+      mFileDescriptor.close();
+    }
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    Timber.d("onResume(): uripdf => " + uripdf);
+    if (uripdf != null) {
+      openRenderer(Uri.parse(uripdf));
+    }
   }
 
   @Override protected void onDestroy() {
@@ -212,8 +242,13 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
     tvFileSize.setText(fileSize);
   }
 
+  @OnClick(R.id.btn_choose_doc) void chooseDoc() {
+    performSearch();
+  }
+
   @OnClick(R.id.btn_add_signer) void addSigner() {
     Intent i = new Intent(this, AddSignerActivity.class);
+    i.putExtra(URI_BUNDLE_KEY, uripdf);
     startActivity(i);
   }
 }

@@ -27,11 +27,12 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
+import nb.scode.digisign.data.remote.FireModel.KeyUser;
 import nb.scode.digisign.data.remote.FireModel.User;
 import timber.log.Timber;
 
@@ -49,7 +50,8 @@ import timber.log.Timber;
   private FirebaseUser user;
   private FirebaseDatabase database;
   private StorageReference storageRef;
-  private Map<String, User> userMap;
+  private List<KeyUser> keyUserList = new ArrayList<>();
+  private KeyUser keyUserOwner;
 
   /**
    * Instantiates a new Api helper.
@@ -62,7 +64,6 @@ import timber.log.Timber;
     auth = FirebaseAuth.getInstance();
     database = FirebaseDatabase.getInstance();
     storageRef = FirebaseStorage.getInstance().getReference();
-    userMap = new HashMap<>();
     activateUsersListener();
   }
 
@@ -312,12 +313,17 @@ import timber.log.Timber;
     mDatabase.addValueEventListener(new ValueEventListener() {
       @Override public void onDataChange(DataSnapshot dataSnapshot) {
         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-          User user = childDataSnapshot.getValue(User.class);
-          userMap.put(childDataSnapshot.getKey(), user);
-          Timber.d("onDataChange(): key => "
-              + childDataSnapshot.getKey()); //displays the key for the node (uid)
-          Timber.d("onDataChange(): value => "
-              + childDataSnapshot.getValue());   //gives the value for given keyname (User)
+          String key = childDataSnapshot.getKey();
+          User userx = childDataSnapshot.getValue(User.class);
+          if (key.equals(user.getUid())) {
+            keyUserOwner = new KeyUser(key, userx);
+            continue;
+          }
+          KeyUser keyUser = new KeyUser(key, userx);
+          keyUserList.add(keyUser);
+          Timber.d("onDataChange(): key => " + key); //displays the key for the node (uid)
+          Timber.d(
+              "onDataChange(): value => " + userx);   //gives the value for given keyname (User)
         }
         Timber.d("onDataChange(): finished");
       }
@@ -328,7 +334,11 @@ import timber.log.Timber;
     });
   }
 
-  @Override public Map<String, User> getListUser() {
-    return userMap;
+  @Override public KeyUser getOwnerKey() {
+    return keyUserOwner;
+  }
+
+  @Override public List<KeyUser> getListUser() {
+    return keyUserList;
   }
 }

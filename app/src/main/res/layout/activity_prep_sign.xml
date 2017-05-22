@@ -84,7 +84,7 @@
       />
 
   <mehdi.sakout.fancybuttons.FancyButton
-      android:id="@+id/btn_self_signing"
+      android:id="@+id/btn_add_signer"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
@@ -98,13 +98,13 @@
       fancy:fb_borderWidth="1dp"
       fancy:fb_defaultColor="@color/yellow_default"
       fancy:fb_focusColor="@color/yellow_focus"
-      fancy:fb_radius="12dp"
-      fancy:fb_text="Self Signing"
+      fancy:fb_radius="8dp"
+      fancy:fb_text="Add\nSignature"
       fancy:fb_textColor="#000000"
       />
 
   <mehdi.sakout.fancybuttons.FancyButton
-      android:id="@+id/btn_add_signer"
+      android:id="@+id/btn_choose_doc"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
@@ -118,8 +118,8 @@
       fancy:fb_borderWidth="1dp"
       fancy:fb_defaultColor="@color/yellow_default"
       fancy:fb_focusColor="@color/yellow_focus"
-      fancy:fb_radius="12dp"
-      fancy:fb_text="Add Signer"
+      fancy:fb_radius="8dp"
+      fancy:fb_text="Choose\nDocument"
       fancy:fb_textColor="#000000"
       />
 

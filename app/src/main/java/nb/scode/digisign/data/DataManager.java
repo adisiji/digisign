@@ -2,13 +2,13 @@ package nb.scode.digisign.data;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import java.io.File;
-import java.util.Map;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
-import nb.scode.digisign.data.remote.FireModel.User;
+import nb.scode.digisign.data.remote.FireModel.KeyUser;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -106,10 +106,6 @@ import nb.scode.digisign.data.remote.FireModel.User;
     apiTask.getUserPost();
   }
 
-  @Override public Map<String, User> getListUser() {
-    return apiTask.getListUser();
-  }
-
   @Override public void checkRemoteKeyPair(CommonAListener listener) {
     apiTask.checkRemoteKeyPair(listener);
   }
@@ -118,4 +114,11 @@ import nb.scode.digisign.data.remote.FireModel.User;
     apiTask.downloadKeyPair(publickey, privatekey, listener);
   }
 
+  @Override public KeyUser getOwnerKey() {
+    return apiTask.getOwnerKey();
+  }
+
+  @Override public List<KeyUser> getListUser() {
+    return apiTask.getListUser();
+  }
 }

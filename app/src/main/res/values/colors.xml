@@ -4,6 +4,7 @@
   <color name="colorPrimaryDark">#2E7CCF</color>
   <color name="colorAccent">#009688</color>
 
+  <color name="grey_500">#9e9e9e</color>
   <color name="yellow_default">#FBE83C</color>
   <color name="yellow_focus">#afb42b</color>
   <color name="white">#FEFEFE</color>

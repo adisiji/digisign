@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -43,12 +44,30 @@
       />
 
   <android.support.design.widget.TextInputLayout
-      android:id="@+id/input_name_signer"
+      android:id="@+id/input_email_signer"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       app:layout_constraintLeft_toRightOf="@id/guide_v10"
       app:layout_constraintRight_toRightOf="@id/guide_v90"
       app:layout_constraintTop_toBottomOf="@id/guide_h20"
+      >
+    <AutoCompleteTextView
+        android:id="@+id/et_email_signer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_signer_email"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        />
+  </android.support.design.widget.TextInputLayout>
+
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/input_name_signer"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      app:layout_constraintLeft_toRightOf="@id/guide_v10"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/input_email_signer"
       >
     <EditText
         android:id="@+id/et_name_signer"
@@ -56,23 +75,126 @@
         android:layout_height="wrap_content"
         android:hint="@string/hint_signer_name"
         android:inputType="textPersonName"
+        android:maxLines="1"
         />
   </android.support.design.widget.TextInputLayout>
 
   <android.support.design.widget.TextInputLayout
+      android:id="@+id/input_desc_doc"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintLeft_toRightOf="@id/guide_v10"
       app:layout_constraintRight_toRightOf="@id/guide_v90"
       app:layout_constraintTop_toBottomOf="@id/input_name_signer"
       >
     <EditText
-        android:id="@+id/et_email_signer"
+        android:id="@+id/et_desc_doc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_signer_email"
-        android:inputType="textEmailAddress"
+        android:hint="@string/hint_desc_doc"
+        android:inputType="textPersonName"
+        android:maxLines="4"
         />
   </android.support.design.widget.TextInputLayout>
+
+  <TextView
+      android:id="@+id/tv_or"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="Or"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/input_desc_doc"
+      />
+
+  <View
+      android:layout_width="0dp"
+      android:layout_height="0.5dp"
+      android:layout_marginEnd="8dp"
+      android:layout_marginStart="8dp"
+      android:background="@color/grey_500"
+      app:layout_constraintBottom_toBottomOf="@id/tv_or"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintRight_toLeftOf="@id/tv_or"
+      app:layout_constraintTop_toTopOf="@id/tv_or"
+      />
+
+  <View
+      android:layout_width="0dp"
+      android:layout_height="0.5dp"
+      android:layout_marginEnd="8dp"
+      android:layout_marginStart="8dp"
+      android:background="@color/grey_500"
+      app:layout_constraintBottom_toBottomOf="@id/tv_or"
+      app:layout_constraintLeft_toRightOf="@id/tv_or"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toTopOf="@id/tv_or"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_self_signature"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="20dp"
+      android:paddingRight="20dp"
+      android:paddingTop="10dp"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/tv_or"
+      fancy:fb_borderColor="@color/yellow_focus"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="@color/yellow_default"
+      fancy:fb_focusColor="@color/yellow_focus"
+      fancy:fb_radius="8dp"
+      fancy:fb_text="Self Signature"
+      fancy:fb_textColor="#212121"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_other_signature"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="20dp"
+      android:paddingRight="20dp"
+      android:paddingTop="10dp"
+      android:visibility="gone"
+      app:layout_constraintLeft_toLeftOf="@id/guide_v10"
+      app:layout_constraintRight_toRightOf="@id/guide_v90"
+      app:layout_constraintTop_toBottomOf="@id/tv_or"
+      fancy:fb_borderColor="@color/yellow_focus"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="@color/yellow_default"
+      fancy:fb_focusColor="@color/yellow_focus"
+      fancy:fb_radius="8dp"
+      fancy:fb_text="Other Signature"
+      fancy:fb_textColor="#000000"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_send_doc"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingBottom="10dp"
+      android:paddingLeft="20dp"
+      android:paddingRight="20dp"
+      android:paddingTop="10dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tv_or"
+      fancy:fb_borderColor="@color/yellow_focus"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="@color/colorPrimary"
+      fancy:fb_focusColor="@color/colorPrimaryDark"
+      fancy:fb_fontIconResource="&#xf1d9;"
+      fancy:fb_iconPosition="left"
+      fancy:fb_radius="20dp"
+      fancy:fb_text="Send Document Now"
+      />
 
 </android.support.constraint.ConstraintLayout>
