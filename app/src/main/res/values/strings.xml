@@ -13,7 +13,9 @@
   <string name="hint_email">Email</string>
   <string name="hint_password">Password</string>
   <string name="hint_signer_name">Signer Name</string>
+  <string name="hint_receiver_name">Receiver Name</string>
   <string name="hint_signer_email">Signer Email</string>
+  <string name="hint_receiver_email">Receiver Email</string>
   <string name="hint_desc_doc">Document description</string>
 
   <string name="title_menu_home">Home</string>

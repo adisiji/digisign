@@ -17,22 +17,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.security.SignatureException;
 import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Calendar;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,7 +53,7 @@ import timber.log.Timber;
   private static final String PUBLIC_KEY = "pubkey.pbk";
 
   private static final String FILE_SIGNATURE_RESULT = "result.sig";
-  private static final String FOLDER_PROCESS = "process";
+  private static final String FOLDER_UNZIP = "received";
   private final SharedPreferences mPref;
   private final Context context;
   private String tempFolder;
@@ -418,20 +422,18 @@ import timber.log.Timber;
 
     try {
       byte[] pdfBytes = getBytesFromFile(pdfFile);
-      MessageDigest digest = MessageDigest.getInstance("SHA-512");
-      // Generate Pdf Digest
-      byte[] pdfDigest = digest.digest(pdfBytes);
 
       byte[] privBytes = getBytesFromFile(new File(context.getFilesDir(), PRIVATE_KEY));
       PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(privBytes);
-
       KeyFactory kf = KeyFactory.getInstance("EC");
       PrivateKey pvt = kf.generatePrivate(ks);
+
+      // Use SHA 384 as Message Digest Algorithm
       Signature signature = Signature.getInstance("SHA384withECDSA");
       // Initialize Signature with private key
       signature.initSign(pvt, new SecureRandom());
       // Update the signature with digest content
-      signature.update(pdfDigest);
+      signature.update(pdfBytes);
 
       // Signing
       byte[] signBytes = signature.sign();
@@ -441,7 +443,7 @@ import timber.log.Timber;
       // Save PDF to one Folder
       saveFiletoCache(pdfBytes, tempFolder, getLastPathComponent(uripdf));
       listener.onFinished();
-    } catch (Exception e) {
+    } catch (IOException | SignatureException | NoSuchAlgorithmException | InvalidKeyException | InvalidKeySpecException e) {
       e.printStackTrace();
       listener.onError(e.getMessage());
     }
@@ -453,6 +455,42 @@ import timber.log.Timber;
     String source = file.getPath();
     String dest = source + File.separator + tempFolder + ".zip";
     zipFileAtPath(source, dest);
-    listener.onFinished();
+
+    File targetunzip = new File(context.getFilesDir(), FOLDER_UNZIP);
+    unZipFile(new File(dest), targetunzip, listener);
+  }
+
+  @Override public void unZipFile(File zipFile, File targetDir, CommonListener listener) {
+    try {
+      ZipInputStream zis =
+          new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
+      ZipEntry ze;
+      int count;
+      byte[] buffer = new byte[8192];
+      while ((ze = zis.getNextEntry()) != null) {
+        File file = new File(targetDir, ze.getName());
+        File dir = ze.isDirectory() ? file : file.getParentFile();
+        if (!dir.isDirectory() && !dir.mkdirs()) {
+          throw new FileNotFoundException("Failed to ensure directory: " + dir.getAbsolutePath());
+        }
+        if (ze.isDirectory()) continue;
+        FileOutputStream fout = new FileOutputStream(file);
+        while ((count = zis.read(buffer)) != -1) {
+          fout.write(buffer, 0, count);
+        }
+        fout.close();
+      }
+      zis.close();
+      listener.onFinished();
+    } catch (IOException e) {
+      e.printStackTrace();
+      listener.onError(e.getMessage());
+    }
+  }
+
+  @Override public File getFileToSend() {
+    File file = new File(context.getCacheDir(),
+        File.separator + tempFolder + File.separator + tempFolder + ".zip");
+    return file;
   }
 }

@@ -34,6 +34,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   @BindView(R.id.btn_self_signature) FancyButton btnSelf;
   @BindView(R.id.et_email_signer) AutoCompleteTextView etEmail;
   @BindView(R.id.et_name_signer) EditText etName;
+  @BindView(R.id.et_desc_doc) EditText etDesc;
   private String uri;
 
   // Your presenter is available using the mPresenter variable
@@ -72,17 +73,17 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   }
 
   @OnClick(R.id.btn_self_signature) void showSelfSign() {
-    clearText();
     btnSelf.setVisibility(View.GONE);
     btnOther.setVisibility(View.VISIBLE);
-    mPresenter.getOwnerSignature();
+    etEmail.setHint(getString(R.string.hint_receiver_email));
+    etName.setHint(getString(R.string.hint_receiver_name));
   }
 
   @OnClick(R.id.btn_other_signature) void showOther() {
-    clearText();
     btnOther.setVisibility(View.GONE);
     btnSelf.setVisibility(View.VISIBLE);
-    mPresenter.getUserList();
+    etEmail.setHint(getString(R.string.hint_signer_email));
+    etName.setHint(getString(R.string.hint_signer_name));
   }
 
   @OnClick(R.id.btn_send_doc) void sendDoc() {
@@ -121,6 +122,14 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
 
   @Override public String getEmail() {
     return etEmail.getText().toString();
+  }
+
+  @Override public String getName() {
+    return etName.getText().toString();
+  }
+
+  @Override public String getDesc() {
+    return etDesc.getText().toString();
   }
 
   @Override public boolean isOwner() {

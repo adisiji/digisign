@@ -23,6 +23,10 @@ public final class MainInteractorImpl implements MainInteractor {
     EventBus.getDefault().post(busPost);
   }
 
+  @Override public void saveToken(String token) {
+    dataTask.saveToken(token);
+  }
+
   @Override public void logout() {
     dataTask.logout();
     EventBus.getDefault().post(new SignOutEvent());

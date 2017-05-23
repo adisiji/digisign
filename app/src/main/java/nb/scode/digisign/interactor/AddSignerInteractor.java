@@ -11,6 +11,11 @@ public interface AddSignerInteractor extends BaseInteractor {
 
   void createSignFile(String uripdf, CommonIListener listener);
 
+  void uploadSignFile(CommonIListener listener);
+
+  void insertPostData(String desc, String from, String to, String name, String emailreceiver,
+      String type, CommonIListener listener);
+
   interface CommonIListener {
 
     void onProcess();

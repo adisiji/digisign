@@ -15,6 +15,10 @@ import java.util.List;
 
   String getEmail();
 
+  String getName();
+
+  String getDesc();
+
   boolean isOwner();
 
 }

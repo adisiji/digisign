@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import nb.scode.digisign.R;
 import nb.scode.digisign.data.remote.BusModel.SignOutEvent;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
+import nb.scode.digisign.data.service.TokenPost;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerMainViewComponent;
 import nb.scode.digisign.injection.MainViewModule;
@@ -55,6 +56,10 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
 
   @Subscribe(threadMode = ThreadMode.MAIN) public void onLogoutEvent(SignOutEvent event) {
     gotoLogin();
+  }
+
+  @Subscribe(threadMode = ThreadMode.BACKGROUND) public void onGetToken(TokenPost post) {
+    mPresenter.sendTokenToServer(post.getToken());
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {

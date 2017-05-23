@@ -9,6 +9,7 @@ import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiTask;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
 import nb.scode.digisign.data.remote.FireModel.KeyUser;
+import nb.scode.digisign.data.remote.FireModel.Post;
 
 /**
  * Created by neobyte on 4/28/2017.
@@ -126,7 +127,27 @@ import nb.scode.digisign.data.remote.FireModel.KeyUser;
     localTask.createZip(listener);
   }
 
+  @Override public void unZipFile(File zipfile, File targetDir, CommonListener listener) {
+    localTask.unZipFile(zipfile, targetDir, listener);
+  }
+
   @Override public void createSignFile(String uripdf, CommonListener listener) {
     localTask.createSignFile(uripdf, listener);
+  }
+
+  @Override public File getFileToSend() {
+    return localTask.getFileToSend();
+  }
+
+  @Override public void uploadSignFile(File signFile, CommonAListener listener) {
+    apiTask.uploadSignFile(signFile, listener);
+  }
+
+  @Override public void insertPostData(Post postData, CommonAListener listener) {
+    apiTask.insertPostData(postData, listener);
+  }
+
+  @Override public void saveToken(String token) {
+    apiTask.saveToken(token);
   }
 }

@@ -8,13 +8,15 @@ public class User {
 
   private String name;
   private String email;
+  private String token;
 
   public User() {
   }
 
-  public User(String name, String email) {
+  public User(String name, String email, String token) {
     this.name = name;
     this.email = email;
+    this.token = token;
   }
 
   public String getName() {
@@ -31,5 +33,13 @@ public class User {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

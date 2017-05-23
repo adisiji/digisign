@@ -154,4 +154,8 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
     });
   }
+
+  @Override public void sendTokenToServer(String token) {
+    mInteractor.saveToken(token);
+  }
 }

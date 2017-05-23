@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import nb.scode.digisign.data.remote.BusModel.UserBusPost;
 import nb.scode.digisign.data.remote.FireModel.KeyUser;
+import nb.scode.digisign.data.remote.FireModel.Post;
 import nb.scode.digisign.data.remote.FireModel.User;
 import timber.log.Timber;
 
@@ -64,7 +66,6 @@ import timber.log.Timber;
     auth = FirebaseAuth.getInstance();
     database = FirebaseDatabase.getInstance();
     storageRef = FirebaseStorage.getInstance().getReference();
-    activateUsersListener();
   }
 
   @Override public void register(String email, String pass, final CommonAListener listener) {
@@ -112,10 +113,14 @@ import timber.log.Timber;
           @Override public void onComplete(@NonNull Task<AuthResult> task) {
             FirebaseUser userx = auth.getCurrentUser();
             if (userx != null && userx.isEmailVerified()) {
+              getFirebaseToken();
               user = userx;
+              activateUsersListener();
               listener.onSuccess();
-            } else {
+            } else if (userx != null && !userx.isEmailVerified()) {
               listener.onFailed("Please verify your email first");
+            } else {
+              listener.onFailed("Please check your username/password");
             }
           }
         })
@@ -137,6 +142,8 @@ import timber.log.Timber;
             if (task.isSuccessful()) {
               user = auth.getCurrentUser();
               if (user.isEmailVerified()) {
+                getFirebaseToken();
+                activateUsersListener();
                 listener.onSuccess();
               } else {
                 sendEmailVerification(listener);
@@ -217,7 +224,12 @@ import timber.log.Timber;
 
   @Override public boolean isUserSignedIn() {
     user = auth.getCurrentUser();
-    return (user != null);
+    boolean b = (user != null);
+    if (b) {
+      getFirebaseToken();
+      activateUsersListener();
+    }
+    return b;
   }
 
   @Override public UserBusPost getUserProfile() {
@@ -275,7 +287,7 @@ import timber.log.Timber;
     DatabaseReference reference1 = database.getReference("users").child(user.getUid());
 
     // creating user object
-    User userd = new User(user.getDisplayName(), user.getEmail());
+    User userd = new User(user.getDisplayName(), user.getEmail(), "empty");
 
     // pushing user to 'users' node using the userId
     reference1.setValue(userd).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -310,7 +322,7 @@ import timber.log.Timber;
 
   private void activateUsersListener() {
     DatabaseReference mDatabase = database.getReference("users");
-    mDatabase.addValueEventListener(new ValueEventListener() {
+    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override public void onDataChange(DataSnapshot dataSnapshot) {
         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
           String key = childDataSnapshot.getKey();
@@ -322,8 +334,8 @@ import timber.log.Timber;
           KeyUser keyUser = new KeyUser(key, userx);
           keyUserList.add(keyUser);
           Timber.d("onDataChange(): key => " + key); //displays the key for the node (uid)
-          Timber.d(
-              "onDataChange(): value => " + userx);   //gives the value for given keyname (User)
+          Timber.d("onDataChange(): value => "
+              + userx.getEmail());   //gives the value for given keyname (User)
         }
         Timber.d("onDataChange(): finished");
       }
@@ -340,5 +352,62 @@ import timber.log.Timber;
 
   @Override public List<KeyUser> getListUser() {
     return keyUserList;
+  }
+
+  @Override public void uploadSignFile(File signFile, final CommonAListener listener) {
+    String signFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + signFile.getName();
+    Uri uri = Uri.fromFile(signFile);
+    Timber.d("uploadSignFile(): folder => " + signFolderRef);
+    storageRef.child(signFolderRef)
+        .putFile(uri)
+        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            listener.onSuccess();
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override public void onFailure(@NonNull Exception e) {
+            listener.onFailed(e.getMessage());
+            Timber.e("onFailure(): " + e.getMessage());
+          }
+        });
+  }
+
+  @Override public void insertPostData(Post postData, final CommonAListener listener) {
+    DatabaseReference mDatabase = database.getReference("posts");
+    String key = mDatabase.push().getKey();
+    Timber.d("insertPostData(): from => " + postData.getFrom());
+    mDatabase.child(key).setValue(postData).addOnSuccessListener(new OnSuccessListener<Void>() {
+      @Override public void onSuccess(Void aVoid) {
+        listener.onSuccess();
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override public void onFailure(@NonNull Exception e) {
+        listener.onFailed(e.getMessage());
+        Timber.e("onFailure(): " + e.getMessage());
+      }
+    });
+  }
+
+  private void getFirebaseToken() {
+    String token = FirebaseInstanceId.getInstance().getId();
+    if (token != null) {
+      saveToken(token);
+    }
+  }
+
+  @Override public void saveToken(String token) {
+    Timber.d("saveToken(): => " + token);
+    DatabaseReference reference =
+        database.getReference("users").child(user.getUid()).child("token");
+    reference.setValue(token).addOnSuccessListener(new OnSuccessListener<Void>() {
+      @Override public void onSuccess(Void aVoid) {
+        Timber.d("onSuccess(): success set token");
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override public void onFailure(@NonNull Exception e) {
+        Timber.e("onFailure(): failed to set token :(");
+      }
+    });
   }
 }

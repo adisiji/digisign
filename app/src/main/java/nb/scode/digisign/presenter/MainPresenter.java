@@ -8,4 +8,6 @@ public interface MainPresenter extends BasePresenter<MainView> {
 
   void logout();
 
+  void sendTokenToServer(String token);
+
 }

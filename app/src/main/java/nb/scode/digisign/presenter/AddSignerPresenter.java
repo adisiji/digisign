@@ -12,4 +12,6 @@ public interface AddSignerPresenter extends BasePresenter<AddSignerView> {
 
   void sendDoc();
 
+  void sendDocWithSign();
+
 }

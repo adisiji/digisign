@@ -6,6 +6,8 @@ public interface MainInteractor extends BaseInteractor {
 
   void logout();
 
+  void saveToken(String token);
+
   boolean isKeyPairAvailable();
 
   void isRemoteKeyPairAvail(MainListener listener);

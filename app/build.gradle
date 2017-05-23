@@ -53,6 +53,8 @@ dependencies {
   compile "com.google.firebase:firebase-auth:$playServicesVersion"
   compile "com.google.firebase:firebase-storage:$playServicesVersion"
   compile "com.google.firebase:firebase-database:$playServicesVersion"
+  compile "com.google.firebase:firebase-messaging:$playServicesVersion"
+  compile 'com.firebase:firebase-jobdispatcher:0.6.0'
   compile "com.google.android.gms:play-services-auth:$playServicesVersion"
   testCompile 'junit:junit:4.12'
 

@@ -71,13 +71,15 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
   }
 
   @Override public void sendDoc() {
-    String uripdf = mView.getPdfUri();
-    String keyuser;
-    for (KeyUser keyUser : keyUserList) {
-      if (keyUser.getUser().getEmail().equals(uripdf)) {
-        keyuser = keyUser.getKey();
-      }
+    if (mView.isOwner()) {
+      sendDocWithSign();
+    } else {
+      Timber.d("sendDoc(): now owner, send to other");
     }
+  }
+
+  @Override public void sendDocWithSign() {
+    String uripdf = mView.getPdfUri();
     mInteractor.createSignFile(uripdf, new AddSignerInteractor.CommonIListener() {
       @Override public void onProcess() {
         Timber.d("onProcess(): good");
@@ -85,11 +87,68 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
       @Override public void onSuccess() {
         Timber.d("onSuccess(): good");
+        uploadDoc();
       }
 
       @Override public void onFailed(String message) {
         Timber.e("onFailed(): " + message);
       }
     });
+  }
+
+  private void uploadDoc() {
+    mInteractor.uploadSignFile(new AddSignerInteractor.CommonIListener() {
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onSuccess() {
+        Timber.d("onSuccess(): NICE !");
+        insertPostData();
+      }
+
+      @Override public void onFailed(String message) {
+        Timber.e("onFailed(): FIAASl");
+      }
+    });
+  }
+
+  private void insertPostData() {
+    String name = mView.getName();
+    String email = mView.getEmail();
+    String desc = mView.getDesc();
+    String token = null;
+    for (KeyUser keyUser : keyUserList) {
+      if (keyUser.getUser().getEmail().equals(email)) {
+        token = keyUser.getUser().getToken();
+        break;
+      }
+    }
+    String from = mInteractor.getOwnerKey().getUser().getName();
+    String emaill = mInteractor.getOwnerKey().getUser().getEmail();
+    if (from == null) {
+      from = emaill;
+    } else {
+      from = from + " (" + emaill + ")";
+    }
+    Timber.d("insertPostData(): from => " + from);
+    if (token != null) {
+      mInteractor.insertPostData(desc, from, token, name, email, "pdf",
+          new AddSignerInteractor.CommonIListener() {
+            @Override public void onProcess() {
+              Timber.d("onProcess(): post good");
+            }
+
+            @Override public void onSuccess() {
+              Timber.d("onSuccess(): post okay");
+            }
+
+            @Override public void onFailed(String message) {
+
+            }
+          });
+    } else {
+      // // TODO: 5/23/2017 Add error to mView
+    }
   }
 }

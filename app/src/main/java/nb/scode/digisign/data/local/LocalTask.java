@@ -46,6 +46,10 @@ public interface LocalTask {
 
   void createZip(CommonListener listener);
 
+  File getFileToSend();
+
+  void unZipFile(File zipfile, File targetDir, CommonListener listener);
+
   void createSignFile(String uripdf, CommonListener listener);
 
   interface ListenerPrepPdf {

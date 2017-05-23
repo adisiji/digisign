@@ -8,9 +8,12 @@ public class Post {
 
   private String desc;
   private String type;
-  private String from;
   private String to;
+  private String from;
+  private String receiverName;
+  private String receiverEmail;
   private long timestamp;
+  private String linkDownload;
 
   public Post() {
   }
@@ -47,11 +50,35 @@ public class Post {
     this.to = to;
   }
 
+  public String getReceiverName() {
+    return receiverName;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
+  }
+
   public long getTimestamp() {
     return timestamp;
   }
 
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
+  }
+
+  public String getReceiverEmail() {
+    return receiverEmail;
+  }
+
+  public void setReceiverEmail(String receiverEmail) {
+    this.receiverEmail = receiverEmail;
+  }
+
+  public String getLinkDownload() {
+    return linkDownload;
+  }
+
+  public void setLinkDownload(String linkDownload) {
+    this.linkDownload = linkDownload;
   }
 }
