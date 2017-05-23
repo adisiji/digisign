@@ -40,7 +40,7 @@ public interface ApiTask {
 
   void uploadKeyPair(File publickey, File privatekey, CommonAListener listener);
 
-  void uploadSignFile(File signFile, CommonAListener listener);
+  void uploadSignFile(File signFile, UploadSignListener listener);
 
   void insertPostData(Post postData, CommonAListener listener);
 
@@ -48,6 +48,14 @@ public interface ApiTask {
     void onProcess();
 
     void onSuccess();
+
+    void onFailed(String message);
+  }
+
+  interface UploadSignListener {
+    void onProcess();
+
+    void onSuccess(String uri);
 
     void onFailed(String message);
   }

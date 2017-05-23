@@ -354,7 +354,7 @@ import timber.log.Timber;
     return keyUserList;
   }
 
-  @Override public void uploadSignFile(File signFile, final CommonAListener listener) {
+  @Override public void uploadSignFile(File signFile, final UploadSignListener listener) {
     String signFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + signFile.getName();
     Uri uri = Uri.fromFile(signFile);
     Timber.d("uploadSignFile(): folder => " + signFolderRef);
@@ -362,7 +362,9 @@ import timber.log.Timber;
         .putFile(uri)
         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
           @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-            listener.onSuccess();
+            //noinspection VisibleForTests
+            String uri = taskSnapshot.getDownloadUrl().toString();
+            listener.onSuccess(uri);
           }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -376,7 +378,7 @@ import timber.log.Timber;
   @Override public void insertPostData(Post postData, final CommonAListener listener) {
     DatabaseReference mDatabase = database.getReference("posts");
     String key = mDatabase.push().getKey();
-    Timber.d("insertPostData(): from => " + postData.getFrom());
+
     mDatabase.child(key).setValue(postData).addOnSuccessListener(new OnSuccessListener<Void>() {
       @Override public void onSuccess(Void aVoid) {
         listener.onSuccess();

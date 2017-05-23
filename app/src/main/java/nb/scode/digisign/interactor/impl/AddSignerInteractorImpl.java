@@ -16,6 +16,7 @@ import timber.log.Timber;
 public final class AddSignerInteractorImpl implements AddSignerInteractor {
 
   private final DataTask dataTask;
+  private String uriSignFile;
 
   @Inject public AddSignerInteractorImpl(@NonNull DataTask dataTask) {
     this.dataTask = dataTask;
@@ -61,13 +62,14 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
 
   @Override public void uploadSignFile(final CommonIListener listener) {
     File file = dataTask.getFileToSend();
-    dataTask.uploadSignFile(file, new ApiTask.CommonAListener() {
+    dataTask.uploadSignFile(file, new ApiTask.UploadSignListener() {
       @Override public void onProcess() {
         listener.onProcess();
       }
 
-      @Override public void onSuccess() {
+      @Override public void onSuccess(String uri) {
         Timber.d("onSuccess(): Good");
+        uriSignFile = uri;
         listener.onSuccess();
       }
 
@@ -85,6 +87,7 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
     post.setTimestamp(Calendar.getInstance().getTimeInMillis());
     post.setType(type);
     post.setTo(to);
+    post.setLinkDownload(uriSignFile);
     post.setReceiverEmail(emailreceiver);
     post.setReceiverName(name);
 

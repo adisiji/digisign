@@ -139,7 +139,7 @@ import nb.scode.digisign.data.remote.FireModel.Post;
     return localTask.getFileToSend();
   }
 
-  @Override public void uploadSignFile(File signFile, CommonAListener listener) {
+  @Override public void uploadSignFile(File signFile, UploadSignListener listener) {
     apiTask.uploadSignFile(signFile, listener);
   }
 
