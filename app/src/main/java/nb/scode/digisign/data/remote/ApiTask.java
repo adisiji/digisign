@@ -12,6 +12,9 @@ import nb.scode.digisign.data.remote.FireModel.Post;
  */
 public interface ApiTask {
 
+  public static final String PUBLIC_KEY = "pubkey.pbk";
+  public static final String PRIVATE_KEY = "privkey.pvk";
+
   void register(String email, String pass, CommonAListener listener);
 
   void login(String email, String pass, CommonAListener listener);
@@ -45,6 +48,8 @@ public interface ApiTask {
   void insertPostData(Post postData, CommonAListener listener);
 
   void downloadFile(File filezip, String url, CommonAListener listener);
+
+  void downloadPublicKey(File filepub, String senderkey, CommonAListener listener);
 
   interface CommonAListener {
     void onProcess();

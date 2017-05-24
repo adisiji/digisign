@@ -51,6 +51,7 @@ import timber.log.Timber;
   private static final String PREF_FIRST_USE = "first_use";
   private static final String PRIVATE_KEY = "privkey.ppk";
   private static final String PUBLIC_KEY = "pubkey.pbk";
+  private static final String SIGN_INSTANCE = "SHA384withECDSA";
 
   private static final String FILE_SIGNATURE_RESULT = "result.sig";
   private static final String FOLDER_UNZIP = "received";
@@ -341,7 +342,7 @@ import timber.log.Timber;
       String test = "Ini message untuk di signBytes";
       byte[] bytesDigest = test.getBytes();
 
-      Signature signature = Signature.getInstance("SHA384withECDSA");
+      Signature signature = Signature.getInstance(SIGN_INSTANCE);
       // Initialize Signature with private key
       signature.initSign(pvt);
       // Update the signature with digest content
@@ -362,18 +363,6 @@ import timber.log.Timber;
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  /*
- * gets the last path component
- *
- * Example: getLastPathComponent("downloads/example/fileToZip");
- * Result: "fileToZip"
- */
-  public String getLastPathComponent(String filePath) {
-    String[] segments = filePath.split("/");
-    if (segments.length == 0) return "";
-    return segments[segments.length - 1];
   }
 
 /*
@@ -440,8 +429,14 @@ import timber.log.Timber;
       Timber.d("createSignFile(): signBytes => " + signBytes.toString());
       // Save Signature
       saveFiletoCache(signBytes, tempFolder, FILE_SIGNATURE_RESULT);
-      // Save PDF to one Folder
-      saveFiletoCache(pdfBytes, tempFolder, getLastPathComponent(uripdf));
+      // Save PDF to same Folder with signature
+      Cursor cursor =
+          context.getContentResolver().query(Uri.parse(uripdf), null, null, null, null, null);
+      if (cursor != null && cursor.moveToFirst()) {
+        String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+        saveFiletoCache(pdfBytes, tempFolder, displayName);
+        cursor.close();
+      }
       listener.onFinished();
     } catch (IOException | SignatureException | NoSuchAlgorithmException | InvalidKeyException | InvalidKeySpecException e) {
       e.printStackTrace();
@@ -499,7 +494,33 @@ import timber.log.Timber;
     return context.getCacheDir();
   }
 
-  @Override public File createFileInCache(String filename) {
-    return new File(context.getCacheDir(), File.separator + filename + ".zip");
+  @Override public File createFileInCache(String filename, String ext) {
+    return new File(context.getCacheDir(), File.separator + filename + "." + ext);
+  }
+
+  @Override public void verifySignature(File pubkey, File sigFile, File oriFile,
+      CommonListener listener) {
+    byte[] pubBytes = getBytesFromFile(pubkey);
+    byte[] signBytes = getBytesFromFile(sigFile);
+    byte[] oriBytes = getBytesFromFile(oriFile);
+
+    try {
+      Signature signature = Signature.getInstance(SIGN_INSTANCE);
+      KeyFactory kf = KeyFactory.getInstance("EC");
+      X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pubBytes);
+      PublicKey publicKey = kf.generatePublic(pubKeySpec);
+      // Prepare signature for verify
+      signature.initVerify(publicKey);
+      signature.update(oriBytes);
+      boolean x = signature.verify(signBytes);
+      if (x) {
+        listener.onFinished();
+      } else {
+        listener.onError("Signature not valid");
+      }
+    } catch (NoSuchAlgorithmException | SignatureException | InvalidKeySpecException | InvalidKeyException e) {
+      e.printStackTrace();
+      listener.onError(e.getMessage());
+    }
   }
 }

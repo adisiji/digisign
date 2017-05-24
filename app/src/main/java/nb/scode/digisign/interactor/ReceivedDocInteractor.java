@@ -10,6 +10,8 @@ public interface ReceivedDocInteractor extends BaseInteractor {
 
   void checkingFiles(CommonRListener listener);
 
+  void downloadPublicKey(String senderkey, CommonRListener listener);
+
   void verifySign(CommonRListener listener);
 
   interface CommonRListener {

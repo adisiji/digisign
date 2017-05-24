@@ -151,8 +151,8 @@ import nb.scode.digisign.data.remote.FireModel.Post;
     apiTask.saveToken(token);
   }
 
-  @Override public File createFileInCache(String filename) {
-    return localTask.createFileInCache(filename);
+  @Override public File createFileInCache(String filename, String ext) {
+    return localTask.createFileInCache(filename, ext);
   }
 
   @Override public File getCacheDir() {
@@ -161,5 +161,15 @@ import nb.scode.digisign.data.remote.FireModel.Post;
 
   @Override public void downloadFile(File filezip, String url, CommonAListener listener) {
     apiTask.downloadFile(filezip, url, listener);
+  }
+
+  @Override public void downloadPublicKey(File filepub, String senderkey,
+      CommonAListener listener) {
+    apiTask.downloadPublicKey(filepub, senderkey, listener);
+  }
+
+  @Override public void verifySignature(File pubkey, File sigFile, File oriFile,
+      CommonListener listener) {
+    localTask.verifySignature(pubkey, sigFile, oriFile, listener);
   }
 }

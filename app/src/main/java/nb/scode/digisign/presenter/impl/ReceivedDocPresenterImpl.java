@@ -86,6 +86,7 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
       }
 
       @Override public void onSuccess() {
+        downloadPublicKey();
         Timber.d("onSuccess(): OK ^^");
       }
 
@@ -96,6 +97,36 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
   }
 
   private void downloadPublicKey() {
+    mInteractor.downloadPublicKey(mView.getSenderKeyIntent(),
+        new ReceivedDocInteractor.CommonRListener() {
+          @Override public void onProcess() {
+            Timber.d("onProcess(): download pubkey");
+          }
 
+          @Override public void onSuccess() {
+            Timber.d("onSuccess(): download pubkey");
+            verifySignature();
+          }
+
+          @Override public void onFailed(String message) {
+            Timber.d("onFailed(): download pubkey " + message);
+          }
+        });
+  }
+
+  private void verifySignature() {
+    mInteractor.verifySign(new ReceivedDocInteractor.CommonRListener() {
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onSuccess() {
+        Timber.d("onSuccess(): File is valid");
+      }
+
+      @Override public void onFailed(String message) {
+        Timber.e("onFailed(): " + message);
+      }
+    });
   }
 }

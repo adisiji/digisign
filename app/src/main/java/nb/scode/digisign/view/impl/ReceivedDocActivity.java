@@ -64,6 +64,10 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
     return intent.getStringExtra("type");
   }
 
+  @Override public String getSenderKeyIntent() {
+    return intent.getStringExtra("senderkey");
+  }
+
   @Override public void showLoading() {
 
   }

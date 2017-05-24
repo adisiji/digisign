@@ -45,8 +45,6 @@ import timber.log.Timber;
 @Singleton public class ApiHelper implements ApiTask {
 
   public static final String USER_STORAGE_REF = "/users/";
-  private final String PUBLIC_KEY = "pubkey.pbk";
-  private final String PRIVATE_KEY = "privkey.pvk";
   private FirebaseAuth auth;
   private FirebaseUser user;
   private FirebaseDatabase database;
@@ -424,5 +422,24 @@ import timber.log.Timber;
             Timber.e("onFailure(): download " + e.getMessage());
       }
     });
+  }
+
+  @Override public void downloadPublicKey(File filepub, String senderkey,
+      final CommonAListener listener) {
+    listener.onProcess();
+    String publicFolderRef = USER_STORAGE_REF + senderkey + "/public/" + PUBLIC_KEY;
+    StorageReference reference = storage.getReference().child(publicFolderRef);
+    reference.getFile(filepub)
+        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+          @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            listener.onSuccess();
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override public void onFailure(@NonNull Exception e) {
+            listener.onFailed(e.getMessage());
+            Timber.e("onFailure(): " + e.toString());
+          }
+        });
   }
 }

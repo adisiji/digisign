@@ -8,10 +8,16 @@ import nb.scode.digisign.data.remote.ApiTask;
 import nb.scode.digisign.interactor.ReceivedDocInteractor;
 import timber.log.Timber;
 
+import static nb.scode.digisign.data.remote.ApiTask.PUBLIC_KEY;
+
 public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
 
   private final DataTask dataTask;
   private File zipFile;
+  private File dirZip;
+  private File sigFile;
+  private File pubkey;
+  private File oriFile;
   private String filename;
   private String fileType;
 
@@ -49,7 +55,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
 
     filename = link.substring(sepIndex + sepLength, zipIndex);
     Timber.d("downloadFile(): filename => " + filename); // ex: 141241231 *without .zip extension
-    zipFile = dataTask.createFileInCache(filename);
+    zipFile = dataTask.createFileInCache(filename, "zip");
     dataTask.downloadFile(zipFile, link, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProcess();
@@ -66,13 +72,17 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
   }
 
   @Override public void checkingFiles(CommonRListener listener) {
-    File dirZip = new File(dataTask.getCacheDir(), File.separator + filename);
+    dirZip = new File(dataTask.getCacheDir(), File.separator + filename);
     File[] files = dirZip.listFiles();
     String sig = "sig";
 
     for (File file : files) {
       String ext = getFileExt(file.getName());
-      if (!ext.equals(sig) && !ext.equals(fileType)) {
+      if (ext.equals(sig)) {
+        sigFile = file;
+      } else if (ext.equals(fileType)) {
+        oriFile = file;
+      } else {
         listener.onFailed("Data is not valid!");
         return;
       }
@@ -82,11 +92,40 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
 
   private String getFileExt(String filenamez) {
     int z = filenamez.length();
-    int i = filenamez.indexOf('.');
+    int i = filenamez.lastIndexOf('.');
     return filenamez.substring(i + 1, z);
   }
 
-  @Override public void verifySign(CommonRListener listener) {
+  @Override public void downloadPublicKey(String senderkey, final CommonRListener listener) {
+    pubkey = new File(dirZip, PUBLIC_KEY);
+    dataTask.downloadPublicKey(pubkey, senderkey, new ApiTask.CommonAListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
 
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
+
+  @Override public void verifySign(final CommonRListener listener) {
+    dataTask.verifySignature(pubkey, sigFile, oriFile, new LocalTask.CommonListener() {
+      @Override public void onFinished() {
+        listener.onSuccess();
+      }
+
+      @Override public void onError(String message) {
+        listener.onFailed(message);
+      }
+
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+    });
   }
 }

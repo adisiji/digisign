@@ -44,13 +44,15 @@ public interface LocalTask {
 
   File getFileToSend();
 
-  File createFileInCache(String filename);
+  File createFileInCache(String filename, String ext);
 
   File getCacheDir();
 
   void unZipFile(File zipfile, File targetDir, CommonListener listener);
 
   void createSignFile(String uripdf, CommonListener listener);
+
+  void verifySignature(File pubkey, File sigFile, File oriFile, CommonListener listener);
 
   interface ListenerPrepPdf {
     void setFileName(String fileName);

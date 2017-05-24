@@ -65,6 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     String desc = data.get("desc");
     String link = data.get("linkDownload");
     String origin = data.get("origin");
+    String senderKey = data.get("senderKey");
     String times = data.get("timestamp");
     String type = data.get("type");
 
@@ -73,6 +74,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     intent.putExtra("origin", origin);
     intent.putExtra("times", times);
     intent.putExtra("type", type);
+    intent.putExtra("senderkey", senderKey);
 
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =

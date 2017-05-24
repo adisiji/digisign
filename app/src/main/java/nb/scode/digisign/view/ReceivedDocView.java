@@ -16,6 +16,8 @@ import android.support.annotation.UiThread;
 
   String getFromIntent();
 
+  String getSenderKeyIntent();
+
   String getTimeIntent();
 
   String getTypeIntent();
