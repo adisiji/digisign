@@ -7,13 +7,11 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import java.util.Map;
 import nb.scode.digisign.R;
-import nb.scode.digisign.view.impl.MainActivity;
+import nb.scode.digisign.view.impl.ReceivedDocActivity;
 import timber.log.Timber;
 
 /**
@@ -39,28 +37,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
     // [END_EXCLUDE]
 
-    // TODO(developer): Handle FCM messages here.
-    // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-    Timber.d("From: " + remoteMessage.getFrom());
-
-    // Check if message contains a data payload.
-    if (remoteMessage.getData().size() > 0) {
-      Timber.d("Message data payload: " + remoteMessage.getData());
-
-      if (/* Check if data needs to be processed by long running job */ true) {
-        // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-        scheduleJob();
-      } else {
-        // Handle message within 10 seconds
-        handleNow();
-      }
-    }
-
     // Check if message contains a notification payload.
-    if (remoteMessage.getNotification() != null) {
+    if (remoteMessage.getNotification() != null && remoteMessage.getData() != null) {
+      Map<String, String> data = remoteMessage.getData();
+      Timber.d("onMessageReceived(): size data => " + data.size());
+
+      RemoteMessage.Notification notification = remoteMessage.getNotification();
       String body = remoteMessage.getNotification().getBody();
+
       Timber.d("onMessageReceived(): Message Notification Body: " + body);
-      sendNotification(body);
+      sendNotification(notification, data);
     }
 
     // Also if you intend on generating your own notifications as a result of a received FCM
@@ -69,31 +55,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
   // [END receive_message]
 
   /**
-   * Schedule a job using FirebaseJobDispatcher.
-   */
-  private void scheduleJob() {
-    // [START dispatch_job]
-    FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-    Job myJob =
-        dispatcher.newJobBuilder().setService(MyJobService.class).setTag("my-job-tag").build();
-    dispatcher.schedule(myJob);
-    // [END dispatch_job]
-  }
-
-  /**
-   * Handle time allotted to BroadcastReceivers.
-   */
-  private void handleNow() {
-    Timber.d("Short lived task is done.");
-  }
-
-  /**
    * Create and show a simple notification containing the received FCM message.
    *
-   * @param messageBody FCM message body received.
+   * @param notification contain message notification payload
+   * @param data FCM data contain message data payload
    */
-  private void sendNotification(String messageBody) {
-    Intent intent = new Intent(this, MainActivity.class);
+  private void sendNotification(RemoteMessage.Notification notification, Map<String, String> data) {
+    Intent intent = new Intent(this, ReceivedDocActivity.class);
+    String desc = data.get("desc");
+    String link = data.get("linkDownload");
+    String origin = data.get("origin");
+    String times = data.get("timestamp");
+    String type = data.get("type");
+
+    intent.putExtra("desc", desc);
+    intent.putExtra("linkdown", link);
+    intent.putExtra("origin", origin);
+    intent.putExtra("times", times);
+    intent.putExtra("type", type);
+
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =
         PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -101,10 +81,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     NotificationCompat.Builder notificationBuilder =
         new NotificationCompat.Builder(this).setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("You get a Document!")
-            .setContentText(messageBody)
+            .setContentTitle(notification.getTitle())
+            .setContentText(notification.getBody())
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
+            .setVibrate(new long[] { 500, 1000, 500, 1000 })
             .setContentIntent(pendingIntent);
 
     NotificationManager notificationManager =

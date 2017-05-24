@@ -13,7 +13,7 @@ public interface AddSignerInteractor extends BaseInteractor {
 
   void uploadSignFile(CommonIListener listener);
 
-  void insertPostData(String desc, String from, String to, String name, String emailreceiver,
+  void insertPostData(String desc, String from, String name, String receiverKey,
       String type, CommonIListener listener);
 
   interface CommonIListener {

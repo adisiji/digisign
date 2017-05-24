@@ -11,11 +11,7 @@ import nb.scode.digisign.data.DataTask;
 import nb.scode.digisign.data.local.LocalHelper;
 import nb.scode.digisign.data.local.LocalTask;
 import nb.scode.digisign.data.remote.ApiHelper;
-import nb.scode.digisign.data.remote.ApiService;
 import nb.scode.digisign.data.remote.ApiTask;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * The type App module.
@@ -48,24 +44,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
    */
   @Provides @Singleton App provideApp() {
     return mApp;
-  }
-
-  /**
-   * Provide api service api service.
-   *
-   * @return the api service
-   */
-  @Provides @Singleton ApiService provideApiService() {
-    /*
-    Gson gson = new GsonBuilder()
-        .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
-        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
-        */
-    Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiService.ENDPOINT)
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build();
-    return retrofit.create(ApiService.class);
   }
 
   /**

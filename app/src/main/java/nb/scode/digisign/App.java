@@ -1,13 +1,13 @@
 package nb.scode.digisign;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDexApplication;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.AppModule;
 import nb.scode.digisign.injection.DaggerAppComponent;
 import timber.log.Timber;
 
-public final class App extends Application {
+public final class App extends MultiDexApplication {
   private AppComponent mAppComponent;
 
   @Override public void onCreate() {

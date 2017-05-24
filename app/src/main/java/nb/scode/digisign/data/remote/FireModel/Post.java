@@ -8,10 +8,9 @@ public class Post {
 
   private String desc;
   private String type;
-  private String to;
-  private String from;
+  private String senderKey;
+  private String receiverKey;
   private String receiverName;
-  private String receiverEmail;
   private long timestamp;
   private String linkDownload;
 
@@ -34,28 +33,20 @@ public class Post {
     this.type = type;
   }
 
-  public String getFrom() {
-    return from;
+  public String getSenderKey() {
+    return senderKey;
   }
 
-  public void setFrom(String from) {
-    this.from = from;
+  public void setSenderKey(String senderKey) {
+    this.senderKey = senderKey;
   }
 
-  public String getTo() {
-    return to;
+  public String getReceiverKey() {
+    return receiverKey;
   }
 
-  public void setTo(String to) {
-    this.to = to;
-  }
-
-  public String getReceiverName() {
-    return receiverName;
-  }
-
-  public void setReceiverName(String receiverName) {
-    this.receiverName = receiverName;
+  public void setReceiverKey(String receiverKey) {
+    this.receiverKey = receiverKey;
   }
 
   public long getTimestamp() {
@@ -66,19 +57,19 @@ public class Post {
     this.timestamp = timestamp;
   }
 
-  public String getReceiverEmail() {
-    return receiverEmail;
-  }
-
-  public void setReceiverEmail(String receiverEmail) {
-    this.receiverEmail = receiverEmail;
-  }
-
   public String getLinkDownload() {
     return linkDownload;
   }
 
   public void setLinkDownload(String linkDownload) {
     this.linkDownload = linkDownload;
+  }
+
+  public String getReceiverName() {
+    return receiverName;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
   }
 }

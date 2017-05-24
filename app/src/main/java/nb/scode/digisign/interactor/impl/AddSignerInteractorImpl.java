@@ -79,16 +79,15 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
     });
   }
 
-  @Override public void insertPostData(String desc, String from, String to, String name,
-      String emailreceiver, String type, final CommonIListener listener) {
+  @Override public void insertPostData(String desc, String from, String name, String receiverKey,
+      String type, final CommonIListener listener) {
     Post post = new Post();
     post.setDesc(desc);
-    post.setFrom(from);
+    post.setSenderKey(from);
     post.setTimestamp(Calendar.getInstance().getTimeInMillis());
     post.setType(type);
-    post.setTo(to);
     post.setLinkDownload(uriSignFile);
-    post.setReceiverEmail(emailreceiver);
+    post.setReceiverKey(receiverKey);
     post.setReceiverName(name);
 
     dataTask.insertPostData(post, new ApiTask.CommonAListener() {

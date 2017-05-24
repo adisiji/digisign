@@ -150,4 +150,16 @@ import nb.scode.digisign.data.remote.FireModel.Post;
   @Override public void saveToken(String token) {
     apiTask.saveToken(token);
   }
+
+  @Override public File createFileInCache(String filename) {
+    return localTask.createFileInCache(filename);
+  }
+
+  @Override public File getCacheDir() {
+    return localTask.getCacheDir();
+  }
+
+  @Override public void downloadFile(File filezip, String url, CommonAListener listener) {
+    apiTask.downloadFile(filezip, url, listener);
+  }
 }

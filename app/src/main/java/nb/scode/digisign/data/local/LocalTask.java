@@ -9,10 +9,6 @@ import java.io.File;
  */
 public interface LocalTask {
 
-  int USER = 1;
-
-  int ROOT = 0;
-
   /**
    * Clear.
    */
@@ -47,6 +43,10 @@ public interface LocalTask {
   void createZip(CommonListener listener);
 
   File getFileToSend();
+
+  File createFileInCache(String filename);
+
+  File getCacheDir();
 
   void unZipFile(File zipfile, File targetDir, CommonListener listener);
 

@@ -462,6 +462,7 @@ import timber.log.Timber;
 
   @Override public void unZipFile(File zipFile, File targetDir, CommonListener listener) {
     try {
+      listener.onProcess();
       ZipInputStream zis =
           new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
       ZipEntry ze;
@@ -492,5 +493,13 @@ import timber.log.Timber;
     File file = new File(context.getCacheDir(),
         File.separator + tempFolder + File.separator + tempFolder + ".zip");
     return file;
+  }
+
+  @Override public File getCacheDir() {
+    return context.getCacheDir();
+  }
+
+  @Override public File createFileInCache(String filename) {
+    return new File(context.getCacheDir(), File.separator + filename + ".zip");
   }
 }

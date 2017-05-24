@@ -7,6 +7,7 @@ android {
     applicationId "nb.scode.digisign"
     minSdkVersion 21
     targetSdkVersion 25
+    multiDexEnabled true
     versionCode 1
     versionName "1.0"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -49,6 +50,7 @@ dependencies {
   compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
   compile "com.android.support:design:$supportLibraryVersion"
   compile "com.android.support.constraint:constraint-layout:1.0.2"
+  compile "com.android.support:multidex:1.0.1"
 
   compile "com.google.firebase:firebase-auth:$playServicesVersion"
   compile "com.google.firebase:firebase-storage:$playServicesVersion"
@@ -87,11 +89,6 @@ dependencies {
   compile "com.google.guava:guava:$guavaVersion"
 
   compile 'com.github.frangsierra:rx2firebase:1.1.1'
-
-  //Retrofit 2 for consuming API
-  compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
-  compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-  compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
   //RxJava
   compile "io.reactivex.rxjava2:rxjava:$rxjavaVersion"

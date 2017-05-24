@@ -44,6 +44,8 @@ public interface ApiTask {
 
   void insertPostData(Post postData, CommonAListener listener);
 
+  void downloadFile(File filezip, String url, CommonAListener listener);
+
   interface CommonAListener {
     void onProcess();
 

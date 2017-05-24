@@ -118,22 +118,20 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
     String email = mView.getEmail();
     String desc = mView.getDesc();
     String token = null;
+    String keyReceiver = null;
     for (KeyUser keyUser : keyUserList) {
       if (keyUser.getUser().getEmail().equals(email)) {
         token = keyUser.getUser().getToken();
+        keyReceiver = keyUser.getKey();
         break;
       }
     }
-    String from = mInteractor.getOwnerKey().getUser().getName();
-    String emaill = mInteractor.getOwnerKey().getUser().getEmail();
-    if (from == null) {
-      from = emaill;
-    } else {
-      from = from + " (" + emaill + ")";
-    }
+
+    String from = mInteractor.getOwnerKey().getKey();
+
     Timber.d("insertPostData(): from => " + from);
     if (token != null) {
-      mInteractor.insertPostData(desc, from, token, name, email, "pdf",
+      mInteractor.insertPostData(desc, from, name, keyReceiver, "pdf",
           new AddSignerInteractor.CommonIListener() {
             @Override public void onProcess() {
               Timber.d("onProcess(): post good");

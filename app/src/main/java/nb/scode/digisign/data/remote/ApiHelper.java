@@ -44,28 +44,23 @@ import timber.log.Timber;
 
 @Singleton public class ApiHelper implements ApiTask {
 
+  public static final String USER_STORAGE_REF = "/users/";
   private final String PUBLIC_KEY = "pubkey.pbk";
   private final String PRIVATE_KEY = "privkey.pvk";
-  private final ApiService apiService;
-  private final String USER_STORAGE_REF = "/users/";
   private FirebaseAuth auth;
   private FirebaseUser user;
   private FirebaseDatabase database;
-  private StorageReference storageRef;
+  private FirebaseStorage storage;
   private List<KeyUser> keyUserList = new ArrayList<>();
   private KeyUser keyUserOwner;
 
   /**
    * Instantiates a new Api helper.
-   *
-   * @param apiService the api service
-   * @see ApiService for edit the EndPoint and Api Methods
    */
-  @Inject ApiHelper(ApiService apiService) {
-    this.apiService = apiService;
+  @Inject ApiHelper() {
     auth = FirebaseAuth.getInstance();
     database = FirebaseDatabase.getInstance();
-    storageRef = FirebaseStorage.getInstance().getReference();
+    storage = FirebaseStorage.getInstance();
   }
 
   @Override public void register(String email, String pass, final CommonAListener listener) {
@@ -166,11 +161,11 @@ import timber.log.Timber;
     listener.onProcess();
     Timber.d("downloadKeyPair(): OK");
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
-    StorageReference refpub = storageRef.child(publicFolderRef);
+    StorageReference refpub = storage.getReference().child(publicFolderRef);
     Maybe<FileDownloadTask.TaskSnapshot> obs1 = RxFirebaseStorage.getFile(refpub, publickey);
 
     String privateFolderRef = USER_STORAGE_REF + user.getUid() + "/" + PRIVATE_KEY;
-    StorageReference refPriv = storageRef.child(privateFolderRef);
+    StorageReference refPriv = storage.getReference().child(privateFolderRef);
     Maybe<FileDownloadTask.TaskSnapshot> obs2 = RxFirebaseStorage.getFile(refPriv, privatekey);
 
     Maybe.concat(obs1, obs2)
@@ -198,11 +193,11 @@ import timber.log.Timber;
     listener.onProcess();
 
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
-    StorageReference refpub = storageRef.child(publicFolderRef);
+    StorageReference refpub = storage.getReference().child(publicFolderRef);
     Maybe<Uri> obs1 = RxFirebaseStorage.getDownloadUrl(refpub);
 
     String privateFolderRef = USER_STORAGE_REF + user.getUid() + "/" + PRIVATE_KEY;
-    StorageReference refPriv = storageRef.child(privateFolderRef);
+    StorageReference refPriv = storage.getReference().child(privateFolderRef);
     Maybe<Uri> obs2 = RxFirebaseStorage.getDownloadUrl(refPriv);
 
     Maybe.concat(obs1, obs2).subscribeOn(Schedulers.io()).subscribe(new Consumer<Uri>() {
@@ -254,13 +249,14 @@ import timber.log.Timber;
 
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
     Uri uri = Uri.fromFile(publickey);
-    storageRef.child(publicFolderRef);
-    Maybe<UploadTask.TaskSnapshot> obs1 = RxFirebaseStorage.putFile(storageRef, uri);
+    StorageReference storageRef = storage.getReference();
+    StorageReference pubref = storageRef.child(publicFolderRef);
+    Maybe<UploadTask.TaskSnapshot> obs1 = RxFirebaseStorage.putFile(pubref, uri);
 
     String privateFolderRef = USER_STORAGE_REF + user.getUid() + "/" + PRIVATE_KEY;
     Uri uri1 = Uri.fromFile(privatekey);
-    storageRef.child(privateFolderRef);
-    Maybe<UploadTask.TaskSnapshot> obs2 = RxFirebaseStorage.putFile(storageRef, uri1);
+    StorageReference privref = storageRef.child(privateFolderRef);
+    Maybe<UploadTask.TaskSnapshot> obs2 = RxFirebaseStorage.putFile(privref, uri1);
 
     Maybe.concat(obs1, obs2)
         .subscribeOn(Schedulers.io())
@@ -320,6 +316,7 @@ import timber.log.Timber;
     });
   }
 
+
   private void activateUsersListener() {
     DatabaseReference mDatabase = database.getReference("users");
     mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -358,7 +355,7 @@ import timber.log.Timber;
     String signFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + signFile.getName();
     Uri uri = Uri.fromFile(signFile);
     Timber.d("uploadSignFile(): folder => " + signFolderRef);
-    storageRef.child(signFolderRef)
+    storage.getReference().child(signFolderRef)
         .putFile(uri)
         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
           @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -392,7 +389,7 @@ import timber.log.Timber;
   }
 
   private void getFirebaseToken() {
-    String token = FirebaseInstanceId.getInstance().getId();
+    String token = FirebaseInstanceId.getInstance().getToken();
     if (token != null) {
       saveToken(token);
     }
@@ -409,6 +406,22 @@ import timber.log.Timber;
     }).addOnFailureListener(new OnFailureListener() {
       @Override public void onFailure(@NonNull Exception e) {
         Timber.e("onFailure(): failed to set token :(");
+      }
+    });
+  }
+
+  @Override public void downloadFile(File filezip, String url, final CommonAListener listener) {
+    StorageReference reference = storage.getReferenceFromUrl(url);
+    reference.getFile(filezip)
+        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+          @Override public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            listener.onSuccess();
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override public void onFailure(@NonNull Exception e) {
+            listener.onFailed(e.getMessage());
+            Timber.e("onFailure(): download " + e.getMessage());
       }
     });
   }
