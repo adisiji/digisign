@@ -25,6 +25,7 @@
 
   <string name="title_page_choose_signer">Choose Signer</string>
   <string name="title_page_add_signer">Add Signer</string>
+  <string name="title_page_received_doc">Received Doc</string>
 
   <string name="file_name">File name :</string>
   <string name="size">Size :</string>

@@ -8,4 +8,7 @@
   <color name="yellow_default">#FBE83C</color>
   <color name="yellow_focus">#afb42b</color>
   <color name="white">#FEFEFE</color>
+
+  <color name="green_status">#8BC34A</color>
+  <color name="red_status">#F44336</color>
 </resources>

@@ -234,7 +234,6 @@ import timber.log.Timber;
 
   @Override public void getPrepFilePdf(String uripdf, ListenerPrepPdf listenerPrepPdf) {
     Uri uri = Uri.parse(uripdf);
-
     // The query, since it only applies to a single document, will only return one row.
     // no need to filter, sort, or select fields, since we want all fields for one
     // document.
@@ -272,6 +271,8 @@ import timber.log.Timber;
           size = "Unknown";
         }
         listenerPrepPdf.setFileSize(size);
+      } else {
+        Timber.e("getPrepFilePdf(): error cursor null");
       }
     } finally {
       if (cursor != null) {

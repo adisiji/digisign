@@ -1,6 +1,9 @@
 package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
+import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 import javax.inject.Inject;
 import nb.scode.digisign.interactor.ReceivedDocInteractor;
 import nb.scode.digisign.presenter.ReceivedDocPresenter;
@@ -43,6 +46,7 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
 
   private void initReceivedDoc() {
     if (!mView.isIntentEmpty()) {
+      mView.showLoading();
       String downlink = mView.getDownloadLink();
       mInteractor.setFileType(mView.getTypeIntent());
       mInteractor.downloadFile(downlink, new ReceivedDocInteractor.CommonRListener() {
@@ -122,11 +126,50 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
 
       @Override public void onSuccess() {
         Timber.d("onSuccess(): File is valid");
+        mView.setFileStatus("This Doc has been verified");
+        mView.setGreenStatus();
+        setupUI();
       }
 
       @Override public void onFailed(String message) {
         Timber.e("onFailed(): " + message);
+        mView.setFileStatus("This Doc can not be verified");
+        mView.setRedStatus();
+        setupUI();
       }
     });
+  }
+
+  private void setupUI() {
+    mView.setFileName(getFileName());
+    mView.setFileSize(getFileSize());
+    mInteractor.showingPdf(new ReceivedDocInteractor.showPdfListener() {
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onSuccess(File file) {
+        mView.setPdfRenderer(file);
+        mView.hideLoading();
+      }
+
+      @Override public void onFailed(String message) {
+        mView.hideLoading();
+      }
+    });
+  }
+
+  @Override public String getTimefromIntent() {
+    Long xx = Long.decode(mView.getTimeIntent());
+    Date date = new Date(xx);
+    return DateFormat.getDateInstance(DateFormat.LONG).format(date);
+  }
+
+  @Override public String getFileName() {
+    return mInteractor.getOriFileName();
+  }
+
+  @Override public String getFileSize() {
+    return mInteractor.getOriFileSize();
   }
 }

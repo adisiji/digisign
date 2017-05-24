@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor.impl;
 
+import android.net.Uri;
 import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
@@ -127,5 +128,44 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
         listener.onProcess();
       }
     });
+  }
+
+  @Override public void showingPdf(final showPdfListener listener) {
+    String uripdf = Uri.fromFile(oriFile).toString();
+    dataTask.getPrepFilePdf(uripdf, new LocalTask.ListenerPrepPdf() {
+      @Override public void setFileName(String fileName) {
+
+      }
+
+      @Override public void setFileSize(String fileSize) {
+
+      }
+
+      @Override public void onComplete(File file) {
+        listener.onSuccess(file);
+      }
+
+      @Override public void onGoing() {
+        listener.onProcess();
+      }
+
+      @Override public void onError(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
+
+  @Override public String getOriFileName() {
+    return oriFile.getName();
+  }
+
+  @Override public String getOriFileSize() {
+    String ext = " KB";
+    long size = oriFile.length() / 1024; // Get file in KB
+    if (size > 1024) {
+      size = size / 1024; // Get file in MB
+      ext = " MB";
+    }
+    return String.valueOf(size) + ext;
   }
 }
