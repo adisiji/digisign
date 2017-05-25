@@ -24,7 +24,7 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-    getSentPost();
+    getAllPost();
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -46,15 +46,17 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
   @Override public void getSentPost() {
     mInteractor.getSentPost(new AllDocInteractor.AllDocIntListener() {
       @Override public void onProcess() {
-
+        mView.showLoading();
       }
 
       @Override public void onSuccess(List<ItemAllDoc> postList) {
         Timber.d("onSuccess(): get sent post");
+        mView.showAllDocItems(postList);
+        mView.hideLoading();
       }
 
       @Override public void onFailed(String message) {
-
+        mView.hideLoading();
       }
     });
   }
@@ -62,15 +64,33 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
   @Override public void getReceivedPost() {
     mInteractor.getReceivePost(new AllDocInteractor.AllDocIntListener() {
       @Override public void onProcess() {
-
+        mView.showLoading();
       }
 
       @Override public void onSuccess(List<ItemAllDoc> postList) {
         mView.showAllDocItems(postList);
+        mView.hideLoading();
       }
 
       @Override public void onFailed(String message) {
+        mView.hideLoading();
+      }
+    });
+  }
 
+  @Override public void getAllPost() {
+    mInteractor.getAllPost(new AllDocInteractor.AllDocIntListener() {
+      @Override public void onProcess() {
+        mView.showLoading();
+      }
+
+      @Override public void onSuccess(List<ItemAllDoc> postList) {
+        mView.showAllDocItems(postList);
+        mView.hideLoading();
+      }
+
+      @Override public void onFailed(String message) {
+        mView.hideLoading();
       }
     });
   }

@@ -16,10 +16,12 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
 
   private final DataTask dataTask;
   private List<KeyUser> keyUserList;
+  private KeyUser keyUser;
 
   @Inject public AllDocInteractorImpl(DataTask dataTask) {
     this.dataTask = dataTask;
     keyUserList = dataTask.getListUser();
+    keyUser = dataTask.getOwnerKey();
   }
 
   @Override public void getSentPost(final AllDocIntListener listener) {
@@ -62,6 +64,26 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
     });
   }
 
+  @Override public void getAllPost(final AllDocIntListener listener) {
+    dataTask.getAllPost(new ApiTask.GetListPostListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onSuccess(List<Post> postList) {
+        List<ItemAllDoc> itemAllDocs = new ArrayList<ItemAllDoc>();
+        for (Post post : postList) {
+          itemAllDocs.add(convertPostToItem(post));
+        }
+        listener.onSuccess(itemAllDocs);
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
+
   private ItemAllDoc convertPostToItem(Post post) {
     ItemAllDoc itemAllDoc = new ItemAllDoc();
     itemAllDoc.setFilename(post.getFilename());
@@ -70,11 +92,19 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
     String datez = DateFormat.getDateInstance(DateFormat.LONG).format(date);
     itemAllDoc.setFiledate(datez);
     String from = null;
-    for (KeyUser keyUser : keyUserList) {
-      if (keyUser.getKey().equals(post.getSenderKey())) {
-        from = keyUser.getUser().getName();
-        if (from == null) {
-          from = keyUser.getUser().getEmail();
+    if (keyUser.getKey().equals(post.getSenderKey())) {
+      itemAllDoc.setSent(true);
+      from = keyUser.getUser().getName();
+      if (from == null) {
+        from = keyUser.getUser().getEmail();
+      }
+    } else {
+      for (KeyUser keyUser : keyUserList) {
+        if (keyUser.getKey().equals(post.getSenderKey())) {
+          from = keyUser.getUser().getName();
+          if (from == null) {
+            from = keyUser.getUser().getEmail();
+          }
         }
       }
     }

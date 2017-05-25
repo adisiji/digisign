@@ -1,5 +1,6 @@
 package nb.scode.digisign.view.impl;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,13 +22,22 @@ import nb.scode.digisign.presenter.AllDocPresenter;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.AllDocView;
 import nb.scode.digisign.view.adapter.AllDocAdapter;
+import nb.scode.digisign.view.busmodel.SpinnerMenu;
 import nb.scode.digisign.view.model.ItemAllDoc;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
+
+import static nb.scode.digisign.view.impl.Constants.MENU_ALL;
+import static nb.scode.digisign.view.impl.Constants.MENU_RECEIVE;
+import static nb.scode.digisign.view.impl.Constants.MENU_SENT;
 
 public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocView>
     implements AllDocView {
   @Inject PresenterFactory<AllDocPresenter> mPresenterFactory;
   @BindView(R.id.rv) RecyclerView recyclerView;
+  private ProgressDialog progressDialog;
 
   private AllDocAdapter.AllDocAdpListener listener = new AllDocAdapter.AllDocAdpListener() {
     @Override public void onClick(String key) {
@@ -39,6 +49,11 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     // Required empty public constructor
   }
 
+  @Override public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    EventBus.getDefault().register(this);
+  }
+
   @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_all_doc, container, false);
@@ -47,7 +62,33 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
   @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     ButterKnife.bind(this, view);
+    progressDialog = new ProgressDialog(getContext());
+    progressDialog.setIndeterminate(true);
+    progressDialog.setMessage("Loading...");
+    progressDialog.setCancelable(false);
     // Do not call mPresenter from here, it will be null! Wait for onStart
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN) public void MenuEvent(SpinnerMenu spinnerMenu) {
+    int i = spinnerMenu.getMenu();
+    switch (i) {
+      case MENU_ALL:
+        mPresenter.getAllPost();
+        break;
+      case MENU_SENT:
+        mPresenter.getSentPost();
+        break;
+      case MENU_RECEIVE:
+        mPresenter.getReceivedPost();
+        break;
+    }
+  }
+
+  @Override public void onDestroy() {
+    super.onDestroy();
+    if (EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().unregister(this);
+    }
   }
 
   @Override protected void setupComponent(@NonNull AppComponent parentComponent) {
@@ -63,6 +104,7 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
   }
 
   @Override public void showAllDocItems(List<ItemAllDoc> docList) {
+    Timber.d("showAllDocItems(): size => " + docList.size());
     final AllDocAdapter adapter = new AllDocAdapter(docList, listener);
     RecyclerView.LayoutManager layoutManager =
         new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -70,5 +112,13 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     recyclerView.setItemAnimator(new DefaultItemAnimator());
     recyclerView.setAdapter(adapter);
     recyclerView.invalidate();
+  }
+
+  @Override public void showLoading() {
+    progressDialog.show();
+  }
+
+  @Override public void hideLoading() {
+    progressDialog.dismiss();
   }
 }

@@ -8,4 +8,8 @@ import nb.scode.digisign.view.model.ItemAllDoc;
 
   void showAllDocItems(List<ItemAllDoc> docList);
 
+  void showLoading();
+
+  void hideLoading();
+
 }

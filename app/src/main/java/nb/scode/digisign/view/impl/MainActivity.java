@@ -13,8 +13,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -33,10 +38,15 @@ import nb.scode.digisign.injection.MainViewModule;
 import nb.scode.digisign.presenter.MainPresenter;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.MainView;
+import nb.scode.digisign.view.busmodel.SpinnerMenu;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
+
+import static nb.scode.digisign.view.impl.Constants.MENU_ALL;
+import static nb.scode.digisign.view.impl.Constants.MENU_RECEIVE;
+import static nb.scode.digisign.view.impl.Constants.MENU_SENT;
 
 public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     implements MainView, NavigationView.OnNavigationItemSelectedListener {
@@ -47,6 +57,10 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   @BindView(R.id.nvView) NavigationView nvDrawer;
   private ActionBarDrawerToggle drawerToggle;
   private ProgressDialog progressDialog;
+  private Spinner navigationSpinner;
+  private SpinnerAdapter spinnerAdapter;
+  private Boolean isFromAllDoc = false;
+  private View view;
 
   // Your presenter is available using the mPresenter variable
 
@@ -78,11 +92,45 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     // Tie DrawerLayout events to the ActionBarToggle
     drawerLayout.addDrawerListener(drawerToggle);
     setupProgress();
+    setupSpinner();
+  }
+
+  private void setupSpinner() {
+    spinnerAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.category,
+        R.layout.spinner_dropdown_item);
+    LayoutInflater inflater = LayoutInflater.from(this);
+    view = inflater.inflate(R.layout.toolbar_all_doc, null);
+    navigationSpinner = (Spinner) view.findViewById(R.id.spinner);
+    navigationSpinner.setAdapter(spinnerAdapter);
+    navigationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        Timber.d("onItemSelected(): i => " + i);
+        switch (i) {
+          case 0: { // All Doc
+            EventBus.getDefault().post(new SpinnerMenu(MENU_ALL));
+            break;
+          }
+          case 1: {
+            EventBus.getDefault().post(new SpinnerMenu(MENU_SENT));
+            break;
+          }
+          case 2: {
+            EventBus.getDefault().post(new SpinnerMenu(MENU_RECEIVE));
+            break;
+          }
+        }
+      }
+
+      @Override public void onNothingSelected(AdapterView<?> adapterView) {
+
+      }
+    });
   }
 
   private void setupProgress() {
     progressDialog = new ProgressDialog(this);
     progressDialog.setIndeterminate(true);
+    progressDialog.setCancelable(false);
   }
 
   @Override protected void onStart() {
@@ -122,14 +170,22 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     switch (menuItem.getItemId()) {
       case R.id.nav_first_fragment:
         fragmentClass = HomeFragment.class;
+        if (isFromAllDoc) {
+          toolbar.removeView(view);
+        }
         pos = 0;
         break;
       case R.id.nav_second_fragment:
         fragmentClass = AllDocFragment.class;
+        toolbar.addView(view);
+        isFromAllDoc = true;
         pos = 1;
         break;
       case R.id.nav_third_fragment:
         fragmentClass = SentFilesFragment.class;
+        if (isFromAllDoc) {
+          toolbar.removeView(view);
+        }
         pos = 2;
         break;
       default:

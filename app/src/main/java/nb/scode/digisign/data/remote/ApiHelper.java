@@ -26,6 +26,7 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase;
 import durdinapps.rxfirebase2.RxFirebaseStorage;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -326,28 +327,6 @@ import timber.log.Timber;
           User userx = childDataSnapshot.getValue(User.class);
           if (key.equals(user.getUid())) {
             keyUserOwner = new KeyUser(key, userx);
-            /*
-            maybeSentPost().flatMapObservable(
-                new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
-                  @Override public Observable<Maybe<DataSnapshot>> apply(
-                      @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
-                      throws Exception {
-                    return Observable.fromIterable(maybes);
-                  }
-                }).flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
-              @Override public Observable<DataSnapshot> apply(
-                  @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
-                  throws Exception {
-                return dataSnapshotMaybe.toObservable();
-              }
-            }).subscribe(new Consumer<DataSnapshot>() {
-              @Override public void accept(
-                  @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-                Post post = dataSnapshot.getValue(Post.class);
-                Timber.d("accept(): datasnap => " + post.getTimestamp());
-              }
-            });
-            */
             continue;
           }
           KeyUser keyUser = new KeyUser(key, userx);
@@ -480,29 +459,34 @@ import timber.log.Timber;
                 throws Exception {
               return Observable.fromIterable(maybes);
             }
-          }).flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
-        @Override public Observable<DataSnapshot> apply(
-            @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
-            throws Exception {
-          return dataSnapshotMaybe.toObservable();
-        }
-      }).subscribe(new Consumer<DataSnapshot>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
-            throws Exception {
-          Post post = dataSnapshot.getValue(Post.class);
-          postList.add(post);
-          Timber.d("accept(): datasnap => " + post.getTimestamp());
-        }
-      }, new Consumer<Throwable>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-            throws Exception {
-          listener.onFailed(throwable.getMessage());
-        }
-      }, new Action() {
-        @Override public void run() throws Exception {
-          listener.onSuccess(postList);
-        }
-      });
+          })
+          .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+            @Override public Observable<DataSnapshot> apply(
+                @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+                throws Exception {
+              return dataSnapshotMaybe.toObservable();
+            }
+          })
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Consumer<DataSnapshot>() {
+            @Override public void accept(
+                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+              Post post = dataSnapshot.getValue(Post.class);
+              postList.add(post);
+              Timber.d("accept(): datasnap => " + post.getTimestamp());
+            }
+          }, new Consumer<Throwable>() {
+            @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+                throws Exception {
+              listener.onFailed(throwable.getMessage());
+            }
+          }, new Action() {
+            @Override public void run() throws Exception {
+              Timber.d("run(): ok post =>" + postList.size());
+              listener.onSuccess(postList);
+            }
+          });
     } else {
       listener.onFailed("Can't get user key");
     }
@@ -531,6 +515,7 @@ import timber.log.Timber;
           @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
               throws Exception {
             Post post = dataSnapshot.getValue(Post.class);
+            postList.add(post);
             Timber.d("accept(): datasnap => " + post.getTimestamp());
           }
         }, new Consumer<Throwable>() {
@@ -540,6 +525,7 @@ import timber.log.Timber;
           }
         }, new Action() {
           @Override public void run() throws Exception {
+            Timber.d("run(): ok post =>" + postList.size());
             listener.onSuccess(postList);
           }
         });
@@ -558,29 +544,33 @@ import timber.log.Timber;
                 throws Exception {
               return Observable.fromIterable(maybes);
             }
-          }).flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
-        @Override public Observable<DataSnapshot> apply(
-            @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
-            throws Exception {
-          return dataSnapshotMaybe.toObservable();
-        }
-      }).subscribe(new Consumer<DataSnapshot>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
-            throws Exception {
-          Post post = dataSnapshot.getValue(Post.class);
-          postList.add(post);
-          Timber.d("accept(): datasnap => " + post.getTimestamp());
-        }
-      }, new Consumer<Throwable>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-            throws Exception {
-          listener.onFailed(throwable.getMessage());
-        }
-      }, new Action() {
-        @Override public void run() throws Exception {
-          listener.onSuccess(postList);
-        }
-      });
+          })
+          .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+            @Override public Observable<DataSnapshot> apply(
+                @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+                throws Exception {
+              return dataSnapshotMaybe.toObservable();
+            }
+          })
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Consumer<DataSnapshot>() {
+            @Override public void accept(
+                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+              Post post = dataSnapshot.getValue(Post.class);
+              postList.add(post);
+              Timber.d("accept(): datasnap => " + post.getTimestamp());
+            }
+          }, new Consumer<Throwable>() {
+            @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+                throws Exception {
+              listener.onFailed(throwable.getMessage());
+            }
+          }, new Action() {
+            @Override public void run() throws Exception {
+              listener.onSuccess(postList);
+            }
+          });
     } else {
       listener.onFailed("Can't get user key");
     }

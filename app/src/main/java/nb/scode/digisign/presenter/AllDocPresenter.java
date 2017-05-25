@@ -4,6 +4,8 @@ import nb.scode.digisign.view.AllDocView;
 
 public interface AllDocPresenter extends BasePresenter<AllDocView> {
 
+  void getAllPost();
+
   void getSentPost();
 
   void getReceivedPost();

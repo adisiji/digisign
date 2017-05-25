@@ -9,6 +9,8 @@ public interface AllDocInteractor extends BaseInteractor {
 
   void getReceivePost(AllDocIntListener listener);
 
+  void getAllPost(AllDocIntListener listener);
+
   interface AllDocIntListener {
     void onProcess();
 
