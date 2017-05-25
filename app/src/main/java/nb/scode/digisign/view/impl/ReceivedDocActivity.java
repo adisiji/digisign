@@ -32,8 +32,6 @@ import timber.log.Timber;
 public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter, ReceivedDocView>
     implements ReceivedDocView, InfoFile.CallbackInfoFile {
   @Inject PresenterFactory<ReceivedDocPresenter> mPresenterFactory;
-  @BindView(R.id.title_file_name) TextView tvFileName;
-  @BindView(R.id.title_size) TextView tvFileSize;
   @BindView(R.id.status_verified) TextView tvStatus;
   @BindView(R.id.iv_file_preview) ImageView ivPreview;
   @BindView(R.id.toolbar) Toolbar toolbar;
@@ -216,14 +214,6 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
 
   @Override public void hideLoading() {
     progressDialog.dismiss();
-  }
-
-  @Override public void setFileName(String name) {
-    tvFileName.setText(name);
-  }
-
-  @Override public void setFileSize(String fileSize) {
-    tvFileSize.setText(fileSize);
   }
 
   @Override public void setFileStatus(String fileStatus) {

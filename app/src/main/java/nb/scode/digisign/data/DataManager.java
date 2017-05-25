@@ -151,6 +151,10 @@ import nb.scode.digisign.data.remote.FireModel.Post;
     apiTask.saveToken(token);
   }
 
+  @Override public void initListUser(CommonAListener listener) {
+    apiTask.initListUser(listener);
+  }
+
   @Override public File createFileInCache(String filename, String ext) {
     return localTask.createFileInCache(filename, ext);
   }

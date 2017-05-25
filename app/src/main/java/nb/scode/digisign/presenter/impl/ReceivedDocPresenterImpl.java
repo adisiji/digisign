@@ -141,8 +141,6 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
   }
 
   private void setupUI() {
-    mView.setFileName(getFileName());
-    mView.setFileSize(getFileSize());
     mInteractor.showingPdf(new ReceivedDocInteractor.showPdfListener() {
       @Override public void onProcess() {
 

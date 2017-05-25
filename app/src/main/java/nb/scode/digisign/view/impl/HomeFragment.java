@@ -68,10 +68,6 @@ public final class HomeFragment extends BaseFragment<HomePresenter, HomeView>
     Timber.i("takePhoto(): ok");
   }
 
-  @OnClick(R.id.btn_send_file) void send() {
-
-  }
-
   @OnClick(R.id.btn_sign_file) void sign() {
     FragmentManager fm = getFragmentManager();
     SignFile signFile = new SignFile();

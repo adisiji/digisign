@@ -137,4 +137,19 @@ public final class MainInteractorImpl implements MainInteractor {
     });
   }
 
+  @Override public void initListUser(final MainListener listener) {
+    dataTask.initListUser(new ApiTask.CommonAListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
 }

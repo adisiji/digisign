@@ -57,6 +57,8 @@ public interface ApiTask {
 
   void downloadPublicKey(File filepub, String senderkey, CommonAListener listener);
 
+  void initListUser(CommonAListener listener);
+
   interface CommonAListener {
     void onProcess();
 

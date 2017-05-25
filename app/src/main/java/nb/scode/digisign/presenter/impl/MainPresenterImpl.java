@@ -42,57 +42,14 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
     super.onPresenterDestroyed();
   }
 
-  @Override public void getPhotoUri() {
-    mInteractor.getUser();
-  }
-
-  @Override public void logout() {
-    mInteractor.logout();
-  }
-
-  private void downloadKeyPair() {
-    mInteractor.downloadKeyPair(new MainInteractor.MainListener() {
-      @Override public void onSuccess() {
-        mView.hideProgressDialog();
-        Timber.d("mainStarter(): finish");
-      }
-
-      @Override public void onProcess() {
-
-      }
-
-      @Override public void onFailed(String message) {
-
-      }
-    });
-  }
-
-  private void uploadKeyPair() {
-    mInteractor.uploadKeyPair(new MainInteractor.MainListener() {
-      @Override public void onSuccess() {
-        mView.hideProgressDialog();
-        Timber.d("onSuccess(): Ok we can start sign");
-      }
-
-      @Override public void onProcess() {
-        Timber.d("onProcess(): Process Upload KeyPair");
-      }
-
-      @Override public void onFailed(String message) {
-        mView.showToast(message);
-      }
-    });
-  }
-
   private void mainStarter() {
     mView.showProgressDialog("Loading...");
     if (mInteractor.isRecentEmailSame()) {
       if (mInteractor.isKeyPairAvailable()) {
         mInteractor.isRemoteKeyPairAvail(new MainInteractor.MainListener() {
           @Override public void onSuccess() {
-            mView.hideProgressDialog();
-            mView.showToast("You can sign document now");
-            Timber.d("onSuccess(): Ok we can start sign");
+            initListUser();
+            Timber.d("onSuccess(): Ok we can start sign after init");
           }
 
           @Override public void onProcess() {
@@ -125,6 +82,48 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
     }
   }
 
+  @Override public void getPhotoUri() {
+    mInteractor.getUser();
+  }
+
+  @Override public void logout() {
+    mInteractor.logout();
+  }
+
+  private void downloadKeyPair() {
+    mInteractor.downloadKeyPair(new MainInteractor.MainListener() {
+      @Override public void onSuccess() {
+        initListUser();
+        Timber.d("mainStarter(): finish");
+      }
+
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onFailed(String message) {
+
+      }
+    });
+  }
+
+  private void uploadKeyPair() {
+    mInteractor.uploadKeyPair(new MainInteractor.MainListener() {
+      @Override public void onSuccess() {
+        mView.hideProgressDialog();
+        Timber.d("onSuccess(): Ok we can start sign");
+      }
+
+      @Override public void onProcess() {
+        Timber.d("onProcess(): Process Upload KeyPair");
+      }
+
+      @Override public void onFailed(String message) {
+        mView.showToast(message);
+      }
+    });
+  }
+
   private void initKeyPair() {
     mInteractor.initKeyPair(new MainInteractor.MainInitListener() {
       @Override public void onStartInit() {
@@ -142,12 +141,30 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
 
       @Override public void onFinishInit() {
-        mView.hideProgressDialog();
-        mView.showToast("You can sign document now");
+        initListUser();
         Timber.d("onFinishInit(): Good");
       }
 
       @Override public void onError(String message) {
+        mView.hideProgressDialog();
+        mView.showToast(message);
+        Timber.d("onError(): GOOO");
+      }
+    });
+  }
+
+  private void initListUser() {
+    mInteractor.initListUser(new MainInteractor.MainListener() {
+      @Override public void onSuccess() {
+        mView.hideProgressDialog();
+        mView.showToast("You can sign document now");
+      }
+
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onFailed(String message) {
         mView.hideProgressDialog();
         mView.showToast(message);
         Timber.d("onError(): GOOO");

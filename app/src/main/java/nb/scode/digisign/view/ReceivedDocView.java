@@ -27,10 +27,6 @@ import java.io.File;
 
   void setRedStatus();
 
-  void setFileName(String name);
-
-  void setFileSize(String fileSize);
-
   void setFileStatus(String fileStatus);
 
   void setPdfRenderer(File file);

@@ -104,7 +104,6 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
   }
 
   @Override public void showAllDocItems(List<ItemAllDoc> docList) {
-    Timber.d("showAllDocItems(): size => " + docList.size());
     final AllDocAdapter adapter = new AllDocAdapter(docList, listener);
     RecyclerView.LayoutManager layoutManager =
         new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);

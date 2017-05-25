@@ -22,6 +22,8 @@ public interface MainInteractor extends BaseInteractor {
 
   void initKeyPair(MainInitListener listener);
 
+  void initListUser(MainListener listener);
+
   interface MainListener {
     void onSuccess();
 

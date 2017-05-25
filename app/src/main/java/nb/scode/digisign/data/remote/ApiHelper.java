@@ -112,7 +112,6 @@ import timber.log.Timber;
             if (userx != null && userx.isEmailVerified()) {
               getFirebaseToken();
               user = userx;
-              activateUsersListener();
               listener.onSuccess();
             } else if (userx != null && !userx.isEmailVerified()) {
               listener.onFailed("Please verify your email first");
@@ -140,7 +139,6 @@ import timber.log.Timber;
               user = auth.getCurrentUser();
               if (user.isEmailVerified()) {
                 getFirebaseToken();
-                activateUsersListener();
                 listener.onSuccess();
               } else {
                 sendEmailVerification(listener);
@@ -224,7 +222,6 @@ import timber.log.Timber;
     boolean b = (user != null);
     if (b) {
       getFirebaseToken();
-      activateUsersListener();
     }
     return b;
   }
@@ -318,7 +315,8 @@ import timber.log.Timber;
     });
   }
 
-  private void activateUsersListener() {
+  @Override public void initListUser(final CommonAListener listener) {
+    listener.onProcess();
     DatabaseReference mDatabase = database.getReference("users");
     mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override public void onDataChange(final DataSnapshot dataSnapshot) {
@@ -336,10 +334,12 @@ import timber.log.Timber;
               + userx.getEmail());   //gives the value for given keyname (User)
         }
         Timber.d("onDataChange(): finished");
+        listener.onSuccess();
       }
 
       @Override public void onCancelled(DatabaseError databaseError) {
-
+        listener.onFailed(databaseError.getMessage());
+        Timber.e("onCancelled(): " + databaseError.getDetails());
       }
     });
   }

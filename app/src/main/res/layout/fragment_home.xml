@@ -46,30 +46,9 @@
       fancy:fb_defaultColor="#f9f9f9"
       fancy:fb_focusColor="#bdbdbd"
       fancy:fb_radius="30dp"
-      fancy:fb_text="Sign a File"
+      fancy:fb_text="Sign a Doc"
       fancy:fb_textColor="#424242"
       fancy:fb_textSize="21sp"
       />
 
-  <mehdi.sakout.fancybuttons.FancyButton
-      android:id="@+id/btn_send_file"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
-      android:paddingBottom="10dp"
-      android:paddingLeft="40dp"
-      android:paddingRight="40dp"
-      android:paddingTop="10dp"
-      app:layout_constraintLeft_toLeftOf="@id/title"
-      app:layout_constraintRight_toRightOf="@id/title"
-      app:layout_constraintTop_toBottomOf="@id/guide_h50"
-      fancy:fb_borderColor="#000000"
-      fancy:fb_borderWidth="1dp"
-      fancy:fb_defaultColor="#f9f9f9"
-      fancy:fb_focusColor="#bdbdbd"
-      fancy:fb_radius="30dp"
-      fancy:fb_text="Send a File"
-      fancy:fb_textColor="#424242"
-      fancy:fb_textSize="21sp"
-      />
 </android.support.constraint.ConstraintLayout>
