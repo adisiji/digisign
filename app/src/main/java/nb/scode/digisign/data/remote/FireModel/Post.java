@@ -11,6 +11,7 @@ public class Post {
   private String senderKey;
   private String receiverKey;
   private String receiverName;
+  private String filename;
   private long timestamp;
   private String linkDownload;
 
@@ -71,5 +72,13 @@ public class Post {
 
   public void setReceiverName(String receiverName) {
     this.receiverName = receiverName;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
+  public void setFilename(String filename) {
+    this.filename = filename;
   }
 }

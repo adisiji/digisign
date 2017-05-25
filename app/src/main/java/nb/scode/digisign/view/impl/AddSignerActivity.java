@@ -24,6 +24,7 @@ import nb.scode.digisign.view.AddSignerView;
 import nb.scode.digisign.view.adapter.AddSignerAdapter;
 import timber.log.Timber;
 
+import static nb.scode.digisign.view.impl.Constants.BUNDLE_FILE_NAME;
 import static nb.scode.digisign.view.impl.Constants.URI_BUNDLE_KEY;
 
 public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, AddSignerView>
@@ -36,6 +37,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   @BindView(R.id.et_name_signer) EditText etName;
   @BindView(R.id.et_desc_doc) EditText etDesc;
   private String uri;
+  private String filenamez;
 
   // Your presenter is available using the mPresenter variable
 
@@ -46,6 +48,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     Intent intent = getIntent();
     if (intent != null) {
       uri = intent.getStringExtra(URI_BUNDLE_KEY);
+      filenamez = intent.getStringExtra(BUNDLE_FILE_NAME);
       Timber.d("onCreate(): uri => " + uri);
     } else {
       onBackPressed();
@@ -130,6 +133,10 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
 
   @Override public String getDesc() {
     return etDesc.getText().toString();
+  }
+
+  @Override public String getFilename() {
+    return filenamez;
   }
 
   @Override public boolean isOwner() {

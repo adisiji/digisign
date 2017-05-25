@@ -80,7 +80,7 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
   }
 
   @Override public void insertPostData(String desc, String from, String name, String receiverKey,
-      String type, final CommonIListener listener) {
+      String filename, String type, final CommonIListener listener) {
     Post post = new Post();
     post.setDesc(desc);
     post.setSenderKey(from);
@@ -89,6 +89,7 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
     post.setLinkDownload(uriSignFile);
     post.setReceiverKey(receiverKey);
     post.setReceiverName(name);
+    post.setFilename(filename);
 
     dataTask.insertPostData(post, new ApiTask.CommonAListener() {
       @Override public void onProcess() {

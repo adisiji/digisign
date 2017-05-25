@@ -47,7 +47,7 @@ public final class HomePresenterImpl extends BasePresenterImpl<HomeView> impleme
       }
 
       @Override public void onFinished() {
-        Timber.d("onFinished(): getCertificate");
+        Timber.d("onSuccess(): getCertificate");
       }
 
       @Override public void onError(String message) {

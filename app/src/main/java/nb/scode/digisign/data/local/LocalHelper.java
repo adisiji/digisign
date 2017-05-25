@@ -412,8 +412,8 @@ import timber.log.Timber;
 
     try {
       byte[] pdfBytes = getBytesFromFile(pdfFile);
-
       byte[] privBytes = getBytesFromFile(new File(context.getFilesDir(), PRIVATE_KEY));
+
       PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(privBytes);
       KeyFactory kf = KeyFactory.getInstance("EC");
       PrivateKey pvt = kf.generatePrivate(ks);

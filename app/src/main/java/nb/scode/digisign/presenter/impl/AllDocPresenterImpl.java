@@ -1,10 +1,13 @@
 package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
+import java.util.List;
 import javax.inject.Inject;
 import nb.scode.digisign.interactor.AllDocInteractor;
 import nb.scode.digisign.presenter.AllDocPresenter;
 import nb.scode.digisign.view.AllDocView;
+import nb.scode.digisign.view.model.ItemAllDoc;
+import timber.log.Timber;
 
 public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
     implements AllDocPresenter {
@@ -21,7 +24,7 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-
+    getReceivedPost();
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -38,5 +41,37 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
          */
 
     super.onPresenterDestroyed();
+  }
+
+  @Override public void getSentPost() {
+    mInteractor.getSentPost(new AllDocInteractor.AllDocIntListener() {
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onSuccess(List<ItemAllDoc> postList) {
+        Timber.d("onSuccess(): get sent post");
+      }
+
+      @Override public void onFailed(String message) {
+
+      }
+    });
+  }
+
+  @Override public void getReceivedPost() {
+    mInteractor.getReceivePost(new AllDocInteractor.AllDocIntListener() {
+      @Override public void onProcess() {
+
+      }
+
+      @Override public void onSuccess(List<ItemAllDoc> postList) {
+        mView.showAllDocItems(postList);
+      }
+
+      @Override public void onFailed(String message) {
+
+      }
+    });
   }
 }

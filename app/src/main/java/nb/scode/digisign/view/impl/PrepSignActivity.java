@@ -30,6 +30,7 @@ import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.PrepSignView;
 import timber.log.Timber;
 
+import static nb.scode.digisign.view.impl.Constants.BUNDLE_FILE_NAME;
 import static nb.scode.digisign.view.impl.Constants.URI_BUNDLE_KEY;
 
 public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, PrepSignView>
@@ -45,6 +46,7 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
   @BindView(R.id.title_size) TextView tvFileSize;
   @BindView(R.id.toolbar) Toolbar toolbar;
   private String uripdf = null;
+  private String filename = null;
   /**
    * File descriptor of the PDF.
    */
@@ -236,6 +238,7 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
 
   @Override public void setFileName(String fileName) {
     tvFileName.setText(fileName);
+    this.filename = fileName;
   }
 
   @Override public void setFileSize(String fileSize) {
@@ -249,6 +252,7 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
   @OnClick(R.id.btn_add_signer) void addSigner() {
     Intent i = new Intent(this, AddSignerActivity.class);
     i.putExtra(URI_BUNDLE_KEY, uripdf);
+    i.putExtra(BUNDLE_FILE_NAME, filename);
     startActivity(i);
   }
 }

@@ -39,6 +39,10 @@ public interface ApiTask {
 
   List<KeyUser> getListUser();
 
+  void getPostReceived(GetListPostListener listener);
+
+  void getPostSent(GetListPostListener listener);
+
   void downloadKeyPair(File publickey, File privatekey, CommonAListener listener);
 
   void uploadKeyPair(File publickey, File privatekey, CommonAListener listener);
@@ -63,6 +67,14 @@ public interface ApiTask {
     void onProcess();
 
     void onSuccess(String uri);
+
+    void onFailed(String message);
+  }
+
+  interface GetListPostListener {
+    void onProcess();
+
+    void onSuccess(List<Post> postList);
 
     void onFailed(String message);
   }

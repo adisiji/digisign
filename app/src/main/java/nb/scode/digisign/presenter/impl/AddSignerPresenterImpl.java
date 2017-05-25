@@ -118,6 +118,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
     String email = mView.getEmail();
     String desc = mView.getDesc();
     String token = null;
+    String filename = mView.getFilename();
     String keyReceiver = null;
     for (KeyUser keyUser : keyUserList) {
       if (keyUser.getUser().getEmail().equals(email)) {
@@ -131,7 +132,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
     Timber.d("insertPostData(): from => " + from);
     if (token != null) {
-      mInteractor.insertPostData(desc, from, name, keyReceiver, "pdf",
+      mInteractor.insertPostData(desc, from, name, keyReceiver, filename, "pdf",
           new AddSignerInteractor.CommonIListener() {
             @Override public void onProcess() {
               Timber.d("onProcess(): post good");

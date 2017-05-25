@@ -19,6 +19,8 @@ import java.util.List;
 
   String getDesc();
 
+  String getFilename();
+
   boolean isOwner();
 
 }

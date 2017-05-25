@@ -22,6 +22,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import durdinapps.rxfirebase2.RxFirebaseDatabase;
 import durdinapps.rxfirebase2.RxFirebaseStorage;
 import io.reactivex.Maybe;
 import io.reactivex.functions.Action;
@@ -314,7 +315,6 @@ import timber.log.Timber;
     });
   }
 
-
   private void activateUsersListener() {
     DatabaseReference mDatabase = database.getReference("users");
     mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -420,8 +420,8 @@ import timber.log.Timber;
           @Override public void onFailure(@NonNull Exception e) {
             listener.onFailed(e.getMessage());
             Timber.e("onFailure(): download " + e.getMessage());
-      }
-    });
+          }
+        });
   }
 
   @Override public void downloadPublicKey(File filepub, String senderkey,
@@ -441,5 +441,105 @@ import timber.log.Timber;
             Timber.e("onFailure(): " + e.toString());
           }
         });
+  }
+
+  @Override public void getPostReceived(final GetListPostListener listener) {
+    listener.onProcess();
+    if (keyUserOwner.getKey() != null) {
+      Timber.d("getPostReceived(): started");
+      DatabaseReference mDatabase = database.getReference("users").child(keyUserOwner.getKey());
+      mDatabase.child("receivepost").addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override public void onDataChange(DataSnapshot dataSnapshot) {
+          List<String> keyList = new ArrayList<>();
+          for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+            keyList.add(childDataSnapshot.getKey());
+          }
+
+          DatabaseReference postRef = database.getReference("posts");
+          final List<Post> postList = new ArrayList<Post>();
+          List<Maybe<DataSnapshot>> maybeList = new ArrayList<>();
+          for (String key : keyList) {
+            Maybe<DataSnapshot> data1 =
+                RxFirebaseDatabase.observeSingleValueEvent(postRef.child(key));
+            maybeList.add(data1);
+          }
+          Maybe.concat(maybeList)
+              .subscribeOn(Schedulers.io())
+              .subscribe(new Consumer<DataSnapshot>() {
+                @Override public void accept(
+                    @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+                  Post post = dataSnapshot.getValue(Post.class);
+                  postList.add(post);
+                }
+              }, new Consumer<Throwable>() {
+                @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+                    throws Exception {
+                  listener.onFailed(throwable.getMessage());
+                  Timber.e("accept(): failed => " + throwable.getMessage());
+                }
+              }, new Action() {
+                @Override public void run() throws Exception {
+                  listener.onSuccess(postList);
+                }
+              });
+        }
+
+        @Override public void onCancelled(DatabaseError databaseError) {
+          listener.onFailed(databaseError.getMessage());
+        }
+      });
+    } else {
+      listener.onFailed("Can't get user key");
+    }
+  }
+
+  @Override public void getPostSent(final GetListPostListener listener) {
+    listener.onProcess();
+    if (keyUserOwner.getKey() != null) {
+      Timber.d("getPostSent(): started");
+      DatabaseReference mDatabase = database.getReference("users").child(keyUserOwner.getKey());
+      mDatabase.child("sentpost").addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override public void onDataChange(DataSnapshot dataSnapshot) {
+          List<String> keyList = new ArrayList<>();
+          for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+            keyList.add(childDataSnapshot.getKey());
+          }
+
+          DatabaseReference postRef = database.getReference("posts");
+          final List<Post> postList = new ArrayList<Post>();
+          List<Maybe<DataSnapshot>> maybeList = new ArrayList<>();
+          for (String key : keyList) {
+            Maybe<DataSnapshot> data1 =
+                RxFirebaseDatabase.observeSingleValueEvent(postRef.child(key));
+            maybeList.add(data1);
+          }
+          Maybe.concat(maybeList)
+              .subscribeOn(Schedulers.io())
+              .subscribe(new Consumer<DataSnapshot>() {
+                @Override public void accept(
+                    @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+                  Post post = (Post) dataSnapshot.getValue();
+                  postList.add(post);
+                }
+              }, new Consumer<Throwable>() {
+                @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+                    throws Exception {
+                  listener.onFailed(throwable.getMessage());
+                  Timber.e("accept(): failed => " + throwable.getMessage());
+                }
+              }, new Action() {
+                @Override public void run() throws Exception {
+                  listener.onSuccess(postList);
+                }
+              });
+        }
+
+        @Override public void onCancelled(DatabaseError databaseError) {
+          listener.onFailed(databaseError.getMessage());
+        }
+      });
+    } else {
+      listener.onFailed("Can't get user key");
+    }
   }
 }

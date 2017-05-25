@@ -172,4 +172,12 @@ import nb.scode.digisign.data.remote.FireModel.Post;
       CommonListener listener) {
     localTask.verifySignature(pubkey, sigFile, oriFile, listener);
   }
+
+  @Override public void getPostReceived(GetListPostListener listener) {
+    apiTask.getPostReceived(listener);
+  }
+
+  @Override public void getPostSent(GetListPostListener listener) {
+    apiTask.getPostSent(listener);
+  }
 }
