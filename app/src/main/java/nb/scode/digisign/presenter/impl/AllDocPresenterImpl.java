@@ -24,7 +24,7 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-    getReceivedPost();
+    getSentPost();
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 

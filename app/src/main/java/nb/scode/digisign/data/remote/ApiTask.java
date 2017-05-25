@@ -43,6 +43,8 @@ public interface ApiTask {
 
   void getPostSent(GetListPostListener listener);
 
+  void getAllPost(GetListPostListener listener);
+
   void downloadKeyPair(File publickey, File privatekey, CommonAListener listener);
 
   void uploadKeyPair(File publickey, File privatekey, CommonAListener listener);

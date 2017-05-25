@@ -180,4 +180,8 @@ import nb.scode.digisign.data.remote.FireModel.Post;
   @Override public void getPostSent(GetListPostListener listener) {
     apiTask.getPostSent(listener);
   }
+
+  @Override public void getAllPost(GetListPostListener listener) {
+    apiTask.getAllPost(listener);
+  }
 }

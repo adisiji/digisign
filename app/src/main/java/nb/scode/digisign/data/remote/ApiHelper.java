@@ -25,8 +25,10 @@ import com.google.firebase.storage.UploadTask;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
 import durdinapps.rxfirebase2.RxFirebaseStorage;
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import java.io.File;
 import java.util.ArrayList;
@@ -318,12 +320,34 @@ import timber.log.Timber;
   private void activateUsersListener() {
     DatabaseReference mDatabase = database.getReference("users");
     mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-      @Override public void onDataChange(DataSnapshot dataSnapshot) {
+      @Override public void onDataChange(final DataSnapshot dataSnapshot) {
         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
           String key = childDataSnapshot.getKey();
           User userx = childDataSnapshot.getValue(User.class);
           if (key.equals(user.getUid())) {
             keyUserOwner = new KeyUser(key, userx);
+            /*
+            maybeSentPost().flatMapObservable(
+                new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
+                  @Override public Observable<Maybe<DataSnapshot>> apply(
+                      @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
+                      throws Exception {
+                    return Observable.fromIterable(maybes);
+                  }
+                }).flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+              @Override public Observable<DataSnapshot> apply(
+                  @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+                  throws Exception {
+                return dataSnapshotMaybe.toObservable();
+              }
+            }).subscribe(new Consumer<DataSnapshot>() {
+              @Override public void accept(
+                  @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+                Post post = dataSnapshot.getValue(Post.class);
+                Timber.d("accept(): datasnap => " + post.getTimestamp());
+              }
+            });
+            */
             continue;
           }
           KeyUser keyUser = new KeyUser(key, userx);
@@ -447,45 +471,36 @@ import timber.log.Timber;
     listener.onProcess();
     if (keyUserOwner.getKey() != null) {
       Timber.d("getPostReceived(): started");
-      DatabaseReference mDatabase = database.getReference("users").child(keyUserOwner.getKey());
-      mDatabase.child("receivepost").addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override public void onDataChange(DataSnapshot dataSnapshot) {
-          List<String> keyList = new ArrayList<>();
-          for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-            keyList.add(childDataSnapshot.getKey());
-          }
+      final List<Post> postList = new ArrayList<>();
 
-          DatabaseReference postRef = database.getReference("posts");
-          final List<Post> postList = new ArrayList<Post>();
-          List<Maybe<DataSnapshot>> maybeList = new ArrayList<>();
-          for (String key : keyList) {
-            Maybe<DataSnapshot> data1 =
-                RxFirebaseDatabase.observeSingleValueEvent(postRef.child(key));
-            maybeList.add(data1);
-          }
-          Maybe.concat(maybeList)
-              .subscribeOn(Schedulers.io())
-              .subscribe(new Consumer<DataSnapshot>() {
-                @Override public void accept(
-                    @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-                  Post post = dataSnapshot.getValue(Post.class);
-                  postList.add(post);
-                }
-              }, new Consumer<Throwable>() {
-                @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-                    throws Exception {
-                  listener.onFailed(throwable.getMessage());
-                  Timber.e("accept(): failed => " + throwable.getMessage());
-                }
-              }, new Action() {
-                @Override public void run() throws Exception {
-                  listener.onSuccess(postList);
-                }
-              });
+      maybeReceivePost().flatMapObservable(
+          new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
+            @Override public Observable<Maybe<DataSnapshot>> apply(
+                @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
+                throws Exception {
+              return Observable.fromIterable(maybes);
+            }
+          }).flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+        @Override public Observable<DataSnapshot> apply(
+            @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+            throws Exception {
+          return dataSnapshotMaybe.toObservable();
         }
-
-        @Override public void onCancelled(DatabaseError databaseError) {
-          listener.onFailed(databaseError.getMessage());
+      }).subscribe(new Consumer<DataSnapshot>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+            throws Exception {
+          Post post = dataSnapshot.getValue(Post.class);
+          postList.add(post);
+          Timber.d("accept(): datasnap => " + post.getTimestamp());
+        }
+      }, new Consumer<Throwable>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+            throws Exception {
+          listener.onFailed(throwable.getMessage());
+        }
+      }, new Action() {
+        @Override public void run() throws Exception {
+          listener.onSuccess(postList);
         }
       });
     } else {
@@ -493,53 +508,141 @@ import timber.log.Timber;
     }
   }
 
+  @Override public void getAllPost(final GetListPostListener listener) {
+    listener.onProcess();
+    Timber.d("getAllPost(): started");
+    final List<Post> postList = new ArrayList<>();
+    Maybe.concat(maybeReceivePost(), maybeSentPost())
+        .flatMapIterable(new Function<List<Maybe<DataSnapshot>>, Iterable<Maybe<DataSnapshot>>>() {
+          @Override public Iterable<Maybe<DataSnapshot>> apply(
+              @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes) throws Exception {
+            return maybes;
+          }
+        })
+        .toObservable()
+        .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+          @Override public Observable<DataSnapshot> apply(
+              @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+              throws Exception {
+            return dataSnapshotMaybe.toObservable();
+          }
+        })
+        .subscribe(new Consumer<DataSnapshot>() {
+          @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+              throws Exception {
+            Post post = dataSnapshot.getValue(Post.class);
+            Timber.d("accept(): datasnap => " + post.getTimestamp());
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+              throws Exception {
+            listener.onFailed(throwable.getMessage());
+          }
+        }, new Action() {
+          @Override public void run() throws Exception {
+            listener.onSuccess(postList);
+          }
+        });
+  }
+
   @Override public void getPostSent(final GetListPostListener listener) {
     listener.onProcess();
     if (keyUserOwner.getKey() != null) {
       Timber.d("getPostSent(): started");
-      DatabaseReference mDatabase = database.getReference("users").child(keyUserOwner.getKey());
-      mDatabase.child("sentpost").addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override public void onDataChange(DataSnapshot dataSnapshot) {
-          List<String> keyList = new ArrayList<>();
-          for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-            keyList.add(childDataSnapshot.getKey());
-          }
+      final List<Post> postList = new ArrayList<>();
 
-          DatabaseReference postRef = database.getReference("posts");
-          final List<Post> postList = new ArrayList<Post>();
-          List<Maybe<DataSnapshot>> maybeList = new ArrayList<>();
-          for (String key : keyList) {
-            Maybe<DataSnapshot> data1 =
-                RxFirebaseDatabase.observeSingleValueEvent(postRef.child(key));
-            maybeList.add(data1);
-          }
-          Maybe.concat(maybeList)
-              .subscribeOn(Schedulers.io())
-              .subscribe(new Consumer<DataSnapshot>() {
-                @Override public void accept(
-                    @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-                  Post post = (Post) dataSnapshot.getValue();
-                  postList.add(post);
-                }
-              }, new Consumer<Throwable>() {
-                @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-                    throws Exception {
-                  listener.onFailed(throwable.getMessage());
-                  Timber.e("accept(): failed => " + throwable.getMessage());
-                }
-              }, new Action() {
-                @Override public void run() throws Exception {
-                  listener.onSuccess(postList);
-                }
-              });
+      maybeSentPost().flatMapObservable(
+          new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
+            @Override public Observable<Maybe<DataSnapshot>> apply(
+                @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
+                throws Exception {
+              return Observable.fromIterable(maybes);
+            }
+          }).flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+        @Override public Observable<DataSnapshot> apply(
+            @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+            throws Exception {
+          return dataSnapshotMaybe.toObservable();
         }
-
-        @Override public void onCancelled(DatabaseError databaseError) {
-          listener.onFailed(databaseError.getMessage());
+      }).subscribe(new Consumer<DataSnapshot>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+            throws Exception {
+          Post post = dataSnapshot.getValue(Post.class);
+          postList.add(post);
+          Timber.d("accept(): datasnap => " + post.getTimestamp());
+        }
+      }, new Consumer<Throwable>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+            throws Exception {
+          listener.onFailed(throwable.getMessage());
+        }
+      }, new Action() {
+        @Override public void run() throws Exception {
+          listener.onSuccess(postList);
         }
       });
     } else {
       listener.onFailed("Can't get user key");
     }
+  }
+
+  private Maybe<List<Maybe<DataSnapshot>>> maybeSentPost() {
+    DatabaseReference reference = database.getReference("users").child(keyUserOwner.getKey());
+    final DatabaseReference postRef = database.getReference("posts");
+    //Get Post Key from sentpost
+    return RxFirebaseDatabase.observeSingleValueEvent(reference.child("sentpost"),
+        new Function<DataSnapshot, List<String>>() {
+          @Override public List<String> apply(
+              @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+            List<String> stringlist = new ArrayList<String>();
+            for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+              stringlist.add(datasnapshot.getKey());
+              Timber.d("apply() function : " + datasnapshot.getKey());
+            }
+            return stringlist;
+          }
+        }).map(new Function<List<String>, List<Maybe<DataSnapshot>>>() {
+      @Override public List<Maybe<DataSnapshot>> apply(
+          @io.reactivex.annotations.NonNull List<String> list) throws Exception {
+        List<Maybe<DataSnapshot>> maybeList = new ArrayList<Maybe<DataSnapshot>>();
+        for (String key : list) {
+          Maybe<DataSnapshot> dataSnapshotMaybe =
+              RxFirebaseDatabase.observeSingleValueEvent(postRef.child(key));
+          Timber.d("apply() map : " + key);
+          maybeList.add(dataSnapshotMaybe);
+        }
+        return maybeList;
+      }
+    });
+  }
+
+  private Maybe<List<Maybe<DataSnapshot>>> maybeReceivePost() {
+    DatabaseReference reference = database.getReference("users").child(keyUserOwner.getKey());
+    final DatabaseReference postRef = database.getReference("posts");
+    //Get Post Key from receivepost
+    return RxFirebaseDatabase.observeSingleValueEvent(reference.child("receivepost"),
+        new Function<DataSnapshot, List<String>>() {
+          @Override public List<String> apply(
+              @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+            List<String> stringlist = new ArrayList<String>();
+            for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+              stringlist.add(datasnapshot.getKey());
+              Timber.d("apply() function : " + datasnapshot.getKey());
+            }
+            return stringlist;
+          }
+        }).map(new Function<List<String>, List<Maybe<DataSnapshot>>>() {
+      @Override public List<Maybe<DataSnapshot>> apply(
+          @io.reactivex.annotations.NonNull List<String> list) throws Exception {
+        List<Maybe<DataSnapshot>> maybeList = new ArrayList<Maybe<DataSnapshot>>();
+        for (String key : list) {
+          Maybe<DataSnapshot> dataSnapshotMaybe =
+              RxFirebaseDatabase.observeSingleValueEvent(postRef.child(key));
+          Timber.d("apply() map : " + key);
+          maybeList.add(dataSnapshotMaybe);
+        }
+        return maybeList;
+      }
+    });
   }
 }
