@@ -33,6 +33,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -168,7 +169,7 @@ import timber.log.Timber;
     StorageReference refPriv = storage.getReference().child(privateFolderRef);
     Maybe<FileDownloadTask.TaskSnapshot> obs2 = RxFirebaseStorage.getFile(refPriv, privatekey);
 
-    Maybe.concat(obs1, obs2)
+    Maybe.concat(obs1, obs2).observeOn(AndroidSchedulers.mainThread())
         .subscribeOn(Schedulers.io())
         .subscribe(new Consumer<FileDownloadTask.TaskSnapshot>() {
           @Override public void accept(
@@ -450,7 +451,7 @@ import timber.log.Timber;
     listener.onProcess();
     if (keyUserOwner.getKey() != null) {
       Timber.d("getPostReceived(): started");
-      final List<Post> postList = new ArrayList<>();
+      final List<Post> PostList = new ArrayList<>();
 
       maybeReceivePost().flatMapObservable(
           new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
@@ -466,15 +467,25 @@ import timber.log.Timber;
                 throws Exception {
               return dataSnapshotMaybe.toObservable();
             }
-          })
+          }).flatMap(new Function<DataSnapshot, Observable<Post>>() {
+        @Override public Observable<Post> apply(
+            @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+          return Observable.just(dataSnapshot.getValue(Post.class));
+        }
+      }).toSortedList(new Comparator<Post>() {
+        @Override public int compare(Post post, Post t1) {
+          return (int) (t1.getTimestamp() - post.getTimestamp());
+        }
+      }).flatMapObservable(new Function<List<Post>, Observable<Post>>() {
+        @Override public Observable<Post> apply(
+            @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+          return Observable.fromIterable(postList);
+        }
+      })
           .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new Consumer<DataSnapshot>() {
-            @Override public void accept(
-                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-              Post post = dataSnapshot.getValue(Post.class);
-              postList.add(post);
-              Timber.d("accept(): datasnap => " + post.getTimestamp());
+          .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Post>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull Post post) throws Exception {
+          PostList.add(post);
             }
           }, new Consumer<Throwable>() {
             @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
@@ -483,9 +494,63 @@ import timber.log.Timber;
             }
           }, new Action() {
             @Override public void run() throws Exception {
-              Timber.d("run(): ok post =>" + postList.size());
-              listener.onSuccess(postList);
+              listener.onSuccess(PostList);
             }
+          });
+    } else {
+      listener.onFailed("Can't get user key");
+    }
+  }
+
+  @Override public void getPostSent(final GetListPostListener listener) {
+    listener.onProcess();
+    if (keyUserOwner.getKey() != null) {
+      Timber.d("getPostSent(): started");
+      final List<Post> PostList = new ArrayList<>();
+      maybeSentPost().flatMapObservable(
+          new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
+            @Override public Observable<Maybe<DataSnapshot>> apply(
+                @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
+                throws Exception {
+              return Observable.fromIterable(maybes);
+            }
+          })
+          .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
+            @Override public Observable<DataSnapshot> apply(
+                @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+                throws Exception {
+              return dataSnapshotMaybe.toObservable();
+            }
+          }).flatMap(new Function<DataSnapshot, Observable<Post>>() {
+        @Override public Observable<Post> apply(
+            @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+          return Observable.just(dataSnapshot.getValue(Post.class));
+        }
+      }).toSortedList(new Comparator<Post>() {
+        @Override public int compare(Post post, Post t1) {
+          return (int) (t1.getTimestamp() - post.getTimestamp());
+        }
+      }).flatMapObservable(new Function<List<Post>, Observable<Post>>() {
+        @Override public Observable<Post> apply(
+            @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+          return Observable.fromIterable(postList);
+        }
+      })
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Post>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull Post post)
+                throws Exception {
+          PostList.add(post);
+            }
+      }, new Consumer<Throwable>() {
+        @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+            throws Exception {
+          listener.onFailed(throwable.getMessage());
+            }
+      }, new Action() {
+        @Override public void run() throws Exception {
+          listener.onSuccess(PostList);
+        }
           });
     } else {
       listener.onFailed("Can't get user key");
@@ -495,7 +560,7 @@ import timber.log.Timber;
   @Override public void getAllPost(final GetListPostListener listener) {
     listener.onProcess();
     Timber.d("getAllPost(): started");
-    final List<Post> postList = new ArrayList<>();
+    final List<Post> PostList = new ArrayList<>();
     Maybe.concat(maybeReceivePost(), maybeSentPost())
         .flatMapIterable(new Function<List<Maybe<DataSnapshot>>, Iterable<Maybe<DataSnapshot>>>() {
           @Override public Iterable<Maybe<DataSnapshot>> apply(
@@ -511,12 +576,29 @@ import timber.log.Timber;
             return dataSnapshotMaybe.toObservable();
           }
         })
-        .subscribe(new Consumer<DataSnapshot>() {
-          @Override public void accept(@io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+        .flatMap(new Function<DataSnapshot, Observable<Post>>() {
+          @Override public Observable<Post> apply(
+              @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+            return Observable.just(dataSnapshot.getValue(Post.class));
+          }
+        })
+        .toSortedList(new Comparator<Post>() {
+          @Override public int compare(Post post, Post t1) {
+            return (int) (t1.getTimestamp() - post.getTimestamp());
+          }
+        })
+        .flatMapObservable(new Function<List<Post>, Observable<Post>>() {
+          @Override public Observable<Post> apply(
+              @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+            return Observable.fromIterable(postList);
+          }
+        })
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<Post>() {
+          @Override public void accept(@io.reactivex.annotations.NonNull Post post)
               throws Exception {
-            Post post = dataSnapshot.getValue(Post.class);
-            postList.add(post);
-            Timber.d("accept(): datasnap => " + post.getTimestamp());
+            PostList.add(post);
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
@@ -525,55 +607,9 @@ import timber.log.Timber;
           }
         }, new Action() {
           @Override public void run() throws Exception {
-            Timber.d("run(): ok post =>" + postList.size());
-            listener.onSuccess(postList);
+            listener.onSuccess(PostList);
           }
         });
-  }
-
-  @Override public void getPostSent(final GetListPostListener listener) {
-    listener.onProcess();
-    if (keyUserOwner.getKey() != null) {
-      Timber.d("getPostSent(): started");
-      final List<Post> postList = new ArrayList<>();
-
-      maybeSentPost().flatMapObservable(
-          new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
-            @Override public Observable<Maybe<DataSnapshot>> apply(
-                @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
-                throws Exception {
-              return Observable.fromIterable(maybes);
-            }
-          })
-          .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
-            @Override public Observable<DataSnapshot> apply(
-                @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
-                throws Exception {
-              return dataSnapshotMaybe.toObservable();
-            }
-          })
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new Consumer<DataSnapshot>() {
-            @Override public void accept(
-                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-              Post post = dataSnapshot.getValue(Post.class);
-              postList.add(post);
-              Timber.d("accept(): datasnap => " + post.getTimestamp());
-            }
-          }, new Consumer<Throwable>() {
-            @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-                throws Exception {
-              listener.onFailed(throwable.getMessage());
-            }
-          }, new Action() {
-            @Override public void run() throws Exception {
-              listener.onSuccess(postList);
-            }
-          });
-    } else {
-      listener.onFailed("Can't get user key");
-    }
   }
 
   private Maybe<List<Maybe<DataSnapshot>>> maybeSentPost() {

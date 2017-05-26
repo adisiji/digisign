@@ -102,7 +102,6 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     etEmail.setAdapter(adapter);
     etEmail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Timber.d("onItemClick(): pos => " + i);
         mPresenter.getUserName(i);
       }
     });

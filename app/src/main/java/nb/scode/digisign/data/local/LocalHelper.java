@@ -6,7 +6,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -217,11 +224,14 @@ import timber.log.Timber;
         saveFile(privKey, PRIVATE_KEY);
         saveFile(publicKey, PUBLIC_KEY);
       }
-    }).subscribe(new Action() {
-      @Override public void run() throws Exception {
-        listener.onFinished();
-      }
-    });
+    })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeOn(Schedulers.computation())
+        .subscribe(new Action() {
+          @Override public void run() throws Exception {
+            listener.onFinished();
+          }
+        });
   }
 
   @Override public File getPublicKey() {
@@ -456,33 +466,43 @@ import timber.log.Timber;
     unZipFile(new File(dest), targetunzip, listener);
   }
 
-  @Override public void unZipFile(File zipFile, File targetDir, CommonListener listener) {
-    try {
-      listener.onProcess();
-      ZipInputStream zis =
-          new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
-      ZipEntry ze;
-      int count;
-      byte[] buffer = new byte[8192];
-      while ((ze = zis.getNextEntry()) != null) {
-        File file = new File(targetDir, ze.getName());
-        File dir = ze.isDirectory() ? file : file.getParentFile();
-        if (!dir.isDirectory() && !dir.mkdirs()) {
-          throw new FileNotFoundException("Failed to ensure directory: " + dir.getAbsolutePath());
+  @Override public void unZipFile(final File zipFile, final File targetDir,
+      final CommonListener listener) {
+    Completable.fromAction(new Action() {
+      @Override public void run() throws Exception {
+        listener.onProcess();
+        ZipInputStream zis =
+            new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
+        ZipEntry ze;
+        int count;
+        byte[] buffer = new byte[8192];
+        while ((ze = zis.getNextEntry()) != null) {
+          File file = new File(targetDir, ze.getName());
+          File dir = ze.isDirectory() ? file : file.getParentFile();
+          if (!dir.isDirectory() && !dir.mkdirs()) {
+            throw new FileNotFoundException("Failed to ensure directory: " + dir.getAbsolutePath());
+          }
+          if (ze.isDirectory()) continue;
+          FileOutputStream fout = new FileOutputStream(file);
+          while ((count = zis.read(buffer)) != -1) {
+            fout.write(buffer, 0, count);
+          }
+          fout.close();
         }
-        if (ze.isDirectory()) continue;
-        FileOutputStream fout = new FileOutputStream(file);
-        while ((count = zis.read(buffer)) != -1) {
-          fout.write(buffer, 0, count);
-        }
-        fout.close();
+        zis.close();
       }
-      zis.close();
-      listener.onFinished();
-    } catch (IOException e) {
-      e.printStackTrace();
-      listener.onError(e.getMessage());
-    }
+    })
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Action() {
+          @Override public void run() throws Exception {
+            listener.onFinished();
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(@NonNull Throwable throwable) throws Exception {
+            listener.onError(throwable.getMessage());
+          }
+        });
   }
 
   @Override public File getFileToSend() {
@@ -500,28 +520,38 @@ import timber.log.Timber;
   }
 
   @Override public void verifySignature(File pubkey, File sigFile, File oriFile,
-      CommonListener listener) {
-    byte[] pubBytes = getBytesFromFile(pubkey);
-    byte[] signBytes = getBytesFromFile(sigFile);
-    byte[] oriBytes = getBytesFromFile(oriFile);
-
-    try {
-      Signature signature = Signature.getInstance(SIGN_INSTANCE);
-      KeyFactory kf = KeyFactory.getInstance("EC");
-      X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pubBytes);
-      PublicKey publicKey = kf.generatePublic(pubKeySpec);
-      // Prepare signature for verify
-      signature.initVerify(publicKey);
-      signature.update(oriBytes);
-      boolean x = signature.verify(signBytes);
-      if (x) {
-        listener.onFinished();
-      } else {
-        listener.onError("Signature not valid");
+      final CommonListener listener) {
+    final byte[] pubBytes = getBytesFromFile(pubkey);
+    final byte[] signBytes = getBytesFromFile(sigFile);
+    final byte[] oriBytes = getBytesFromFile(oriFile);
+    Observable.create(new ObservableOnSubscribe<Boolean>() {
+      @Override public void subscribe(@NonNull ObservableEmitter<Boolean> e) throws Exception {
+        Signature signature = Signature.getInstance(SIGN_INSTANCE);
+        KeyFactory kf = KeyFactory.getInstance("EC");
+        X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pubBytes);
+        PublicKey publicKey = kf.generatePublic(pubKeySpec);
+        // Prepare signature for verify
+        signature.initVerify(publicKey);
+        signature.update(oriBytes);
+        boolean x = signature.verify(signBytes);
+        e.onNext(x);
+        e.onComplete();
       }
-    } catch (NoSuchAlgorithmException | SignatureException | InvalidKeySpecException | InvalidKeyException e) {
-      e.printStackTrace();
-      listener.onError(e.getMessage());
-    }
+    })
+        .subscribeOn(Schedulers.computation())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<Boolean>() {
+          @Override public void accept(@NonNull Boolean aBoolean) throws Exception {
+            if (aBoolean) {
+              listener.onFinished();
+            } else {
+              listener.onError("Can't verify this Doc");
+            }
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(@NonNull Throwable throwable) throws Exception {
+            listener.onError(throwable.getMessage());
+          }
+        });
   }
 }

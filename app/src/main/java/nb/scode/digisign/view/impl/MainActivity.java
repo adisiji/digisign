@@ -57,8 +57,6 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   @BindView(R.id.nvView) NavigationView nvDrawer;
   private ActionBarDrawerToggle drawerToggle;
   private ProgressDialog progressDialog;
-  private Spinner navigationSpinner;
-  private SpinnerAdapter spinnerAdapter;
   private Boolean isFromAllDoc = false;
   private View view;
 
@@ -96,11 +94,12 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   }
 
   private void setupSpinner() {
-    spinnerAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.category,
-        R.layout.spinner_dropdown_item);
+    SpinnerAdapter spinnerAdapter =
+        ArrayAdapter.createFromResource(getApplicationContext(), R.array.category,
+            R.layout.spinner_dropdown_item);
     LayoutInflater inflater = LayoutInflater.from(this);
     view = inflater.inflate(R.layout.toolbar_all_doc, null);
-    navigationSpinner = (Spinner) view.findViewById(R.id.spinner);
+    Spinner navigationSpinner = (Spinner) view.findViewById(R.id.spinner);
     navigationSpinner.setAdapter(spinnerAdapter);
     navigationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
