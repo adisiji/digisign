@@ -1,5 +1,6 @@
 package nb.scode.digisign.view.impl;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,12 +9,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import java.util.List;
 import javax.inject.Inject;
-import mehdi.sakout.fancybuttons.FancyButton;
 import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AddSignerViewModule;
 import nb.scode.digisign.injection.AppComponent;
@@ -31,13 +32,12 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     implements AddSignerView {
   @Inject PresenterFactory<AddSignerPresenter> mPresenterFactory;
   @BindView(R.id.toolbar) Toolbar toolbar;
-  @BindView(R.id.btn_other_signature) FancyButton btnOther;
-  @BindView(R.id.btn_self_signature) FancyButton btnSelf;
   @BindView(R.id.et_email_signer) AutoCompleteTextView etEmail;
   @BindView(R.id.et_name_signer) EditText etName;
   @BindView(R.id.et_desc_doc) EditText etDesc;
   private String uri;
   private String filenamez;
+  private ProgressDialog progressDialog;
 
   // Your presenter is available using the mPresenter variable
 
@@ -55,7 +55,15 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     }
     setSupportActionBar(toolbar);
     setupToolbar(getString(R.string.title_page_add_signer));
+    setupLoading();
     // Do not call mPresenter from here, it will be null! Wait for onStart or onPostCreate.
+  }
+
+  private void setupLoading() {
+    progressDialog = new ProgressDialog(this);
+    progressDialog.setIndeterminate(true);
+    progressDialog.setMessage("Loading...");
+    progressDialog.setCancelable(false);
   }
 
   @Override public void onBackPressed() {
@@ -73,20 +81,6 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
 
   @NonNull @Override protected PresenterFactory<AddSignerPresenter> getPresenterFactory() {
     return mPresenterFactory;
-  }
-
-  @OnClick(R.id.btn_self_signature) void showSelfSign() {
-    btnSelf.setVisibility(View.GONE);
-    btnOther.setVisibility(View.VISIBLE);
-    etEmail.setHint(getString(R.string.hint_receiver_email));
-    etName.setHint(getString(R.string.hint_receiver_name));
-  }
-
-  @OnClick(R.id.btn_other_signature) void showOther() {
-    btnOther.setVisibility(View.GONE);
-    btnSelf.setVisibility(View.VISIBLE);
-    etEmail.setHint(getString(R.string.hint_signer_email));
-    etName.setHint(getString(R.string.hint_signer_name));
   }
 
   @OnClick(R.id.btn_send_doc) void sendDoc() {
@@ -138,7 +132,21 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     return filenamez;
   }
 
-  @Override public boolean isOwner() {
-    return (btnOther.getVisibility() == View.VISIBLE);
+  @Override public void showLoading() {
+    progressDialog.show();
+  }
+
+  @Override public void hideLoading() {
+    progressDialog.dismiss();
+  }
+
+  @Override public void showToast(String message) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override public void gotoMain() {
+    Intent intent = new Intent(this, MainActivity.class);
+    startActivity(intent);
+    finish();
   }
 }

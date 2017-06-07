@@ -2,20 +2,20 @@ package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
 import javax.inject.Inject;
-import nb.scode.digisign.interactor.SentFilesInteractor;
-import nb.scode.digisign.presenter.SentFilesPresenter;
-import nb.scode.digisign.view.SentFilesView;
+import nb.scode.digisign.interactor.SettingsInteractor;
+import nb.scode.digisign.presenter.SettingsPresenter;
+import nb.scode.digisign.view.SettingsView;
 
-public final class SentFilesPresenterImpl extends BasePresenterImpl<SentFilesView>
-    implements SentFilesPresenter {
+public final class SettingsPresenterImpl extends BasePresenterImpl<SettingsView>
+    implements SettingsPresenter {
   /**
    * The interactor
    */
-  @NonNull private final SentFilesInteractor mInteractor;
+  @NonNull private final SettingsInteractor mInteractor;
 
   // The view is available using the mView variable
 
-  @Inject public SentFilesPresenterImpl(@NonNull SentFilesInteractor interactor) {
+  @Inject public SettingsPresenterImpl(@NonNull SettingsInteractor interactor) {
     mInteractor = interactor;
   }
 

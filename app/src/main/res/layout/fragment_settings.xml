@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".view.impl.SettingsFragment"
+    >
+
+  <TextView
+      android:id="@+id/tv_title_notif"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Document Notification"
+      android:textColor="@color/dark_blue"
+      android:textStyle="bold"
+      />
+
+  <TextView
+      android:id="@+id/tv_title_vibrate"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="Vibrate"
+      android:textColor="@android:color/black"
+      app:layout_constraintTop_toBottomOf="@id/tv_title_notif"
+      />
+
+  <TextView
+      android:id="@+id/tv_setting_vibrate"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="8dp"
+      android:text="Default"
+      app:layout_constraintBaseline_toBaselineOf="@id/tv_title_vibrate"
+      app:layout_constraintLeft_toRightOf="@id/tv_title_vibrate"
+      />
+
+  <TextView
+      android:id="@+id/tv_title_cache"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="Document Cache"
+      android:textColor="@color/dark_blue"
+      android:textStyle="bold"
+      app:layout_constraintTop_toBottomOf="@id/tv_setting_vibrate"
+      />
+
+  <TextView
+      android:id="@+id/tv_cache_size"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="Cache Size"
+      android:textColor="@android:color/black"
+      app:layout_constraintTop_toBottomOf="@id/tv_title_cache"
+      />
+
+  <TextView
+      android:id="@+id/content_cache_size"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:text="99 MB"
+      app:layout_constraintBaseline_toBaselineOf="@id/tv_cache_size"
+      app:layout_constraintLeft_toRightOf="@id/tv_cache_size"
+      />
+
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_clear_cache"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="12dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:paddingTop="10dp"
+      app:layout_constraintBottom_toBottomOf="@id/tv_cache_size"
+      app:layout_constraintLeft_toRightOf="@id/content_cache_size"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="@id/tv_cache_size"
+      fancy:fb_borderColor="#FFFFFF"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="#3b5998"
+      fancy:fb_focusColor="#5474b8"
+      fancy:fb_fontIconResource="&#xf1f8;"
+      fancy:fb_iconPosition="left"
+      fancy:fb_radius="5dp"
+      fancy:fb_text="CLEAR CACHE"
+      fancy:fb_textColor="#FFFFFF"
+      />
+
+  <TextView
+      android:id="@+id/tv_title_credits"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="Credits"
+      android:textColor="@color/dark_blue"
+      android:textStyle="bold"
+      app:layout_constraintTop_toBottomOf="@id/btn_clear_cache"
+      />
+
+  <WebView
+      android:id="@+id/wv_credits"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_marginTop="4dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tv_title_credits"
+      />
+
+</android.support.constraint.ConstraintLayout>

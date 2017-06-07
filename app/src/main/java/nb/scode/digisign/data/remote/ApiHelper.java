@@ -467,25 +467,30 @@ import timber.log.Timber;
                 throws Exception {
               return dataSnapshotMaybe.toObservable();
             }
-          }).flatMap(new Function<DataSnapshot, Observable<Post>>() {
-        @Override public Observable<Post> apply(
-            @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-          return Observable.just(dataSnapshot.getValue(Post.class));
-        }
-      }).toSortedList(new Comparator<Post>() {
-        @Override public int compare(Post post, Post t1) {
-          return (int) (t1.getTimestamp() - post.getTimestamp());
-        }
-      }).flatMapObservable(new Function<List<Post>, Observable<Post>>() {
-        @Override public Observable<Post> apply(
-            @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
-          return Observable.fromIterable(postList);
-        }
-      })
+          })
+          .flatMap(new Function<DataSnapshot, Observable<Post>>() {
+            @Override public Observable<Post> apply(
+                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+              return Observable.just(dataSnapshot.getValue(Post.class));
+            }
+          })
+          .toSortedList(new Comparator<Post>() {
+            @Override public int compare(Post post, Post t1) {
+              return (int) (t1.getTimestamp() - post.getTimestamp());
+            }
+          })
+          .flatMapObservable(new Function<List<Post>, Observable<Post>>() {
+            @Override public Observable<Post> apply(
+                @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+              return Observable.fromIterable(postList);
+            }
+          })
           .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Post>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull Post post) throws Exception {
-          PostList.add(post);
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Consumer<Post>() {
+            @Override public void accept(@io.reactivex.annotations.NonNull Post post)
+                throws Exception {
+              PostList.add(post);
             }
           }, new Consumer<Throwable>() {
             @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
@@ -521,36 +526,40 @@ import timber.log.Timber;
                 throws Exception {
               return dataSnapshotMaybe.toObservable();
             }
-          }).flatMap(new Function<DataSnapshot, Observable<Post>>() {
-        @Override public Observable<Post> apply(
-            @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
-          return Observable.just(dataSnapshot.getValue(Post.class));
-        }
-      }).toSortedList(new Comparator<Post>() {
-        @Override public int compare(Post post, Post t1) {
-          return (int) (t1.getTimestamp() - post.getTimestamp());
-        }
-      }).flatMapObservable(new Function<List<Post>, Observable<Post>>() {
-        @Override public Observable<Post> apply(
-            @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
-          return Observable.fromIterable(postList);
-        }
-      })
+          })
+          .flatMap(new Function<DataSnapshot, Observable<Post>>() {
+            @Override public Observable<Post> apply(
+                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+              return Observable.just(dataSnapshot.getValue(Post.class));
+            }
+          })
+          .toSortedList(new Comparator<Post>() {
+            @Override public int compare(Post post, Post t1) {
+              return (int) (t1.getTimestamp() - post.getTimestamp());
+            }
+          })
+          .flatMapObservable(new Function<List<Post>, Observable<Post>>() {
+            @Override public Observable<Post> apply(
+                @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+              return Observable.fromIterable(postList);
+            }
+          })
           .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Post>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull Post post)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Consumer<Post>() {
+            @Override public void accept(@io.reactivex.annotations.NonNull Post post)
                 throws Exception {
-          PostList.add(post);
+              PostList.add(post);
             }
-      }, new Consumer<Throwable>() {
-        @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-            throws Exception {
-          listener.onFailed(throwable.getMessage());
+          }, new Consumer<Throwable>() {
+            @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+                throws Exception {
+              listener.onFailed(throwable.getMessage());
             }
-      }, new Action() {
-        @Override public void run() throws Exception {
-          listener.onSuccess(PostList);
-        }
+          }, new Action() {
+            @Override public void run() throws Exception {
+              listener.onSuccess(PostList);
+            }
           });
     } else {
       listener.onFailed("Can't get user key");

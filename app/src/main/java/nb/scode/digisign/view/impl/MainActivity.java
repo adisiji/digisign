@@ -181,7 +181,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
         pos = 1;
         break;
       case R.id.nav_third_fragment:
-        fragmentClass = SentFilesFragment.class;
+        fragmentClass = SettingsFragment.class;
         if (isFromAllDoc) {
           toolbar.removeView(view);
         }

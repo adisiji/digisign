@@ -1,8 +1,12 @@
 package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import nb.scode.digisign.data.remote.FireModel.KeyUser;
 import nb.scode.digisign.interactor.AddSignerInteractor;
@@ -71,11 +75,8 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
   }
 
   @Override public void sendDoc() {
-    if (mView.isOwner()) {
-      sendDocWithSign();
-    } else {
-      Timber.d("sendDoc(): now owner, send to other");
-    }
+    mView.showLoading();
+    sendDocWithSign();
   }
 
   @Override public void sendDocWithSign() {
@@ -91,6 +92,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
       }
 
       @Override public void onFailed(String message) {
+        mView.showToast(message);
         Timber.e("onFailed(): " + message);
       }
     });
@@ -109,6 +111,8 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
       @Override public void onFailed(String message) {
         Timber.e("onFailed(): FIAASl");
+        mView.hideLoading();
+        mView.showToast(message);
       }
     });
   }
@@ -139,6 +143,16 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
             }
 
             @Override public void onSuccess() {
+              mView.hideLoading();
+              mView.showToast("Doc has been sent");
+              Single.timer(1500, TimeUnit.MILLISECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(new Consumer<Long>() {
+                    @Override public void accept(@io.reactivex.annotations.NonNull Long aLong)
+                        throws Exception {
+                      mView.gotoMain();
+                    }
+                  });
               Timber.d("onSuccess(): post okay");
             }
 

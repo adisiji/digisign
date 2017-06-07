@@ -21,6 +21,12 @@ import java.util.List;
 
   String getFilename();
 
-  boolean isOwner();
+  void showLoading();
+
+  void hideLoading();
+
+  void showToast(String message);
+
+  void gotoMain();
 
 }
