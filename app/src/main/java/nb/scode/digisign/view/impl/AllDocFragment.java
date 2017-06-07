@@ -69,6 +69,11 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     // Do not call mPresenter from here, it will be null! Wait for onStart
   }
 
+  @Override public void onStart() {
+    super.onStart();
+    mPresenter.getAllPost();
+  }
+
   @Subscribe(threadMode = ThreadMode.MAIN) public void MenuEvent(SpinnerMenu spinnerMenu) {
     int i = spinnerMenu.getMenu();
     switch (i) {
