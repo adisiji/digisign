@@ -19,11 +19,13 @@
 
 
     <ImageView
+        android:id="@+id/logo_header"
         android:layout_width="@dimen/logo_w_h"
         android:layout_height="@dimen/logo_w_h"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
         android:src="@drawable/logo_ic"
+        android:transitionName="logo_header"
         />
 
     <android.support.design.widget.TextInputLayout
@@ -42,6 +44,7 @@
           android:inputType="textEmailAddress"
           android:textColor="@android:color/white"
           android:textColorHint="@android:color/white"
+          android:transitionName="email"
           />
     </android.support.design.widget.TextInputLayout>
 
@@ -61,6 +64,7 @@
           android:inputType="textPassword"
           android:textColor="@android:color/white"
           android:textColorHint="@android:color/white"
+          android:transitionName="password"
           />
     </android.support.design.widget.TextInputLayout>
 

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 25
+  compileSdkVersion 26
   buildToolsVersion "25.0.3"
   defaultConfig {
     applicationId "nb.scode.digisign"
@@ -18,6 +18,43 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
+  productFlavors {
+    prod {
+      applicationIdSuffix ".prod"
+      versionCode 1
+      versionName "1.0.0"
+    }
+    dev {
+      applicationIdSuffix ".dev"
+      versionCode 1
+      versionName "Beta 1"
+    }
+  }
+
+  applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+      def project = "digisign"
+      def SEP = "_"
+      def flavor = variant.productFlavors[0].name
+      def buildType = variant.variantData.variantConfiguration.buildType.name
+      def version = variant.versionName
+      def date = new Date();
+      def formattedDate = date.format('ddMMyy_HHmm')
+
+      def newApkName = project + SEP +
+          flavor +
+          SEP +
+          buildType +
+          SEP +
+          version +
+          SEP +
+          formattedDate +
+          ".apk"
+
+      output.outputFile = new File(output.outputFile.parent, newApkName)
+    }
+  }
 }
 
 ext {
@@ -27,16 +64,14 @@ ext {
   glideVersion = '3.7.0'
   guavaVersion = '20.0'
   itextVersion = '5.5.11'
-  jsoupVersion = '1.10.2'
   leakVersion = '1.5'
   okhtppVersion = '3.6.0'
-  playServicesVersion = '10.2.6'
+  playServicesVersion = '11.0.1'
   retrofitVersion = '2.2.0'
   rxBindingVersion = '2.0.0'
   rxjavaVersion = '2.0.9'
   securePrefVersion = '0.1.4'
-  spongyVersion = '1.56.0.0'
-  supportLibraryVersion = '25.3.1'
+  supportLibraryVersion = '26.0.0-beta2'
   timberVersion = '4.5.1'
 }
 

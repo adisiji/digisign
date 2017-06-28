@@ -150,7 +150,7 @@ import timber.log.Timber;
   }
 
   @Override public String getEmailUser() {
-    return user.getEmail();
+    return (user != null) ? user.getEmail() : null;
   }
 
   @Override public void downloadKeyPair(File publickey, File privatekey,
