@@ -114,10 +114,6 @@ import timber.log.Timber;
               getFirebaseToken();
               user = userx;
               listener.onSuccess();
-            } else if (userx != null && !userx.isEmailVerified()) {
-              listener.onFailed("Please verify your email first");
-            } else {
-              listener.onFailed("Please check your username/password");
             }
           }
         })

@@ -11,7 +11,4 @@ public final class HomeInteractorImpl implements HomeInteractor {
     this.dataTask = dataTask;
   }
 
-  @Override public void getCert(final GetCertListener listener) {
-
-  }
 }

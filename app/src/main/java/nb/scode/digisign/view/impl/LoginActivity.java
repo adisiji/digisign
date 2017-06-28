@@ -103,8 +103,6 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
       GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
       if (result.isSuccess()) {
         mPresenter.firebaseAuthWithGoogle(result.getSignInAccount());
-      } else {
-        showToast("Failed to use this account");
       }
     }
   }

@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import nb.scode.digisign.interactor.HomeInteractor;
 import nb.scode.digisign.presenter.HomePresenter;
 import nb.scode.digisign.view.HomeView;
-import timber.log.Timber;
 
 public final class HomePresenterImpl extends BasePresenterImpl<HomeView> implements HomePresenter {
   /**
@@ -41,18 +40,6 @@ public final class HomePresenterImpl extends BasePresenterImpl<HomeView> impleme
   }
 
   @Override public void getCertificate() {
-    mInteractor.getCert(new HomeInteractor.GetCertListener() {
-      @Override public void onProcess() {
-        Timber.d("onProcess(): getCertificate");
-      }
 
-      @Override public void onFinished() {
-        Timber.d("onSuccess(): getCertificate");
-      }
-
-      @Override public void onError(String message) {
-
-      }
-    });
   }
 }

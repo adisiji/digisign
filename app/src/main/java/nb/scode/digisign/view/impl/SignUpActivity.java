@@ -59,6 +59,12 @@ public final class SignUpActivity extends BaseActivity<SignUpPresenter, SignUpVi
     mPresenter.register();
   }
 
+  @OnClick(R.id.btn_login) void login() {
+    Intent intent = new Intent(this, LoginActivity.class);
+    startActivity(intent);
+    finish();
+  }
+
   @Override public void showProgress() {
     progressBar.setVisibility(View.VISIBLE);
   }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,12 +23,14 @@
         android:layout_height="@dimen/logo_w_h"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/logo_ic"
         />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:theme="@style/InputLayout"
+        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
         >
 
       <EditText
@@ -45,6 +48,8 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:theme="@style/InputLayout"
+        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
         >
 
       <EditText
