@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.transition.Slide;
 import android.util.Pair;
 import android.view.Gravity;
@@ -35,11 +36,11 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
     implements LoginView, GoogleApiClient.OnConnectionFailedListener {
   private final int RC_SIGN_IN = 9909;
   @Inject PresenterFactory<LoginPresenter> mPresenterFactory;
-  @BindView(R.id.sign_in_google_button) SignInButton signInButton;
-  @BindView(R.id.email) EditText etEmail;
-  @BindView(R.id.password) EditText etPassword;
-  @BindView(R.id.progressBar) ProgressBar progressBar;
-  @BindView(R.id.logo_header) View logo;
+  @Nullable @BindView(R.id.sign_in_google_button) SignInButton signInButton;
+  @Nullable @BindView(R.id.email) EditText etEmail;
+  @Nullable @BindView(R.id.password) EditText etPassword;
+  @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+  @Nullable @BindView(R.id.logo_header) View logo;
   private View vEmail;
   private View vPass;
   private GoogleApiClient googleApiClient;

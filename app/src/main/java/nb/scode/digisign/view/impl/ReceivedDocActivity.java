@@ -7,6 +7,7 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -32,9 +33,9 @@ import timber.log.Timber;
 public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter, ReceivedDocView>
     implements ReceivedDocView, InfoFile.CallbackInfoFile {
   @Inject PresenterFactory<ReceivedDocPresenter> mPresenterFactory;
-  @BindView(R.id.status_verified) TextView tvStatus;
-  @BindView(R.id.iv_file_preview) ImageView ivPreview;
-  @BindView(R.id.toolbar) Toolbar toolbar;
+  @Nullable @BindView(R.id.status_verified) TextView tvStatus;
+  @Nullable @BindView(R.id.iv_file_preview) ImageView ivPreview;
+  @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
   private Intent intent;
   private ProgressDialog progressDialog;
   /**
@@ -69,7 +70,7 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
     return true;
   }
 
-  @Override public boolean onOptionsItemSelected(MenuItem item) {
+  @Override public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
         onBackPressed();

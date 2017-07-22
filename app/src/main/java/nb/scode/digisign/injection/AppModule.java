@@ -33,7 +33,7 @@ import nb.scode.digisign.data.remote.ApiTask;
    *
    * @return the context
    */
-  @Provides @Singleton Context provideAppContext() {
+  @NonNull @Provides @Singleton Context provideAppContext() {
     return mApp;
   }
 
@@ -42,7 +42,7 @@ import nb.scode.digisign.data.remote.ApiTask;
    *
    * @return the app
    */
-  @Provides @Singleton App provideApp() {
+  @NonNull @Provides @Singleton App provideApp() {
     return mApp;
   }
 

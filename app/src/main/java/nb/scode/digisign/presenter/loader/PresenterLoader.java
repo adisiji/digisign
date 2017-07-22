@@ -21,7 +21,7 @@ public final class PresenterLoader<T extends BasePresenter> extends Loader<T> {
 
   // ---------------------------------------->
 
-  public PresenterLoader(Context context, @NonNull PresenterFactory<T> presenterFactory) {
+  public PresenterLoader(@NonNull Context context, @NonNull PresenterFactory<T> presenterFactory) {
     super(context);
 
     mPresenterFactory = presenterFactory;

@@ -1,6 +1,7 @@
 package nb.scode.digisign.custom_font;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
@@ -10,22 +11,22 @@ import android.util.AttributeSet;
 
 public class TextViewMagneto extends AppCompatTextView {
 
-  public TextViewMagneto(Context context, AttributeSet attrs, int defStyle) {
+  public TextViewMagneto(@NonNull Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
     applyFont(context, attrs);
   }
 
-  public TextViewMagneto(Context context, AttributeSet attrs) {
+  public TextViewMagneto(@NonNull Context context, AttributeSet attrs) {
     super(context, attrs);
     applyFont(context, attrs);
   }
 
-  public TextViewMagneto(Context context) {
+  public TextViewMagneto(@NonNull Context context) {
     super(context);
     applyFont(context, null);
   }
 
-  private void applyFont(Context context, AttributeSet attrs) {
+  private void applyFont(@NonNull Context context, AttributeSet attrs) {
     setTypeface(FontCache.get("magneto_bold.ttf", context));
   }
 }

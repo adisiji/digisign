@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor.impl;
 
+import android.support.annotation.NonNull;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
 import nb.scode.digisign.data.remote.ApiTask;
@@ -13,7 +14,8 @@ public final class SignUpInteractorImpl implements SignUpInteractor {
     this.dataTask = dataTask;
   }
 
-  @Override public void register(String email, String pass, final CommonDListener dInteractor) {
+  @Override public void register(String email, String pass,
+      @NonNull final CommonDListener dInteractor) {
     dataTask.register(email, pass, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         dInteractor.onProccess();

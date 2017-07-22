@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.transition.Slide;
 import android.util.Pair;
 import android.view.Gravity;
@@ -26,10 +27,10 @@ import nb.scode.digisign.view.SignUpView;
 public final class SignUpActivity extends BaseActivity<SignUpPresenter, SignUpView>
     implements SignUpView {
   @Inject PresenterFactory<SignUpPresenter> mPresenterFactory;
-  @BindView(R.id.email) EditText etEmail;
-  @BindView(R.id.password) EditText etPassword;
-  @BindView(R.id.progressBar) ProgressBar progressBar;
-  @BindView(R.id.logo_header) View logo;
+  @Nullable @BindView(R.id.email) EditText etEmail;
+  @Nullable @BindView(R.id.password) EditText etPassword;
+  @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+  @Nullable @BindView(R.id.logo_header) View logo;
   private View vEmail;
   private View vPass;
   // Your presenter is available using the mPresenter variable

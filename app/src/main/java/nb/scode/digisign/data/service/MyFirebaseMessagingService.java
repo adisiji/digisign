@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -26,7 +27,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
    * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
    */
   // [START receive_message]
-  @Override public void onMessageReceived(RemoteMessage remoteMessage) {
+  @Override public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     // [START_EXCLUDE]
     // There are two types of messages data messages and notification messages. Data messages are handled
     // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
@@ -60,7 +61,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
    * @param notification contain message notification payload
    * @param data FCM data contain message data payload
    */
-  private void sendNotification(RemoteMessage.Notification notification, Map<String, String> data) {
+  private void sendNotification(@NonNull RemoteMessage.Notification notification,
+      @NonNull Map<String, String> data) {
     Intent intent = new Intent(this, ReceivedDocActivity.class);
     String desc = data.get("desc");
     String link = data.get("linkDownload");

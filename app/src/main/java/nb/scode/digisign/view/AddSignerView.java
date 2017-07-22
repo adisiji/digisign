@@ -1,5 +1,6 @@
 package nb.scode.digisign.view;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import java.util.List;
 
@@ -13,11 +14,11 @@ import java.util.List;
 
   String getPdfUri();
 
-  String getEmail();
+  @NonNull String getEmail();
 
-  String getName();
+  @NonNull String getName();
 
-  String getDesc();
+  @NonNull String getDesc();
 
   String getFilename();
 

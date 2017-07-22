@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor.impl;
 
+import android.support.annotation.NonNull;
 import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
@@ -14,7 +15,7 @@ public final class PrepSignInteractorImpl implements PrepSignInteractor {
     this.dataTask = dataTask;
   }
 
-  @Override public void getFilePdf(String uripdf, final GetPdfListener listener) {
+  @Override public void getFilePdf(String uripdf, @NonNull final GetPdfListener listener) {
     dataTask.getPrepFilePdf(uripdf, new LocalTask.ListenerPrepPdf() {
       @Override public void onComplete(File file) {
         listener.onComplete(file);

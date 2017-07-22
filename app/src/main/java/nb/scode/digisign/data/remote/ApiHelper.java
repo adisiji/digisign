@@ -2,6 +2,7 @@ package nb.scode.digisign.data.remote;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,11 +52,11 @@ import timber.log.Timber;
 
   public static final String USER_STORAGE_REF = "/users/";
   private FirebaseAuth auth;
-  private FirebaseUser user;
+  @Nullable private FirebaseUser user;
   private FirebaseDatabase database;
   private FirebaseStorage storage;
-  private List<KeyUser> keyUserList = new ArrayList<>();
-  private KeyUser keyUserOwner;
+  @NonNull private List<KeyUser> keyUserList = new ArrayList<>();
+  @Nullable private KeyUser keyUserOwner;
 
   /**
    * Instantiates a new Api helper.
@@ -66,7 +67,8 @@ import timber.log.Timber;
     storage = FirebaseStorage.getInstance();
   }
 
-  @Override public void register(String email, String pass, final CommonAListener listener) {
+  @Override public void register(@NonNull String email, @NonNull String pass,
+      @NonNull final CommonAListener listener) {
     listener.onProcess();
     // Create new user with email and password
     auth.createUserWithEmailAndPassword(email, pass)
@@ -87,7 +89,7 @@ import timber.log.Timber;
         });
   }
 
-  private void sendEmailVerification(final CommonAListener listener) {
+  private void sendEmailVerification(@NonNull final CommonAListener listener) {
     user = auth.getCurrentUser();
     if (user != null && !user.isEmailVerified()) {
       user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -104,7 +106,8 @@ import timber.log.Timber;
     }
   }
 
-  @Override public void login(String email, String pass, final CommonAListener listener) {
+  @Override public void login(@NonNull String email, @NonNull String pass,
+      @NonNull final CommonAListener listener) {
     listener.onProcess();
     auth.signInWithEmailAndPassword(email, pass)
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -125,8 +128,8 @@ import timber.log.Timber;
         });
   }
 
-  @Override public void firebaseAuthWithGoogle(GoogleSignInAccount account,
-      final CommonAListener listener) {
+  @Override public void firebaseAuthWithGoogle(@NonNull GoogleSignInAccount account,
+      @NonNull final CommonAListener listener) {
     listener.onProcess();
     AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
     auth.signInWithCredential(credential)
@@ -149,12 +152,12 @@ import timber.log.Timber;
     });
   }
 
-  @Override public String getEmailUser() {
+  @Nullable @Override public String getEmailUser() {
     return (user != null) ? user.getEmail() : null;
   }
 
-  @Override public void downloadKeyPair(File publickey, File privatekey,
-      final CommonAListener listener) {
+  @Override public void downloadKeyPair(@NonNull File publickey, @NonNull File privatekey,
+      @NonNull final CommonAListener listener) {
     listener.onProcess();
     Timber.d("downloadKeyPair(): OK");
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
@@ -174,7 +177,8 @@ import timber.log.Timber;
             Timber.d("accept(): good");
           }
         }, new Consumer<Throwable>() {
-          @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+          @Override public void accept(
+              @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
               throws Exception {
             Timber.e("accept(): error " + throwable.getMessage());
             listener.onFailed(throwable.getMessage());
@@ -186,7 +190,7 @@ import timber.log.Timber;
         });
   }
 
-  @Override public void checkRemoteKeyPair(final CommonAListener listener) {
+  @Override public void checkRemoteKeyPair(@NonNull final CommonAListener listener) {
     listener.onProcess();
 
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
@@ -202,7 +206,7 @@ import timber.log.Timber;
 
       }
     }, new Consumer<Throwable>() {
-      @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+      @Override public void accept(@NonNull @io.reactivex.annotations.NonNull Throwable throwable)
           throws Exception {
         Timber.e("accept(): error " + throwable.getMessage());
         listener.onFailed(throwable.getMessage());
@@ -223,7 +227,7 @@ import timber.log.Timber;
     return b;
   }
 
-  @Override public UserBusPost getUserProfile() {
+  @NonNull @Override public UserBusPost getUserProfile() {
     Uri uri = user.getPhotoUrl();
     String email = user.getEmail();
     String name = user.getDisplayName();
@@ -240,7 +244,7 @@ import timber.log.Timber;
   }
 
   @Override public void uploadKeyPair(File publickey, File privatekey,
-      final CommonAListener listener) {
+      @NonNull final CommonAListener listener) {
     listener.onProcess();
 
     String publicFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + PUBLIC_KEY;
@@ -263,7 +267,8 @@ import timber.log.Timber;
 
           }
         }, new Consumer<Throwable>() {
-          @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+          @Override public void accept(
+              @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
               throws Exception {
             listener.onFailed(throwable.getMessage());
           }
@@ -274,7 +279,7 @@ import timber.log.Timber;
         });
   }
 
-  private void insertUserData(final CommonAListener listener) {
+  private void insertUserData(@NonNull final CommonAListener listener) {
     // new user node would be /users/$userid/
     DatabaseReference reference1 = database.getReference("users").child(user.getUid());
 
@@ -300,7 +305,7 @@ import timber.log.Timber;
     String uid = user.getUid();
 
     mDatabase.child(uid).addValueEventListener(new ValueEventListener() {
-      @Override public void onDataChange(DataSnapshot dataSnapshot) {
+      @Override public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
         User userData = dataSnapshot.getValue(User.class);
         userData.getEmail();
         Timber.d("onDataChange(): " + userData.getName());
@@ -312,11 +317,11 @@ import timber.log.Timber;
     });
   }
 
-  @Override public void initListUser(final CommonAListener listener) {
+  @Override public void initListUser(@NonNull final CommonAListener listener) {
     listener.onProcess();
     DatabaseReference mDatabase = database.getReference("users");
     mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-      @Override public void onDataChange(final DataSnapshot dataSnapshot) {
+      @Override public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
           String key = childDataSnapshot.getKey();
           User userx = childDataSnapshot.getValue(User.class);
@@ -334,29 +339,30 @@ import timber.log.Timber;
         listener.onSuccess();
       }
 
-      @Override public void onCancelled(DatabaseError databaseError) {
+      @Override public void onCancelled(@NonNull DatabaseError databaseError) {
         listener.onFailed(databaseError.getMessage());
         Timber.e("onCancelled(): " + databaseError.getDetails());
       }
     });
   }
 
-  @Override public KeyUser getOwnerKey() {
+  @Nullable @Override public KeyUser getOwnerKey() {
     return keyUserOwner;
   }
 
-  @Override public List<KeyUser> getListUser() {
+  @NonNull @Override public List<KeyUser> getListUser() {
     return keyUserList;
   }
 
-  @Override public void uploadSignFile(File signFile, final UploadSignListener listener) {
+  @Override public void uploadSignFile(@NonNull File signFile,
+      @NonNull final UploadSignListener listener) {
     String signFolderRef = USER_STORAGE_REF + user.getUid() + "/public/" + signFile.getName();
     Uri uri = Uri.fromFile(signFile);
     Timber.d("uploadSignFile(): folder => " + signFolderRef);
     storage.getReference().child(signFolderRef)
         .putFile(uri)
         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+          @Override public void onSuccess(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
             //noinspection VisibleForTests
             String uri = taskSnapshot.getDownloadUrl().toString();
             listener.onSuccess(uri);
@@ -370,7 +376,7 @@ import timber.log.Timber;
         });
   }
 
-  @Override public void insertPostData(Post postData, final CommonAListener listener) {
+  @Override public void insertPostData(Post postData, @NonNull final CommonAListener listener) {
     DatabaseReference mDatabase = database.getReference("posts");
     String key = mDatabase.push().getKey();
 
@@ -408,7 +414,8 @@ import timber.log.Timber;
     });
   }
 
-  @Override public void downloadFile(File filezip, String url, final CommonAListener listener) {
+  @Override public void downloadFile(@NonNull File filezip, @NonNull String url,
+      @NonNull final CommonAListener listener) {
     StorageReference reference = storage.getReferenceFromUrl(url);
     reference.getFile(filezip)
         .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
@@ -424,8 +431,8 @@ import timber.log.Timber;
         });
   }
 
-  @Override public void downloadPublicKey(File filepub, String senderkey,
-      final CommonAListener listener) {
+  @Override public void downloadPublicKey(@NonNull File filepub, String senderkey,
+      @NonNull final CommonAListener listener) {
     listener.onProcess();
     String publicFolderRef = USER_STORAGE_REF + senderkey + "/public/" + PUBLIC_KEY;
     StorageReference reference = storage.getReference().child(publicFolderRef);
@@ -443,7 +450,7 @@ import timber.log.Timber;
         });
   }
 
-  @Override public void getPostReceived(final GetListPostListener listener) {
+  @Override public void getPostReceived(@NonNull final GetListPostListener listener) {
     listener.onProcess();
     if (keyUserOwner.getKey() != null) {
       Timber.d("getPostReceived(): started");
@@ -452,32 +459,33 @@ import timber.log.Timber;
       maybeReceivePost().flatMapObservable(
           new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
             @Override public Observable<Maybe<DataSnapshot>> apply(
-                @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
+                @NonNull @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
                 throws Exception {
               return Observable.fromIterable(maybes);
             }
           })
           .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
             @Override public Observable<DataSnapshot> apply(
-                @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+                @NonNull @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
                 throws Exception {
               return dataSnapshotMaybe.toObservable();
             }
           })
           .flatMap(new Function<DataSnapshot, Observable<Post>>() {
             @Override public Observable<Post> apply(
-                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+                @NonNull @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+                throws Exception {
               return Observable.just(dataSnapshot.getValue(Post.class));
             }
           })
           .toSortedList(new Comparator<Post>() {
-            @Override public int compare(Post post, Post t1) {
+            @Override public int compare(@NonNull Post post, @NonNull Post t1) {
               return (int) (t1.getTimestamp() - post.getTimestamp());
             }
           })
           .flatMapObservable(new Function<List<Post>, Observable<Post>>() {
             @Override public Observable<Post> apply(
-                @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+                @NonNull @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
               return Observable.fromIterable(postList);
             }
           })
@@ -489,7 +497,8 @@ import timber.log.Timber;
               PostList.add(post);
             }
           }, new Consumer<Throwable>() {
-            @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+            @Override public void accept(
+                @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
                 throws Exception {
               listener.onFailed(throwable.getMessage());
             }
@@ -503,7 +512,7 @@ import timber.log.Timber;
     }
   }
 
-  @Override public void getPostSent(final GetListPostListener listener) {
+  @Override public void getPostSent(@NonNull final GetListPostListener listener) {
     listener.onProcess();
     if (keyUserOwner.getKey() != null) {
       Timber.d("getPostSent(): started");
@@ -511,32 +520,33 @@ import timber.log.Timber;
       maybeSentPost().flatMapObservable(
           new Function<List<Maybe<DataSnapshot>>, Observable<Maybe<DataSnapshot>>>() {
             @Override public Observable<Maybe<DataSnapshot>> apply(
-                @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
+                @NonNull @io.reactivex.annotations.NonNull List<Maybe<DataSnapshot>> maybes)
                 throws Exception {
               return Observable.fromIterable(maybes);
             }
           })
           .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
             @Override public Observable<DataSnapshot> apply(
-                @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+                @NonNull @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
                 throws Exception {
               return dataSnapshotMaybe.toObservable();
             }
           })
           .flatMap(new Function<DataSnapshot, Observable<Post>>() {
             @Override public Observable<Post> apply(
-                @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+                @NonNull @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+                throws Exception {
               return Observable.just(dataSnapshot.getValue(Post.class));
             }
           })
           .toSortedList(new Comparator<Post>() {
-            @Override public int compare(Post post, Post t1) {
+            @Override public int compare(@NonNull Post post, @NonNull Post t1) {
               return (int) (t1.getTimestamp() - post.getTimestamp());
             }
           })
           .flatMapObservable(new Function<List<Post>, Observable<Post>>() {
             @Override public Observable<Post> apply(
-                @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+                @NonNull @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
               return Observable.fromIterable(postList);
             }
           })
@@ -548,7 +558,8 @@ import timber.log.Timber;
               PostList.add(post);
             }
           }, new Consumer<Throwable>() {
-            @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+            @Override public void accept(
+                @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
                 throws Exception {
               listener.onFailed(throwable.getMessage());
             }
@@ -562,7 +573,7 @@ import timber.log.Timber;
     }
   }
 
-  @Override public void getAllPost(final GetListPostListener listener) {
+  @Override public void getAllPost(@NonNull final GetListPostListener listener) {
     listener.onProcess();
     Timber.d("getAllPost(): started");
     final List<Post> PostList = new ArrayList<>();
@@ -576,25 +587,26 @@ import timber.log.Timber;
         .toObservable()
         .flatMap(new Function<Maybe<DataSnapshot>, Observable<DataSnapshot>>() {
           @Override public Observable<DataSnapshot> apply(
-              @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
+              @NonNull @io.reactivex.annotations.NonNull Maybe<DataSnapshot> dataSnapshotMaybe)
               throws Exception {
             return dataSnapshotMaybe.toObservable();
           }
         })
         .flatMap(new Function<DataSnapshot, Observable<Post>>() {
           @Override public Observable<Post> apply(
-              @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+              @NonNull @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+              throws Exception {
             return Observable.just(dataSnapshot.getValue(Post.class));
           }
         })
         .toSortedList(new Comparator<Post>() {
-          @Override public int compare(Post post, Post t1) {
+          @Override public int compare(@NonNull Post post, @NonNull Post t1) {
             return (int) (t1.getTimestamp() - post.getTimestamp());
           }
         })
         .flatMapObservable(new Function<List<Post>, Observable<Post>>() {
           @Override public Observable<Post> apply(
-              @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
+              @NonNull @io.reactivex.annotations.NonNull List<Post> postList) throws Exception {
             return Observable.fromIterable(postList);
           }
         })
@@ -606,7 +618,8 @@ import timber.log.Timber;
             PostList.add(post);
           }
         }, new Consumer<Throwable>() {
-          @Override public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+          @Override public void accept(
+              @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
               throws Exception {
             listener.onFailed(throwable.getMessage());
           }
@@ -623,8 +636,9 @@ import timber.log.Timber;
     //Get Post Key from sentpost
     return RxFirebaseDatabase.observeSingleValueEvent(reference.child("sentpost"),
         new Function<DataSnapshot, List<String>>() {
-          @Override public List<String> apply(
-              @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+          @NonNull @Override public List<String> apply(
+              @NonNull @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+              throws Exception {
             List<String> stringlist = new ArrayList<String>();
             for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
               stringlist.add(datasnapshot.getKey());
@@ -633,8 +647,8 @@ import timber.log.Timber;
             return stringlist;
           }
         }).map(new Function<List<String>, List<Maybe<DataSnapshot>>>() {
-      @Override public List<Maybe<DataSnapshot>> apply(
-          @io.reactivex.annotations.NonNull List<String> list) throws Exception {
+      @NonNull @Override public List<Maybe<DataSnapshot>> apply(
+          @NonNull @io.reactivex.annotations.NonNull List<String> list) throws Exception {
         List<Maybe<DataSnapshot>> maybeList = new ArrayList<Maybe<DataSnapshot>>();
         for (String key : list) {
           Maybe<DataSnapshot> dataSnapshotMaybe =
@@ -653,8 +667,9 @@ import timber.log.Timber;
     //Get Post Key from receivepost
     return RxFirebaseDatabase.observeSingleValueEvent(reference.child("receivepost"),
         new Function<DataSnapshot, List<String>>() {
-          @Override public List<String> apply(
-              @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot) throws Exception {
+          @NonNull @Override public List<String> apply(
+              @NonNull @io.reactivex.annotations.NonNull DataSnapshot dataSnapshot)
+              throws Exception {
             List<String> stringlist = new ArrayList<String>();
             for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
               stringlist.add(datasnapshot.getKey());
@@ -663,8 +678,8 @@ import timber.log.Timber;
             return stringlist;
           }
         }).map(new Function<List<String>, List<Maybe<DataSnapshot>>>() {
-      @Override public List<Maybe<DataSnapshot>> apply(
-          @io.reactivex.annotations.NonNull List<String> list) throws Exception {
+      @NonNull @Override public List<Maybe<DataSnapshot>> apply(
+          @NonNull @io.reactivex.annotations.NonNull List<String> list) throws Exception {
         List<Maybe<DataSnapshot>> maybeList = new ArrayList<Maybe<DataSnapshot>>();
         for (String key : list) {
           Maybe<DataSnapshot> dataSnapshotMaybe =

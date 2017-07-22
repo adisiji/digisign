@@ -21,19 +21,19 @@ import nb.scode.digisign.view.SettingsView;
 public final class SettingsFragment extends BaseFragment<SettingsPresenter, SettingsView>
     implements SettingsView {
   @Inject PresenterFactory<SettingsPresenter> mPresenterFactory;
-  @BindView(R.id.wv_credits) WebView webView;
+  @Nullable @BindView(R.id.wv_credits) WebView webView;
   // Your presenter is available using the mPresenter variable
 
   public SettingsFragment() {
     // Required empty public constructor
   }
 
-  @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+  @Override public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_settings, container, false);
   }
 
-  @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+  @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     ButterKnife.bind(this, view);
     webView.loadUrl("file:///android_asset/webs/Credits.html");

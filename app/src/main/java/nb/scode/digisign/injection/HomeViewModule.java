@@ -11,11 +11,11 @@ import nb.scode.digisign.presenter.impl.HomePresenterImpl;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 
 @Module public final class HomeViewModule {
-  @Provides public HomeInteractor provideInteractor(final DataTask dataTask) {
+  @NonNull @Provides public HomeInteractor provideInteractor(final DataTask dataTask) {
     return new HomeInteractorImpl(dataTask);
   }
 
-  @Provides public PresenterFactory<HomePresenter> providePresenterFactory(
+  @NonNull @Provides public PresenterFactory<HomePresenter> providePresenterFactory(
       @NonNull final HomeInteractor interactor) {
     return new PresenterFactory<HomePresenter>() {
       @NonNull @Override public HomePresenter create() {

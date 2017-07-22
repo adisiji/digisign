@@ -10,11 +10,11 @@ import nb.scode.digisign.presenter.impl.SettingsPresenterImpl;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 
 @Module public final class SettingsViewModule {
-  @Provides public SettingsInteractor provideInteractor() {
+  @NonNull @Provides public SettingsInteractor provideInteractor() {
     return new SettingsInteractorImpl();
   }
 
-  @Provides public PresenterFactory<SettingsPresenter> providePresenterFactory(
+  @NonNull @Provides public PresenterFactory<SettingsPresenter> providePresenterFactory(
       @NonNull final SettingsInteractor interactor) {
     return new PresenterFactory<SettingsPresenter>() {
       @NonNull @Override public SettingsPresenter create() {

@@ -63,7 +63,7 @@ import timber.log.Timber;
   private static final String FILE_SIGNATURE_RESULT = "result.sig";
   private static final String FOLDER_UNZIP = "received";
   private final SharedPreferences mPref;
-  private final Context context;
+  @android.support.annotation.NonNull private final Context context;
   private String tempFolder;
 
   /**
@@ -71,7 +71,7 @@ import timber.log.Timber;
    *
    * @param context the context
    */
-  @Inject public LocalHelper(Context context) {
+  @Inject public LocalHelper(@android.support.annotation.NonNull Context context) {
     mPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
     this.context = context;
     //testKunci();
@@ -109,7 +109,8 @@ import timber.log.Timber;
     mPref.edit().putString("EMAIL", email).apply();
   }
 
-  @Override public void createKey(final CommonListener listener) throws Exception {
+  @Override public void createKey(@android.support.annotation.NonNull final CommonListener listener)
+      throws Exception {
     listener.onProcess();
     Completable.fromAction(new Action() {
       @Override public void run() throws Exception {
@@ -234,15 +235,16 @@ import timber.log.Timber;
         });
   }
 
-  @Override public File getPublicKey() {
+  @android.support.annotation.NonNull @Override public File getPublicKey() {
     return new File(context.getFilesDir(), PUBLIC_KEY);
   }
 
-  @Override public File getPrivateKey() {
+  @android.support.annotation.NonNull @Override public File getPrivateKey() {
     return new File(context.getFilesDir(), PRIVATE_KEY);
   }
 
-  @Override public void getPrepFilePdf(String uripdf, ListenerPrepPdf listenerPrepPdf) {
+  @Override public void getPrepFilePdf(String uripdf,
+      @android.support.annotation.NonNull ListenerPrepPdf listenerPrepPdf) {
     Uri uri = Uri.parse(uripdf);
     // The query, since it only applies to a single document, will only return one row.
     // no need to filter, sort, or select fields, since we want all fields for one
@@ -310,7 +312,8 @@ import timber.log.Timber;
     }
   }
 
-  private byte[] getBytesFromFile(File file) {
+  @android.support.annotation.NonNull private byte[] getBytesFromFile(
+      @android.support.annotation.NonNull File file) {
     byte[] b = new byte[(int) file.length()];
     try {
       FileInputStream fileInputStream = new FileInputStream(file);
@@ -326,13 +329,15 @@ import timber.log.Timber;
     return b;
   }
 
-  private void saveFile(byte[] bytes, String path) throws IOException {
+  private void saveFile(@android.support.annotation.NonNull byte[] bytes,
+      @android.support.annotation.NonNull String path) throws IOException {
     FileOutputStream fos = new FileOutputStream(new File(context.getFilesDir(), path));
     fos.write(bytes);
     fos.close();
   }
 
-  private void saveFiletoCache(byte[] bytes, String parent, String file) throws IOException {
+  private void saveFiletoCache(@android.support.annotation.NonNull byte[] bytes, String parent,
+      @android.support.annotation.NonNull String file) throws IOException {
     File file1 = context.getCacheDir();
     File newTempFolder = new File(file1, File.separator + parent);
     if (!newTempFolder.exists()) {
@@ -382,7 +387,8 @@ import timber.log.Timber;
  * Example: zipFileAtPath("downloads/myfolder", "downloads/myFolder.zip");
  */
 
-  public boolean zipFileAtPath(String sourcePath, String toLocation) {
+  public boolean zipFileAtPath(@android.support.annotation.NonNull String sourcePath,
+      @android.support.annotation.NonNull String toLocation) {
     final int BUFFER = 2048;
     File folder = new File(sourcePath);
     File[] fileList = folder.listFiles();
@@ -414,7 +420,8 @@ import timber.log.Timber;
     return true;
   }
 
-  @Override public void createSignFile(String uripdf, CommonListener listener) {
+  @Override public void createSignFile(String uripdf,
+      @android.support.annotation.NonNull CommonListener listener) {
     listener.onProcess();
     tempFolder = String.valueOf(Calendar.getInstance().getTimeInMillis());
     Timber.d("createSignFile(): tempFolder => " + tempFolder);
@@ -449,13 +456,13 @@ import timber.log.Timber;
         cursor.close();
       }
       listener.onFinished();
-    } catch (IOException | SignatureException | NoSuchAlgorithmException | InvalidKeyException | InvalidKeySpecException e) {
+    } catch (@android.support.annotation.NonNull IOException | SignatureException | NoSuchAlgorithmException | InvalidKeyException | InvalidKeySpecException e) {
       e.printStackTrace();
       listener.onError(e.getMessage());
     }
   }
 
-  @Override public void createZip(CommonListener listener) {
+  @Override public void createZip(@android.support.annotation.NonNull CommonListener listener) {
     listener.onProcess();
     File file = new File(context.getCacheDir(), File.separator + tempFolder);
     String source = file.getPath();
@@ -466,8 +473,8 @@ import timber.log.Timber;
     unZipFile(new File(dest), targetunzip, listener);
   }
 
-  @Override public void unZipFile(final File zipFile, final File targetDir,
-      final CommonListener listener) {
+  @Override public void unZipFile(@android.support.annotation.NonNull final File zipFile,
+      final File targetDir, @android.support.annotation.NonNull final CommonListener listener) {
     Completable.fromAction(new Action() {
       @Override public void run() throws Exception {
         listener.onProcess();
@@ -499,13 +506,14 @@ import timber.log.Timber;
             listener.onFinished();
           }
         }, new Consumer<Throwable>() {
-          @Override public void accept(@NonNull Throwable throwable) throws Exception {
+          @Override public void accept(
+              @android.support.annotation.NonNull @NonNull Throwable throwable) throws Exception {
             listener.onError(throwable.getMessage());
           }
         });
   }
 
-  @Override public File getFileToSend() {
+  @android.support.annotation.NonNull @Override public File getFileToSend() {
     File file = new File(context.getCacheDir(),
         File.separator + tempFolder + File.separator + tempFolder + ".zip");
     return file;
@@ -515,17 +523,22 @@ import timber.log.Timber;
     return context.getCacheDir();
   }
 
-  @Override public File createFileInCache(String filename, String ext) {
+  @android.support.annotation.NonNull @Override public File createFileInCache(String filename,
+      String ext) {
     return new File(context.getCacheDir(), File.separator + filename + "." + ext);
   }
 
-  @Override public void verifySignature(File pubkey, File sigFile, File oriFile,
-      final CommonListener listener) {
+  @Override public void verifySignature(@android.support.annotation.NonNull File pubkey,
+      @android.support.annotation.NonNull File sigFile,
+      @android.support.annotation.NonNull File oriFile,
+      @android.support.annotation.NonNull final CommonListener listener) {
     final byte[] pubBytes = getBytesFromFile(pubkey);
     final byte[] signBytes = getBytesFromFile(sigFile);
     final byte[] oriBytes = getBytesFromFile(oriFile);
     Observable.create(new ObservableOnSubscribe<Boolean>() {
-      @Override public void subscribe(@NonNull ObservableEmitter<Boolean> e) throws Exception {
+      @Override public void subscribe(
+          @android.support.annotation.NonNull @NonNull ObservableEmitter<Boolean> e)
+          throws Exception {
         Signature signature = Signature.getInstance(SIGN_INSTANCE);
         KeyFactory kf = KeyFactory.getInstance("EC");
         X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pubBytes);
@@ -549,7 +562,8 @@ import timber.log.Timber;
             }
           }
         }, new Consumer<Throwable>() {
-          @Override public void accept(@NonNull Throwable throwable) throws Exception {
+          @Override public void accept(
+              @android.support.annotation.NonNull @NonNull Throwable throwable) throws Exception {
             listener.onError(throwable.getMessage());
           }
         });

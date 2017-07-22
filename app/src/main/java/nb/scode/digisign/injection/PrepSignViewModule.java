@@ -11,11 +11,11 @@ import nb.scode.digisign.presenter.impl.PrepSignPresenterImpl;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 
 @Module public final class PrepSignViewModule {
-  @Provides public PrepSignInteractor provideInteractor(final DataTask dataTask) {
+  @NonNull @Provides public PrepSignInteractor provideInteractor(final DataTask dataTask) {
     return new PrepSignInteractorImpl(dataTask);
   }
 
-  @Provides public PresenterFactory<PrepSignPresenter> providePresenterFactory(
+  @NonNull @Provides public PresenterFactory<PrepSignPresenter> providePresenterFactory(
       @NonNull final PrepSignInteractor interactor) {
     return new PresenterFactory<PrepSignPresenter>() {
       @NonNull @Override public PrepSignPresenter create() {

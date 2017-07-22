@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor.impl;
 
+import android.support.annotation.NonNull;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,23 +15,23 @@ import nb.scode.digisign.view.model.ItemAllDoc;
 
 public final class AllDocInteractorImpl implements AllDocInteractor {
 
-  private final DataTask dataTask;
+  @NonNull private final DataTask dataTask;
   private List<KeyUser> keyUserList;
   private KeyUser keyUser;
 
-  @Inject public AllDocInteractorImpl(DataTask dataTask) {
+  @Inject public AllDocInteractorImpl(@NonNull DataTask dataTask) {
     this.dataTask = dataTask;
     keyUserList = dataTask.getListUser();
     keyUser = dataTask.getOwnerKey();
   }
 
-  @Override public void getSentPost(final AllDocIntListener listener) {
+  @Override public void getSentPost(@NonNull final AllDocIntListener listener) {
     dataTask.getPostSent(new ApiTask.GetListPostListener() {
       @Override public void onProcess() {
         listener.onProcess();
       }
 
-      @Override public void onSuccess(List<Post> postList) {
+      @Override public void onSuccess(@NonNull List<Post> postList) {
         List<ItemAllDoc> itemAllDocs = new ArrayList<ItemAllDoc>();
         for (Post post : postList) {
           itemAllDocs.add(convertPostToItem(post));
@@ -44,13 +45,13 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
     });
   }
 
-  @Override public void getReceivePost(final AllDocIntListener listener) {
+  @Override public void getReceivePost(@NonNull final AllDocIntListener listener) {
     dataTask.getPostReceived(new ApiTask.GetListPostListener() {
       @Override public void onProcess() {
         listener.onProcess();
       }
 
-      @Override public void onSuccess(List<Post> postList) {
+      @Override public void onSuccess(@NonNull List<Post> postList) {
         List<ItemAllDoc> itemAllDocs = new ArrayList<ItemAllDoc>();
         for (Post post : postList) {
           itemAllDocs.add(convertPostToItem(post));
@@ -64,13 +65,13 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
     });
   }
 
-  @Override public void getAllPost(final AllDocIntListener listener) {
+  @Override public void getAllPost(@NonNull final AllDocIntListener listener) {
     dataTask.getAllPost(new ApiTask.GetListPostListener() {
       @Override public void onProcess() {
         listener.onProcess();
       }
 
-      @Override public void onSuccess(List<Post> postList) {
+      @Override public void onSuccess(@NonNull List<Post> postList) {
         List<ItemAllDoc> itemAllDocs = new ArrayList<ItemAllDoc>();
         for (Post post : postList) {
           itemAllDocs.add(convertPostToItem(post));
@@ -84,7 +85,7 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
     });
   }
 
-  private ItemAllDoc convertPostToItem(Post post) {
+  @NonNull private ItemAllDoc convertPostToItem(@NonNull Post post) {
     ItemAllDoc itemAllDoc = new ItemAllDoc();
     itemAllDoc.setFilename(post.getFilename());
     Long xx = post.getTimestamp();

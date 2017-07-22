@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -41,12 +42,12 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
   private static final int PERMISSIONS_REQUEST_EXT_STORAGE = 212;
   private final String BUNDLE_KEY = "PREP_PDF_KEY";
   @Inject PresenterFactory<PrepSignPresenter> mPresenterFactory;
-  @BindView(R.id.iv_file_preview) ImageView ivPreview;
-  @BindView(R.id.title_file_name) TextView tvFileName;
-  @BindView(R.id.title_size) TextView tvFileSize;
-  @BindView(R.id.toolbar) Toolbar toolbar;
-  private String uripdf = null;
-  private String filename = null;
+  @Nullable @BindView(R.id.iv_file_preview) ImageView ivPreview;
+  @Nullable @BindView(R.id.title_file_name) TextView tvFileName;
+  @Nullable @BindView(R.id.title_size) TextView tvFileSize;
+  @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+  @Nullable private String uripdf = null;
+  @Nullable private String filename = null;
   /**
    * File descriptor of the PDF.
    */
@@ -153,7 +154,8 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
     // END_INCLUDE (use_open_document_intent)
   }
 
-  @Override public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+  @Override public void onActivityResult(int requestCode, int resultCode,
+      @Nullable Intent resultData) {
     // BEGIN_INCLUDE (parse_open_document_response)
     // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
     // If the request code seen here doesn't match, it's the response to some other intent,

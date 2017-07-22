@@ -36,10 +36,11 @@ import static nb.scode.digisign.view.impl.Constants.MENU_SENT;
 public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocView>
     implements AllDocView {
   @Inject PresenterFactory<AllDocPresenter> mPresenterFactory;
-  @BindView(R.id.rv) RecyclerView recyclerView;
+  @Nullable @BindView(R.id.rv) RecyclerView recyclerView;
   private ProgressDialog progressDialog;
 
-  private AllDocAdapter.AllDocAdpListener listener = new AllDocAdapter.AllDocAdpListener() {
+  @NonNull private AllDocAdapter.AllDocAdpListener listener =
+      new AllDocAdapter.AllDocAdpListener() {
     @Override public void onClick(String key) {
       Timber.d("onClick(): key => " + key);
     }
@@ -54,12 +55,12 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     EventBus.getDefault().register(this);
   }
 
-  @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+  @Override public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_all_doc, container, false);
   }
 
-  @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+  @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     ButterKnife.bind(this, view);
     progressDialog = new ProgressDialog(getContext());
@@ -74,7 +75,7 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     mPresenter.getAllPost();
   }
 
-  @Subscribe(threadMode = ThreadMode.MAIN) public void MenuEvent(SpinnerMenu spinnerMenu) {
+  @Subscribe(threadMode = ThreadMode.MAIN) public void MenuEvent(@NonNull SpinnerMenu spinnerMenu) {
     int i = spinnerMenu.getMenu();
     switch (i) {
       case MENU_ALL:

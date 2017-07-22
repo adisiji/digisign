@@ -1,5 +1,7 @@
 package nb.scode.digisign.view.adapter;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +28,14 @@ public class AllDocAdapter extends RecyclerView.Adapter<AllDocAdapter.MyViewHold
     this.listener = listener;
   }
 
-  @Override public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  @NonNull @Override public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
+      int viewType) {
     View view =
         LayoutInflater.from(parent.getContext()).inflate(R.layout.card_all_files, parent, false);
     return new MyViewHolder(view);
   }
 
-  @Override public void onBindViewHolder(MyViewHolder holder, int position) {
+  @Override public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
     holder.bind(postList.get(position), listener);
   }
 
@@ -47,18 +50,18 @@ public class AllDocAdapter extends RecyclerView.Adapter<AllDocAdapter.MyViewHold
 
   static class MyViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.tv_file_name) TextView tvFilename;
-    @BindView(R.id.tv_file_from) TextView tvFilefrom;
-    @BindView(R.id.tv_file_date) TextView tvFiledate;
-    @BindView(R.id.iv_status) ImageView ivStatus;
-    @BindView(R.id.view) View view;
+    @Nullable @BindView(R.id.tv_file_name) TextView tvFilename;
+    @Nullable @BindView(R.id.tv_file_from) TextView tvFilefrom;
+    @Nullable @BindView(R.id.tv_file_date) TextView tvFiledate;
+    @Nullable @BindView(R.id.iv_status) ImageView ivStatus;
+    @Nullable @BindView(R.id.view) View view;
 
-    public MyViewHolder(View itemView) {
+    public MyViewHolder(@NonNull View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
 
-    public void bind(final ItemAllDoc post, final AllDocAdpListener listener) {
+    public void bind(@NonNull final ItemAllDoc post, @NonNull final AllDocAdpListener listener) {
       tvFilename.setText(post.getFilename());
       tvFilefrom.setText(post.getFromname());
       tvFiledate.setText(post.getFiledate());

@@ -79,7 +79,7 @@ public abstract class BaseActivity<P extends BasePresenter<V>, V> extends AppCom
     super.onStop();
   }
 
-  @Override public final Loader<P> onCreateLoader(int id, Bundle args) {
+  @NonNull @Override public final Loader<P> onCreateLoader(int id, Bundle args) {
     return new PresenterLoader<>(this, getPresenterFactory());
   }
 

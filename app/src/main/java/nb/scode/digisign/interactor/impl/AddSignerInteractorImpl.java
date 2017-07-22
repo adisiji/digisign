@@ -15,7 +15,7 @@ import timber.log.Timber;
 
 public final class AddSignerInteractorImpl implements AddSignerInteractor {
 
-  private final DataTask dataTask;
+  @NonNull private final DataTask dataTask;
   private String uriSignFile;
 
   @Inject public AddSignerInteractorImpl(@NonNull DataTask dataTask) {
@@ -30,7 +30,7 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
     return dataTask.getOwnerKey();
   }
 
-  @Override public void createSignFile(String uripdf, final CommonIListener listener) {
+  @Override public void createSignFile(String uripdf, @NonNull final CommonIListener listener) {
 
     dataTask.createSignFile(uripdf, new LocalTask.CommonListener() {
       @Override public void onFinished() {
@@ -60,7 +60,7 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
     });
   }
 
-  @Override public void uploadSignFile(final CommonIListener listener) {
+  @Override public void uploadSignFile(@NonNull final CommonIListener listener) {
     File file = dataTask.getFileToSend();
     dataTask.uploadSignFile(file, new ApiTask.UploadSignListener() {
       @Override public void onProcess() {
@@ -80,7 +80,7 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
   }
 
   @Override public void insertPostData(String desc, String from, String name, String receiverKey,
-      String filename, String type, final CommonIListener listener) {
+      String filename, String type, @NonNull final CommonIListener listener) {
     Post post = new Post();
     post.setDesc(desc);
     post.setSenderKey(from);

@@ -81,7 +81,7 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
     super.onStop();
   }
 
-  @Override public final Loader<P> onCreateLoader(int id, Bundle args) {
+  @NonNull @Override public final Loader<P> onCreateLoader(int id, Bundle args) {
     return new PresenterLoader<>(getActivity(), getPresenterFactory());
   }
 

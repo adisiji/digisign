@@ -1,5 +1,6 @@
 package nb.scode.digisign.view;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 @UiThread public interface LoginView {
@@ -8,9 +9,9 @@ import android.support.annotation.UiThread;
 
   void showToast(String message);
 
-  String getEmail();
+  @NonNull String getEmail();
 
-  String getPassword();
+  @NonNull String getPassword();
 
   void showProgress();
 

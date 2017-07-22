@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor.impl;
 
+import android.support.annotation.NonNull;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
@@ -15,7 +16,7 @@ public final class LoginInteractorImpl implements LoginInteractor {
   }
 
   @Override public void authWithGoogle(GoogleSignInAccount account,
-      final CommonDListener listener) {
+      @NonNull final CommonDListener listener) {
     dataTask.firebaseAuthWithGoogle(account, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProccess();
@@ -35,7 +36,7 @@ public final class LoginInteractorImpl implements LoginInteractor {
     return dataTask.isUserSignedIn();
   }
 
-  @Override public void login(String email, String pass, final CommonDListener listener) {
+  @Override public void login(String email, String pass, @NonNull final CommonDListener listener) {
     dataTask.login(email, pass, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProccess();

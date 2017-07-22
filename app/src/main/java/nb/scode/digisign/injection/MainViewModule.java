@@ -11,11 +11,11 @@ import nb.scode.digisign.presenter.impl.MainPresenterImpl;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 
 @Module public final class MainViewModule {
-  @Provides public MainInteractor provideInteractor(DataTask dataTask) {
+  @NonNull @Provides public MainInteractor provideInteractor(DataTask dataTask) {
     return new MainInteractorImpl(dataTask);
   }
 
-  @Provides public PresenterFactory<MainPresenter> providePresenterFactory(
+  @NonNull @Provides public PresenterFactory<MainPresenter> providePresenterFactory(
       @NonNull final MainInteractor interactor) {
     return new PresenterFactory<MainPresenter>() {
       @NonNull @Override public MainPresenter create() {

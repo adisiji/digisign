@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,10 +32,10 @@ import static nb.scode.digisign.view.impl.Constants.URI_BUNDLE_KEY;
 public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, AddSignerView>
     implements AddSignerView {
   @Inject PresenterFactory<AddSignerPresenter> mPresenterFactory;
-  @BindView(R.id.toolbar) Toolbar toolbar;
-  @BindView(R.id.et_email_signer) AutoCompleteTextView etEmail;
-  @BindView(R.id.et_name_signer) EditText etName;
-  @BindView(R.id.et_desc_doc) EditText etDesc;
+  @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+  @Nullable @BindView(R.id.et_email_signer) AutoCompleteTextView etEmail;
+  @Nullable @BindView(R.id.et_name_signer) EditText etName;
+  @Nullable @BindView(R.id.et_desc_doc) EditText etDesc;
   private String uri;
   private String filenamez;
   private ProgressDialog progressDialog;
@@ -116,7 +117,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     etName.setText(name);
   }
 
-  @Override public String getEmail() {
+  @NonNull @Override public String getEmail() {
     return etEmail.getText().toString();
   }
 

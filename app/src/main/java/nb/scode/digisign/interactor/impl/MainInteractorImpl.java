@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor.impl;
 
+import android.support.annotation.NonNull;
 import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
@@ -42,7 +43,7 @@ public final class MainInteractorImpl implements MainInteractor {
     }
   }
 
-  @Override public void downloadKeyPair(final MainListener listener) {
+  @Override public void downloadKeyPair(@NonNull final MainListener listener) {
     File privkey = dataTask.getPrivateKey();
     File pubkey = dataTask.getPublicKey();
     dataTask.downloadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
@@ -69,7 +70,7 @@ public final class MainInteractorImpl implements MainInteractor {
     return dataTask.isLocalKeyPairAvailable();
   }
 
-  @Override public void isRemoteKeyPairAvail(final MainListener listener) {
+  @Override public void isRemoteKeyPairAvail(@NonNull final MainListener listener) {
     dataTask.checkRemoteKeyPair(new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProcess();
@@ -85,7 +86,7 @@ public final class MainInteractorImpl implements MainInteractor {
     });
   }
 
-  @Override public void initKeyPair(final MainInitListener listener) {
+  @Override public void initKeyPair(@NonNull final MainInitListener listener) {
     try {
       listener.onStartInit();
       dataTask.createKey(new LocalTask.CommonListener() {
@@ -106,7 +107,7 @@ public final class MainInteractorImpl implements MainInteractor {
     }
   }
 
-  private void uploadKeyPair(final MainInitListener listener) {
+  private void uploadKeyPair(@NonNull final MainInitListener listener) {
     File privkey = dataTask.getPrivateKey();
     File pubkey = dataTask.getPublicKey();
     dataTask.uploadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
@@ -124,7 +125,7 @@ public final class MainInteractorImpl implements MainInteractor {
     });
   }
 
-  @Override public void uploadKeyPair(final MainListener listener) {
+  @Override public void uploadKeyPair(@NonNull final MainListener listener) {
     File privkey = dataTask.getPrivateKey();
     File pubkey = dataTask.getPublicKey();
     dataTask.uploadKeyPair(pubkey, privkey, new ApiTask.CommonAListener() {
@@ -142,7 +143,7 @@ public final class MainInteractorImpl implements MainInteractor {
     });
   }
 
-  @Override public void initListUser(final MainListener listener) {
+  @Override public void initListUser(@NonNull final MainListener listener) {
     dataTask.initListUser(new ApiTask.CommonAListener() {
       @Override public void onProcess() {
         listener.onProcess();

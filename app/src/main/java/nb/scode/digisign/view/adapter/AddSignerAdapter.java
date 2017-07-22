@@ -2,6 +2,7 @@ package nb.scode.digisign.view.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +22,13 @@ public class AddSignerAdapter extends ArrayAdapter<String> implements Filterable
   private List<String> tempItems;
   private List<String> suggestions;
 
-  public AddSignerAdapter(@NonNull Context context, List<String> userList) {
+  public AddSignerAdapter(@NonNull Context context, @NonNull List<String> userList) {
     super(context, 0, userList);
     tempItems = new ArrayList<>(userList);
     suggestions = new ArrayList<>();
   }
 
-  @NonNull @Override public View getView(int position, View convertView,
+  @NonNull @Override public View getView(int position, @Nullable View convertView,
       @NonNull ViewGroup parent) {
     View view = convertView;
     if (convertView == null) {
@@ -46,11 +47,12 @@ public class AddSignerAdapter extends ArrayAdapter<String> implements Filterable
 
   @NonNull @Override public Filter getFilter() {
     return new Filter() {
-      @Override public CharSequence convertResultToString(Object resultValue) {
+      @NonNull @Override public CharSequence convertResultToString(@NonNull Object resultValue) {
         return (String) resultValue;
       }
 
-      @Override protected FilterResults performFiltering(CharSequence constraint) {
+      @NonNull @Override protected FilterResults performFiltering(
+          @Nullable CharSequence constraint) {
         if (constraint != null) {
           suggestions.clear();
           for (String names : tempItems) {
@@ -67,7 +69,8 @@ public class AddSignerAdapter extends ArrayAdapter<String> implements Filterable
         }
       }
 
-      @Override protected void publishResults(CharSequence constraint, FilterResults results) {
+      @Override protected void publishResults(CharSequence constraint,
+          @NonNull FilterResults results) {
         List<String> filterList = (ArrayList<String>) results.values;
         if (results != null && results.count > 0) {
           clear();

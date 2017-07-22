@@ -1,12 +1,13 @@
 package nb.scode.digisign.view;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 @UiThread public interface SignUpView {
 
-  String getEmail();
+  @NonNull String getEmail();
 
-  String getPassword();
+  @NonNull String getPassword();
 
   void showProgress();
 

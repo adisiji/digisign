@@ -2,6 +2,7 @@ package nb.scode.digisign.custom_font;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import java.util.Hashtable;
 
 /**
@@ -10,9 +11,9 @@ import java.util.Hashtable;
 
 public class FontCache {
 
-  private static Hashtable<String, Typeface> fontCache = new Hashtable<String, Typeface>();
+  @NonNull private static Hashtable<String, Typeface> fontCache = new Hashtable<String, Typeface>();
 
-  public static Typeface get(String name, Context context) {
+  public static Typeface get(String name, @NonNull Context context) {
     Typeface tf = fontCache.get(name);
     if (tf == null) {
       try {

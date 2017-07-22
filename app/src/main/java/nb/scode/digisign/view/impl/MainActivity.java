@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -52,17 +53,18 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
   @Inject PresenterFactory<MainPresenter> mPresenterFactory;
-  @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
-  @BindView(R.id.toolbar) Toolbar toolbar;
-  @BindView(R.id.nvView) NavigationView nvDrawer;
-  private ActionBarDrawerToggle drawerToggle;
+  @Nullable @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+  @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+  @Nullable @BindView(R.id.nvView) NavigationView nvDrawer;
+  @Nullable private ActionBarDrawerToggle drawerToggle;
   private ProgressDialog progressDialog;
-  private Boolean isFromAllDoc = false;
+  @NonNull private Boolean isFromAllDoc = false;
   private View view;
 
   // Your presenter is available using the mPresenter variable
 
-  @Subscribe(threadMode = ThreadMode.MAIN) public void onUserBusEvent(UserBusPost userBusPost) {
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onUserBusEvent(
+      @NonNull UserBusPost userBusPost) {
     setHeaderProfile(userBusPost);
   }
 
@@ -70,11 +72,11 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     gotoLogin();
   }
 
-  @Subscribe(threadMode = ThreadMode.BACKGROUND) public void onGetToken(TokenPost post) {
+  @Subscribe(threadMode = ThreadMode.BACKGROUND) public void onGetToken(@NonNull TokenPost post) {
     mPresenter.sendTokenToServer(post.getToken());
   }
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
+  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
@@ -160,7 +162,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     return true;
   }
 
-  public void selectDrawerItem(MenuItem menuItem) {
+  public void selectDrawerItem(@NonNull MenuItem menuItem) {
     // Create a new fragment and specify the fragment to show based on nav item clicked
     Fragment fragment = null;
     String[] fragmentTag = new String[] { "home_tag", "alldoc_tag", "sentfiles_tag" };
@@ -195,7 +197,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
 
     try {
       fragment = (Fragment) fragmentClass.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+    } catch (@NonNull InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
     }
 
@@ -211,7 +213,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     drawerLayout.closeDrawers();
   }
 
-  private ActionBarDrawerToggle setupDrawerToggle() {
+  @Nullable private ActionBarDrawerToggle setupDrawerToggle() {
     // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
     // and will not render the hamburger icon without it.
     return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open,
@@ -230,7 +232,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     drawerToggle.onConfigurationChanged(newConfig);
   }
 
-  private void setHeaderProfile(UserBusPost busPost) {
+  private void setHeaderProfile(@NonNull UserBusPost busPost) {
     View view = nvDrawer.getHeaderView(0);
     CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.civ_profile_header);
     Uri uri = busPost.getUri();

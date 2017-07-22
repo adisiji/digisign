@@ -1,5 +1,6 @@
 package nb.scode.digisign.interactor;
 
+import android.support.annotation.NonNull;
 import java.io.File;
 
 public interface ReceivedDocInteractor extends BaseInteractor {
@@ -16,9 +17,9 @@ public interface ReceivedDocInteractor extends BaseInteractor {
 
   void showingPdf(showPdfListener listener);
 
-  String getOriFileName();
+  @NonNull String getOriFileName();
 
-  String getOriFileSize();
+  @NonNull String getOriFileSize();
 
   void verifySign(CommonRListener listener);
 

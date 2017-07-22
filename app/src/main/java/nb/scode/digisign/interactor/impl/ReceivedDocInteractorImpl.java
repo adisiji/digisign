@@ -1,6 +1,7 @@
 package nb.scode.digisign.interactor.impl;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
@@ -30,7 +31,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     this.fileType = type;
   }
 
-  @Override public void unzipFile(final CommonRListener listener) {
+  @Override public void unzipFile(@NonNull final CommonRListener listener) {
     dataTask.unZipFile(zipFile, dataTask.getCacheDir(), new LocalTask.CommonListener() {
       @Override public void onFinished() {
         listener.onSuccess();
@@ -46,7 +47,8 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     });
   }
 
-  @Override public void downloadFile(String link, final CommonRListener listener) {
+  @Override public void downloadFile(@NonNull String link,
+      @NonNull final CommonRListener listener) {
     String separator = "%2Fpublic%2F";
     String zip_ext = ".zip";
     int sepIndex = link.indexOf(separator);
@@ -72,7 +74,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     });
   }
 
-  @Override public void checkingFiles(CommonRListener listener) {
+  @Override public void checkingFiles(@NonNull CommonRListener listener) {
     dirZip = new File(dataTask.getCacheDir(), File.separator + filename);
     File[] files = dirZip.listFiles();
     String sig = "sig";
@@ -91,13 +93,14 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     listener.onSuccess();
   }
 
-  private String getFileExt(String filenamez) {
+  private String getFileExt(@NonNull String filenamez) {
     int z = filenamez.length();
     int i = filenamez.lastIndexOf('.');
     return filenamez.substring(i + 1, z);
   }
 
-  @Override public void downloadPublicKey(String senderkey, final CommonRListener listener) {
+  @Override public void downloadPublicKey(String senderkey,
+      @NonNull final CommonRListener listener) {
     pubkey = new File(dirZip, PUBLIC_KEY);
     dataTask.downloadPublicKey(pubkey, senderkey, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
@@ -114,7 +117,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     });
   }
 
-  @Override public void verifySign(final CommonRListener listener) {
+  @Override public void verifySign(@NonNull final CommonRListener listener) {
     dataTask.verifySignature(pubkey, sigFile, oriFile, new LocalTask.CommonListener() {
       @Override public void onFinished() {
         listener.onSuccess();
@@ -130,7 +133,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     });
   }
 
-  @Override public void showingPdf(final showPdfListener listener) {
+  @Override public void showingPdf(@NonNull final showPdfListener listener) {
     String uripdf = Uri.fromFile(oriFile).toString();
     dataTask.getPrepFilePdf(uripdf, new LocalTask.ListenerPrepPdf() {
       @Override public void setFileName(String fileName) {
@@ -159,7 +162,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
     return oriFile.getName();
   }
 
-  @Override public String getOriFileSize() {
+  @NonNull @Override public String getOriFileSize() {
     String ext = " KB";
     long size = oriFile.length() / 1024; // Get file in KB
     if (size > 1024) {
