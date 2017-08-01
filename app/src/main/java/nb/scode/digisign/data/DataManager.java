@@ -131,8 +131,8 @@ import nb.scode.digisign.data.remote.FireModel.Post;
     localTask.unZipFile(zipfile, targetDir, listener);
   }
 
-  @Override public void createSignFile(String uripdf, CommonListener listener) {
-    localTask.createSignFile(uripdf, listener);
+  @Override public void createSignFile(String uripdf, String filetype, CommonListener listener) {
+    localTask.createSignFile(uripdf, filetype, listener);
   }
 
   @Override public File getFileToSend() {

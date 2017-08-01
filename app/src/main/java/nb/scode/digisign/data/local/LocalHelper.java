@@ -420,12 +420,12 @@ import timber.log.Timber;
     return true;
   }
 
-  @Override public void createSignFile(String uripdf,
+  @Override public void createSignFile(String urifile, String filetype,
       @android.support.annotation.NonNull CommonListener listener) {
     listener.onProcess();
     tempFolder = String.valueOf(Calendar.getInstance().getTimeInMillis());
     Timber.d("createSignFile(): tempFolder => " + tempFolder);
-    File pdfFile = new File(context.getCacheDir(), "cache.pdf");
+    File pdfFile = new File(context.getCacheDir(), "cache." + filetype);
 
     try {
       byte[] pdfBytes = getBytesFromFile(pdfFile);
@@ -449,7 +449,7 @@ import timber.log.Timber;
       saveFiletoCache(signBytes, tempFolder, FILE_SIGNATURE_RESULT);
       // Save PDF to same Folder with signature
       Cursor cursor =
-          context.getContentResolver().query(Uri.parse(uripdf), null, null, null, null, null);
+          context.getContentResolver().query(Uri.parse(urifile), null, null, null, null, null);
       if (cursor != null && cursor.moveToFirst()) {
         String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
         saveFiletoCache(pdfBytes, tempFolder, displayName);

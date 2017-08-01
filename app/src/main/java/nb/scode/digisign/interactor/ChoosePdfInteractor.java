@@ -2,7 +2,7 @@ package nb.scode.digisign.interactor;
 
 import java.io.File;
 
-public interface PrepSignInteractor extends BaseInteractor {
+public interface ChoosePdfInteractor extends BaseInteractor {
 
   void getFilePdf(String uripdf, GetPdfListener listener);
 

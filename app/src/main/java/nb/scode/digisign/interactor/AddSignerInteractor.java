@@ -9,7 +9,7 @@ public interface AddSignerInteractor extends BaseInteractor {
 
   KeyUser getOwnerKey();
 
-  void createSignFile(String uripdf, CommonIListener listener);
+  void createSignFile(String uripdf, String filetype, CommonIListener listener);
 
   void uploadSignFile(CommonIListener listener);
 

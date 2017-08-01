@@ -26,22 +26,22 @@ import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerPrepSignViewComponent;
 import nb.scode.digisign.injection.PrepSignViewModule;
-import nb.scode.digisign.presenter.PrepSignPresenter;
+import nb.scode.digisign.presenter.ChoosePdfPresenter;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
-import nb.scode.digisign.view.PrepSignView;
+import nb.scode.digisign.view.ChoosePdfView;
 import timber.log.Timber;
 
 import static nb.scode.digisign.view.impl.Constants.BUNDLE_FILE_NAME;
 import static nb.scode.digisign.view.impl.Constants.URI_BUNDLE_KEY;
 
-public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, PrepSignView>
-    implements PrepSignView {
+public final class ChoosePdfActivity extends BaseActivity<ChoosePdfPresenter, ChoosePdfView>
+    implements ChoosePdfView {
   // A request code's purpose is to match the result of a "startActivityForResult" with
   // the type of the original request.  Choose any value.
   private static final int READ_REQUEST_CODE = 1337;
   private static final int PERMISSIONS_REQUEST_EXT_STORAGE = 212;
   private final String BUNDLE_KEY = "PREP_PDF_KEY";
-  @Inject PresenterFactory<PrepSignPresenter> mPresenterFactory;
+  @Inject PresenterFactory<ChoosePdfPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.iv_file_preview) ImageView ivPreview;
   @Nullable @BindView(R.id.title_file_name) TextView tvFileName;
   @Nullable @BindView(R.id.title_size) TextView tvFileSize;
@@ -71,7 +71,6 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
     // Setup toolbar
     setSupportActionBar(toolbar);
     setupToolbar(getString(R.string.title_page_choose_signer));
-    Timber.d("onCreate(): bjbjb");
     /*
     if(savedInstanceState != null){
       String uri = savedInstanceState.getString(BUNDLE_KEY);
@@ -108,7 +107,7 @@ public final class PrepSignActivity extends BaseActivity<PrepSignPresenter, Prep
         .inject(this);
   }
 
-  @NonNull @Override protected PresenterFactory<PrepSignPresenter> getPresenterFactory() {
+  @NonNull @Override protected PresenterFactory<ChoosePdfPresenter> getPresenterFactory() {
     return mPresenterFactory;
   }
 

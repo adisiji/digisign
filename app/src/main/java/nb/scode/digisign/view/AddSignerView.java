@@ -12,7 +12,7 @@ import java.util.List;
 
   void showOwnerName(String name);
 
-  String getPdfUri();
+  String getUriFile();
 
   @NonNull String getEmail();
 

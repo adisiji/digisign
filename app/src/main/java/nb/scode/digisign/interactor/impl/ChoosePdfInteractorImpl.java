@@ -5,13 +5,13 @@ import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.data.DataTask;
 import nb.scode.digisign.data.local.LocalTask;
-import nb.scode.digisign.interactor.PrepSignInteractor;
+import nb.scode.digisign.interactor.ChoosePdfInteractor;
 
-public final class PrepSignInteractorImpl implements PrepSignInteractor {
+public final class ChoosePdfInteractorImpl implements ChoosePdfInteractor {
 
   private final DataTask dataTask;
 
-  @Inject public PrepSignInteractorImpl(DataTask dataTask) {
+  @Inject public ChoosePdfInteractorImpl(DataTask dataTask) {
     this.dataTask = dataTask;
   }
 

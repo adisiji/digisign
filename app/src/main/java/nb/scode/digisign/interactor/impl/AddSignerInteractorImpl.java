@@ -30,9 +30,10 @@ public final class AddSignerInteractorImpl implements AddSignerInteractor {
     return dataTask.getOwnerKey();
   }
 
-  @Override public void createSignFile(String uripdf, @NonNull final CommonIListener listener) {
+  @Override public void createSignFile(String urifile, String filetype,
+      @NonNull final CommonIListener listener) {
 
-    dataTask.createSignFile(uripdf, new LocalTask.CommonListener() {
+    dataTask.createSignFile(urifile, filetype, new LocalTask.CommonListener() {
       @Override public void onFinished() {
         dataTask.createZip(new LocalTask.CommonListener() {
           @Override public void onFinished() {

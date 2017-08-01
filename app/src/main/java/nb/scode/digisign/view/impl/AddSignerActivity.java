@@ -85,10 +85,10 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   }
 
   @OnClick(R.id.btn_send_doc) void sendDoc() {
-    mPresenter.sendDoc();
+    mPresenter.sendDocWithSign();
   }
 
-  @Override public String getPdfUri() {
+  @Override public String getUriFile() {
     return uri;
   }
 
@@ -121,11 +121,11 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     return etEmail.getText().toString();
   }
 
-  @Override public String getName() {
+  @NonNull @Override public String getName() {
     return etName.getText().toString();
   }
 
-  @Override public String getDesc() {
+  @NonNull @Override public String getDesc() {
     return etDesc.getText().toString();
   }
 

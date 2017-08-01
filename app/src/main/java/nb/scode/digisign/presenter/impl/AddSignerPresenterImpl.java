@@ -66,36 +66,32 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
     mView.showOwnerName(name);
   }
 
-  @Override public void getOwnerSignature() {
-    KeyUser keyUser = mInteractor.getOwnerKey();
-    String email = keyUser.getUser().getEmail();
-    mView.showOwnerEmail(email);
-    String name = keyUser.getUser().getName();
-    mView.showOwnerName(name);
-  }
-
-  @Override public void sendDoc() {
-    mView.showLoading();
-    sendDocWithSign();
-  }
-
   @Override public void sendDocWithSign() {
-    String uripdf = mView.getPdfUri();
-    mInteractor.createSignFile(uripdf, new AddSignerInteractor.CommonIListener() {
-      @Override public void onProcess() {
-        Timber.d("onProcess(): good");
-      }
+    String uripdf = null;
+    String filetype = null;
+    if (mView != null) {
+      mView.showLoading();
+      uripdf = mView.getUriFile();
+      int sizeFileString = mView.getFilename().length();
+      filetype = mView.getFilename().substring(sizeFileString - 3);
+    }
+    if (uripdf != null) {
+      mInteractor.createSignFile(uripdf, filetype, new AddSignerInteractor.CommonIListener() {
+        @Override public void onProcess() {
+          Timber.d("onProcess(): good");
+        }
 
-      @Override public void onSuccess() {
-        Timber.d("onSuccess(): good");
-        uploadDoc();
-      }
+        @Override public void onSuccess() {
+          Timber.d("onSuccess(): good");
+          uploadDoc();
+        }
 
-      @Override public void onFailed(String message) {
-        mView.showToast(message);
-        Timber.e("onFailed(): " + message);
-      }
-    });
+        @Override public void onFailed(String message) {
+          mView.showToast(message);
+          Timber.e("onFailed(): " + message);
+        }
+      });
+    }
   }
 
   private void uploadDoc() {

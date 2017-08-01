@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.impl.ChoosePdfActivity"
+    tools:context=".view.impl.TakePhotoActivity"
     >
 
   <android.support.constraint.Guideline
@@ -54,12 +54,12 @@
       app:layout_constraintTop_toBottomOf="@id/toolbar"
       />
 
-  <TextView
+  <EditText
       android:id="@+id/title_file_name"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
-      android:text="@string/file_name"
+      android:layout_marginTop="8dp"
+      android:hint="@string/file_name_edit"
       app:layout_constraintLeft_toLeftOf="@id/guide_v10"
       app:layout_constraintTop_toBottomOf="@id/guide_h80"
       />
@@ -78,9 +78,11 @@
       android:layout_width="0dp"
       android:layout_height="0dp"
       app:layout_constraintBottom_toTopOf="@id/guide_h80"
+      app:layout_constraintHorizontal_bias="1.0"
       app:layout_constraintLeft_toLeftOf="@id/guide_v10"
       app:layout_constraintRight_toRightOf="@id/guide_v90"
       app:layout_constraintTop_toBottomOf="@id/guide_h20"
+      app:layout_constraintVertical_bias="1.0"
       />
 
   <mehdi.sakout.fancybuttons.FancyButton
@@ -99,27 +101,27 @@
       fancy:fb_defaultColor="@color/yellow_default"
       fancy:fb_focusColor="@color/yellow_focus"
       fancy:fb_radius="8dp"
-      fancy:fb_text="Add\nSignature"
+      fancy:fb_text="Add Signature"
       fancy:fb_textColor="#000000"
       />
 
   <mehdi.sakout.fancybuttons.FancyButton
-      android:id="@+id/btn_choose_doc"
+      android:id="@+id/btn_take_photo"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
       android:paddingBottom="10dp"
       android:paddingLeft="20dp"
       android:paddingRight="20dp"
       android:paddingTop="10dp"
+      app:layout_constraintBottom_toBottomOf="@id/btn_add_signer"
       app:layout_constraintLeft_toLeftOf="@id/guide_v10"
-      app:layout_constraintTop_toBottomOf="@id/title_file_name"
+      app:layout_constraintTop_toTopOf="@id/btn_add_signer"
       fancy:fb_borderColor="@android:color/darker_gray"
       fancy:fb_borderWidth="1dp"
       fancy:fb_defaultColor="@color/yellow_default"
       fancy:fb_focusColor="@color/yellow_focus"
       fancy:fb_radius="8dp"
-      fancy:fb_text="Choose\nDocument"
+      fancy:fb_text="Take Photo"
       fancy:fb_textColor="#000000"
       />
 

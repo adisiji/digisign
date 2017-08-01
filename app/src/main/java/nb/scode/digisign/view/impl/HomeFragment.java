@@ -60,12 +60,13 @@ public final class HomeFragment extends BaseFragment<HomePresenter, HomeView>
   }
 
   @Override public void selectFile() {
-    Intent i = new Intent(getContext(), PrepSignActivity.class);
+    Intent i = new Intent(getContext(), ChoosePdfActivity.class);
     startActivity(i);
   }
 
   @Override public void takePhoto() {
-    Timber.i("takePhoto(): ok");
+    Intent intent = new Intent(getContext(), TakePhotoActivity.class);
+    startActivity(intent);
   }
 
   @OnClick(R.id.btn_sign_file) void sign() {

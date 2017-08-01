@@ -3,20 +3,20 @@ package nb.scode.digisign.presenter.impl;
 import android.support.annotation.NonNull;
 import java.io.File;
 import javax.inject.Inject;
-import nb.scode.digisign.interactor.PrepSignInteractor;
-import nb.scode.digisign.presenter.PrepSignPresenter;
-import nb.scode.digisign.view.PrepSignView;
+import nb.scode.digisign.interactor.ChoosePdfInteractor;
+import nb.scode.digisign.presenter.ChoosePdfPresenter;
+import nb.scode.digisign.view.ChoosePdfView;
 
-public final class PrepSignPresenterImpl extends BasePresenterImpl<PrepSignView>
-    implements PrepSignPresenter {
+public final class ChoosePdfPresenterImpl extends BasePresenterImpl<ChoosePdfView>
+    implements ChoosePdfPresenter {
   /**
    * The interactor
    */
-  @NonNull private final PrepSignInteractor mInteractor;
+  @NonNull private final ChoosePdfInteractor mInteractor;
 
   // The view is available using the mView variable
 
-  @Inject public PrepSignPresenterImpl(@NonNull PrepSignInteractor interactor) {
+  @Inject public ChoosePdfPresenterImpl(@NonNull ChoosePdfInteractor interactor) {
     mInteractor = interactor;
   }
 
@@ -41,7 +41,7 @@ public final class PrepSignPresenterImpl extends BasePresenterImpl<PrepSignView>
   }
 
   @Override public void getFilePdf(String uripdf) {
-    mInteractor.getFilePdf(uripdf, new PrepSignInteractor.GetPdfListener() {
+    mInteractor.getFilePdf(uripdf, new ChoosePdfInteractor.GetPdfListener() {
       @Override public void onComplete(File file) {
         mView.setPdfRenderer(file);
       }
