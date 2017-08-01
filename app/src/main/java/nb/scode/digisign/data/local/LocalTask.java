@@ -50,9 +50,11 @@ public interface LocalTask {
 
   void unZipFile(File zipfile, File targetDir, CommonListener listener);
 
-  void createSignFile(String urifile, String filetype, CommonListener listener);
+  void createSignFile(String urifile, String filename, String filetype, CommonListener listener);
 
   void verifySignature(File pubkey, File sigFile, File oriFile, CommonListener listener);
+
+  void createCacheImage(String photoPath, CommonListener listener);
 
   interface ListenerPrepPdf {
     void setFileName(String fileName);

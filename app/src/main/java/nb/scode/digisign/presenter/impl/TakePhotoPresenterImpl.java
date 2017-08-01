@@ -49,6 +49,7 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
       } else if (!fileName.contains(".jpg")) {
         fileName = fileName + ".jpg";
       }
+      mInteractor.writeFileToCache(photoPath);
       mView.sendFile(photoPath, fileName);
     }
   }

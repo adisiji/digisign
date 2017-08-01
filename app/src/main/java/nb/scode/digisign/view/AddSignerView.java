@@ -22,6 +22,12 @@ import java.util.List;
 
   String getFilename();
 
+  void clearErrorEditText();
+
+  void showErrorName(String message);
+
+  void showErrorEmail(String message);
+
   void showLoading();
 
   void hideLoading();

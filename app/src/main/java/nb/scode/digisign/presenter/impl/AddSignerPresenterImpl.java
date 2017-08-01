@@ -76,25 +76,27 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
       filetype = mView.getFilename().substring(sizeFileString - 3);
     }
     if (uripdf != null) {
-      mInteractor.createSignFile(uripdf, filetype, new AddSignerInteractor.CommonIListener() {
-        @Override public void onProcess() {
-          Timber.d("onProcess(): good");
-        }
+      final String finalFiletype = filetype;
+      mInteractor.createSignFile(uripdf, mView.getFilename(), filetype,
+          new AddSignerInteractor.CommonIListener() {
+            @Override public void onProcess() {
+              Timber.d("onProcess(): good");
+            }
 
-        @Override public void onSuccess() {
-          Timber.d("onSuccess(): good");
-          uploadDoc();
-        }
+            @Override public void onSuccess() {
+              Timber.d("onSuccess(): good");
+              uploadDoc(finalFiletype);
+            }
 
-        @Override public void onFailed(String message) {
-          mView.showToast(message);
-          Timber.e("onFailed(): " + message);
-        }
-      });
+            @Override public void onFailed(String message) {
+              mView.showToast(message);
+              Timber.e("onFailed(): " + message);
+            }
+          });
     }
   }
 
-  private void uploadDoc() {
+  private void uploadDoc(final String filetype) {
     mInteractor.uploadSignFile(new AddSignerInteractor.CommonIListener() {
       @Override public void onProcess() {
 
@@ -102,7 +104,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
       @Override public void onSuccess() {
         Timber.d("onSuccess(): NICE !");
-        insertPostData();
+        insertPostData(filetype);
       }
 
       @Override public void onFailed(String message) {
@@ -113,9 +115,18 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
     });
   }
 
-  private void insertPostData() {
+  private void insertPostData(String filetype) {
+    mView.clearErrorEditText();
     String name = mView.getName();
+    if (name.length() == 0) {
+      mView.showErrorName("Name cannot be empty");
+      return;
+    }
     String email = mView.getEmail();
+    if (email.length() == 0) {
+      mView.showErrorEmail("Email cannot be empty");
+      return;
+    }
     String desc = mView.getDesc();
     String token = null;
     String filename = mView.getFilename();
@@ -132,7 +143,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
     Timber.d("insertPostData(): from => " + from);
     if (token != null) {
-      mInteractor.insertPostData(desc, from, name, keyReceiver, filename, "pdf",
+      mInteractor.insertPostData(desc, from, name, keyReceiver, filename, filetype,
           new AddSignerInteractor.CommonIListener() {
             @Override public void onProcess() {
               Timber.d("onProcess(): post good");

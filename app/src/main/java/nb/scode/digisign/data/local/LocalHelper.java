@@ -109,6 +109,11 @@ import timber.log.Timber;
     mPref.edit().putString("EMAIL", email).apply();
   }
 
+  /**
+   * Method to create ECDSA Key based on 384bit
+   *
+   * @throws Exception
+   */
   @Override public void createKey(@android.support.annotation.NonNull final CommonListener listener)
       throws Exception {
     listener.onProcess();
@@ -346,6 +351,7 @@ import timber.log.Timber;
     FileOutputStream fos = new FileOutputStream(new File(newTempFolder, file));
     fos.write(bytes);
     fos.close();
+    Timber.d("saveFiletoCache(): OK");
   }
 
   private void testKunci() {
@@ -420,7 +426,7 @@ import timber.log.Timber;
     return true;
   }
 
-  @Override public void createSignFile(String urifile, String filetype,
+  @Override public void createSignFile(String urifile, String filename, String filetype,
       @android.support.annotation.NonNull CommonListener listener) {
     listener.onProcess();
     tempFolder = String.valueOf(Calendar.getInstance().getTimeInMillis());
@@ -428,9 +434,13 @@ import timber.log.Timber;
     File pdfFile = new File(context.getCacheDir(), "cache." + filetype);
 
     try {
-      byte[] pdfBytes = getBytesFromFile(pdfFile);
+      byte[] pdfBytes = new byte[0];
+      if (pdfFile != null) {
+        pdfBytes = getBytesFromFile(pdfFile);
+        Timber.d("getBytes For File: OK");
+      }
       byte[] privBytes = getBytesFromFile(new File(context.getFilesDir(), PRIVATE_KEY));
-
+      Timber.d("getBytes For Private Key File: OK");
       PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(privBytes);
       KeyFactory kf = KeyFactory.getInstance("EC");
       PrivateKey pvt = kf.generatePrivate(ks);
@@ -447,14 +457,9 @@ import timber.log.Timber;
       Timber.d("createSignFile(): signBytes => " + signBytes.toString());
       // Save Signature
       saveFiletoCache(signBytes, tempFolder, FILE_SIGNATURE_RESULT);
-      // Save PDF to same Folder with signature
-      Cursor cursor =
-          context.getContentResolver().query(Uri.parse(urifile), null, null, null, null, null);
-      if (cursor != null && cursor.moveToFirst()) {
-        String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-        saveFiletoCache(pdfBytes, tempFolder, displayName);
-        cursor.close();
-      }
+      // Save File to same Folder with signature
+      saveFiletoCache(pdfBytes, tempFolder, filename);
+
       listener.onFinished();
     } catch (@android.support.annotation.NonNull IOException | SignatureException | NoSuchAlgorithmException | InvalidKeyException | InvalidKeySpecException e) {
       e.printStackTrace();
@@ -567,5 +572,26 @@ import timber.log.Timber;
             listener.onError(throwable.getMessage());
           }
         });
+  }
+
+  @Override public void createCacheImage(String photoPath, CommonListener listener) {
+    try {
+      final Uri uri = Uri.fromFile(new File(photoPath));
+      InputStream input = context.getContentResolver().openInputStream(uri);
+      File file = new File(context.getCacheDir(), "cache.jpg");
+      OutputStream output = new FileOutputStream(file);
+      byte[] buffer = new byte[4 * 1024]; // or other buffer size
+      int read;
+      while ((read = input.read(buffer)) != -1) {
+        output.write(buffer, 0, read);
+      }
+      output.flush();
+      output.close();
+      input.close();
+      listener.onFinished();
+    } catch (IOException e) {
+      listener.onError(e.getMessage());
+      e.printStackTrace();
+    }
   }
 }

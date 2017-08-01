@@ -133,6 +133,19 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     return filenamez;
   }
 
+  @Override public void clearErrorEditText() {
+    etEmail.setError(null);
+    etName.setError(null);
+  }
+
+  @Override public void showErrorName(String message) {
+    etName.setError(message);
+  }
+
+  @Override public void showErrorEmail(String message) {
+    etEmail.setError(message);
+  }
+
   @Override public void showLoading() {
     progressDialog.show();
   }
