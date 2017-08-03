@@ -30,6 +30,10 @@ public interface LocalTask {
 
   void setEmailPref(String email);
 
+  String getUserToken();
+
+  void setUserToken(String token);
+
   boolean isLocalKeyPairAvailable();
 
   void createKey(CommonListener listener) throws Exception;

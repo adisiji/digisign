@@ -21,7 +21,11 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-
+    if (viewCreated) {
+      if (mView != null) {
+        mView.dispatchTakePictureIntent();
+      }
+    }
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 

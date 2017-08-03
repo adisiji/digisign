@@ -25,7 +25,7 @@
 
   <string name="title_page_choose_signer">Choose PDF File</string>
   <string name="title_page_take_photo">Take Photo</string>
-  <string name="title_page_add_signer">Add Signer</string>
+  <string name="title_page_add_signer">Add Receiver</string>
   <string name="title_page_received_doc">Received Doc</string>
 
   <string name="file_name">File name :</string>

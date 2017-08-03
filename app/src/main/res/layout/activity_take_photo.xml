@@ -101,7 +101,7 @@
       fancy:fb_defaultColor="@color/yellow_default"
       fancy:fb_focusColor="@color/yellow_focus"
       fancy:fb_radius="8dp"
-      fancy:fb_text="Add Signature"
+      fancy:fb_text="Choose Receiver"
       fancy:fb_textColor="#000000"
       />
 

@@ -141,7 +141,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
     String from = mInteractor.getOwnerKey().getKey();
 
-    Timber.d("insertPostData(): from => " + from);
+    Timber.d("insertPostData(): from => %s, to => %s", from, keyReceiver);
     if (token != null) {
       mInteractor.insertPostData(desc, from, name, keyReceiver, filename, filetype,
           new AddSignerInteractor.CommonIListener() {

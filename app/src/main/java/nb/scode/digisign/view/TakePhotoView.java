@@ -8,5 +8,7 @@ import android.support.annotation.UiThread;
 
   String getFileName();
 
+  void dispatchTakePictureIntent();
+
   void sendFile(String photoPath, String fieleName);
 }

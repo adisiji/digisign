@@ -6,6 +6,10 @@ public interface MainInteractor extends BaseInteractor {
 
   void logout();
 
+  boolean isUserNull();
+
+  void getUser(MainListener listener);
+
   void saveToken(String token);
 
   boolean isKeyPairAvailable();

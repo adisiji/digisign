@@ -11,6 +11,8 @@ import java.io.File;
 
   void hideLoading();
 
+  void showDialog(String title, String body);
+
   String getDescIntent();
 
   String getDownloadLink();
@@ -30,4 +32,6 @@ import java.io.File;
   void setFileStatus(String fileStatus);
 
   void setPdfRenderer(File file);
+
+  void setImageRenderer(File file);
 }

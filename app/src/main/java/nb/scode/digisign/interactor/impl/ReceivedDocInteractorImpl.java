@@ -69,6 +69,7 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
       }
 
       @Override public void onFailed(String message) {
+        Timber.e("onFailed(): " + message);
         listener.onFailed(message);
       }
     });
@@ -170,5 +171,9 @@ public final class ReceivedDocInteractorImpl implements ReceivedDocInteractor {
       ext = " MB";
     }
     return String.valueOf(size) + ext;
+  }
+
+  @Override public String getOriFileType() {
+    return fileType;
   }
 }

@@ -68,8 +68,14 @@
         android:launchMode="singleTask">
     </activity>
     <activity android:name=".view.impl.ReceivedDocActivity">
+      <intent-filter>
+        <action android:name="OPEN_RECEIVED_DOC"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
     </activity>
-    <activity android:name=".view.impl.TakePhotoActivity">
+    <activity
+        android:name=".view.impl.TakePhotoActivity"
+        android:parentActivityName=".view.impl.MainActivity">
     </activity>
   </application>
 

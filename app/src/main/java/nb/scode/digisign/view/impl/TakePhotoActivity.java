@@ -54,7 +54,7 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
     ButterKnife.bind(this);
     // Setup toolbar
     setSupportActionBar(toolbar);
-    setupToolbar(getString(R.string.title_page_choose_signer));
+    setupToolbar(getString(R.string.title_page_take_photo));
     // Do not call mPresenter from here, it will be null! Wait for onStart or onPostCreate.
   }
 
@@ -85,7 +85,7 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
     return image;
   }
 
-  @OnClick(R.id.btn_take_photo) void dispatchTakePictureIntent() {
+  @Override @OnClick(R.id.btn_take_photo) public void dispatchTakePictureIntent() {
     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
       // Create the File where the photo should go
@@ -184,6 +184,11 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
     if (mPresenter != null) {
       mPresenter.addSigner();
     }
+  }
+
+  @Override public void onBackPressed() {
+    super.onBackPressed();
+    finish();
   }
 
   @Override public String getPhotoPath() {

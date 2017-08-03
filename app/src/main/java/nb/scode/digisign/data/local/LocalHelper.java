@@ -56,6 +56,7 @@ import timber.log.Timber;
 
   private static final String PREF_FILE_NAME = "digi_sign_pref";
   private static final String PREF_FIRST_USE = "first_use";
+  private static final String PREF_TOKEN_USER = "token_user";
   private static final String PRIVATE_KEY = "privkey.ppk";
   private static final String PUBLIC_KEY = "pubkey.pbk";
   private static final String SIGN_INSTANCE = "SHA384withECDSA";
@@ -107,6 +108,14 @@ import timber.log.Timber;
 
   @Override public void setEmailPref(String email) {
     mPref.edit().putString("EMAIL", email).apply();
+  }
+
+  @Override public String getUserToken() {
+    return mPref.getString(PREF_TOKEN_USER, null);
+  }
+
+  @Override public void setUserToken(String token) {
+    mPref.edit().putString(PREF_TOKEN_USER, token).apply();
   }
 
   /**
@@ -388,7 +397,6 @@ import timber.log.Timber;
   }
 
 /*
- *
  * Zips a file at a location and places the resulting zip file at the toLocation
  * Example: zipFileAtPath("downloads/myfolder", "downloads/myFolder.zip");
  */

@@ -1,15 +1,19 @@
 package nb.scode.digisign.view.impl;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.inject.Inject;
 import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AppComponent;
@@ -134,6 +139,78 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
   }
 
   /**
+   * Method to scale down the image after taking photo, to showing in ImageView
+   *
+   * @param path The photo path
+   * @return bitmap image
+   */
+  private Bitmap getBitmap(String path) {
+
+    Uri uri = Uri.fromFile(new File(path));
+    InputStream in = null;
+    try {
+      final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+      in = getContentResolver().openInputStream(uri);
+
+      // Decode image size
+      BitmapFactory.Options o = new BitmapFactory.Options();
+      o.inJustDecodeBounds = true;
+      BitmapFactory.decodeStream(in, null, o);
+      in.close();
+
+      int scale = 1;
+      while ((o.outWidth * o.outHeight) * (1 / Math.pow(scale, 2)) > IMAGE_MAX_SIZE) {
+        scale++;
+      }
+      Timber.d("getBitmap(): scale = "
+          + scale
+          + ", orig-width: "
+          + o.outWidth
+          + ", orig-height: "
+          + o.outHeight);
+
+      Bitmap b = null;
+      in = getContentResolver().openInputStream(uri);
+      if (scale > 1) {
+        scale--;
+        // scale to max possible inSampleSize that still yields an image
+        // larger than target
+        o = new BitmapFactory.Options();
+        o.inSampleSize = scale;
+        b = BitmapFactory.decodeStream(in, null, o);
+
+        // resize to desired dimensions
+        int height = b.getHeight();
+        int width = b.getWidth();
+        Timber.d(
+            "getBitmap(): 1th scale operation dimenions - width: " + width + ", height: " + height);
+
+        double y = Math.sqrt(IMAGE_MAX_SIZE / (((double) width) / height));
+        double x = (y / height) * width;
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, (int) x, (int) y, true);
+        b.recycle();
+        b = scaledBitmap;
+
+        System.gc();
+      } else {
+        b = BitmapFactory.decodeStream(in);
+      }
+      in.close();
+
+      Timber.d("getBitmap(): bitmap size - width: " + b.getWidth() + ", height: " + b.getHeight());
+      return b;
+    } catch (IOException e) {
+      Timber.e("getBitmap(): " + e.getMessage());
+      return null;
+    }
+  }
+
+  @Override public void setImageRenderer(File file) {
+    ivPreview.setImageBitmap(getBitmap(file.getAbsolutePath()));
+  }
+
+  /**
    * Closes the {@link android.graphics.pdf.PdfRenderer} and related resources.
    *
    * @throws java.io.IOException When the PDF file cannot be closed.
@@ -170,7 +247,7 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
   }
 
   @Override public String getDownloadLink() {
-    return intent.getStringExtra("linkdown");
+    return intent.getStringExtra("linkDownload");
   }
 
   @Override public String getFromIntent() {
@@ -178,7 +255,7 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
   }
 
   @Override public String getTimeIntent() {
-    return intent.getStringExtra("times");
+    return intent.getStringExtra("timestamp");
   }
 
   @Override public String getTypeIntent() {
@@ -233,5 +310,16 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
 
   @Override public void setRedStatus() {
     tvStatus.setTextColor(ContextCompat.getColor(this, R.color.red_status));
+  }
+
+  @Override public void showDialog(String title, String body) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle(title)
+        .setMessage(body)
+        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+          @Override public void onClick(DialogInterface dialogInterface, int i) {
+            dialogInterface.dismiss();
+          }
+        });
+    builder.create().show();
   }
 }

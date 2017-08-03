@@ -46,6 +46,14 @@ import nb.scode.digisign.data.remote.FireModel.Post;
     localTask.setEmailPref(email);
   }
 
+  @Override public String getUserToken() {
+    return localTask.getUserToken();
+  }
+
+  @Override public void setUserToken(String token) {
+    localTask.setUserToken(token);
+  }
+
   @Override public boolean isLocalKeyPairAvailable() {
     return localTask.isLocalKeyPairAvailable();
   }
@@ -85,6 +93,10 @@ import nb.scode.digisign.data.remote.FireModel.Post;
   @Override public void firebaseAuthWithGoogle(GoogleSignInAccount account,
       CommonAListener aListener) {
     apiTask.firebaseAuthWithGoogle(account, aListener);
+  }
+
+  @Override public void firebaseReAuth(String token, CommonAListener aListener) {
+    apiTask.firebaseReAuth(token, aListener);
   }
 
   @Override public boolean isUserSignedIn() {
@@ -150,6 +162,7 @@ import nb.scode.digisign.data.remote.FireModel.Post;
 
   @Override public void saveToken(String token) {
     apiTask.saveToken(token);
+    localTask.setUserToken(token);
   }
 
   @Override public void initListUser(CommonAListener listener) {

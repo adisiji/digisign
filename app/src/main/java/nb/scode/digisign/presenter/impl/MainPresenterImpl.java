@@ -22,7 +22,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
     if (viewCreated) {
-      mainStarter();
+      checkNullUser();
     }
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
@@ -42,8 +42,26 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
     super.onPresenterDestroyed();
   }
 
-  private void mainStarter() {
+  private void checkNullUser() {
     mView.showProgressDialog("Loading...");
+    if (mInteractor.isUserNull()) {
+      mInteractor.getUser(new MainInteractor.MainListener() {
+        @Override public void onSuccess() {
+          mainStarter();
+        }
+
+        @Override public void onProcess() {
+
+        }
+
+        @Override public void onFailed(String message) {
+
+        }
+      });
+    }
+  }
+
+  private void mainStarter() {
     if (mInteractor.isRecentEmailSame()) {
       if (mInteractor.isKeyPairAvailable()) {
         mInteractor.isRemoteKeyPairAvail(new MainInteractor.MainListener() {

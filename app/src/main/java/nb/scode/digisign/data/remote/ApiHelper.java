@@ -57,6 +57,7 @@ import timber.log.Timber;
   private FirebaseStorage storage;
   @NonNull private List<KeyUser> keyUserList = new ArrayList<>();
   @Nullable private KeyUser keyUserOwner;
+  private boolean isFirstList = true;
 
   /**
    * Instantiates a new Api helper.
@@ -128,6 +129,25 @@ import timber.log.Timber;
         });
   }
 
+  @Override public void firebaseReAuth(String token, final CommonAListener aListener) {
+    aListener.onProcess();
+    AuthCredential credential = GoogleAuthProvider.getCredential(token, null);
+    auth.signInWithCredential(credential)
+        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+          @Override public void onComplete(@NonNull Task<AuthResult> task) {
+            if (task.isSuccessful()) {
+              user = auth.getCurrentUser();
+              aListener.onSuccess();
+            }
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override public void onFailure(@NonNull Exception e) {
+            aListener.onFailed(e.getMessage());
+          }
+        });
+  }
+
   @Override public void firebaseAuthWithGoogle(@NonNull GoogleSignInAccount account,
       @NonNull final CommonAListener listener) {
     listener.onProcess();
@@ -178,8 +198,7 @@ import timber.log.Timber;
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(
-              @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
-              throws Exception {
+              @NonNull @io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
             Timber.e("accept(): error " + throwable.getMessage());
             listener.onFailed(throwable.getMessage());
           }
@@ -268,8 +287,7 @@ import timber.log.Timber;
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(
-              @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
-              throws Exception {
+              @NonNull @io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
             listener.onFailed(throwable.getMessage());
           }
         }, new Action() {
@@ -319,31 +337,38 @@ import timber.log.Timber;
 
   @Override public void initListUser(@NonNull final CommonAListener listener) {
     listener.onProcess();
-    DatabaseReference mDatabase = database.getReference("users");
-    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-      @Override public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-          String key = childDataSnapshot.getKey();
-          User userx = childDataSnapshot.getValue(User.class);
-          if (key.equals(user.getUid())) {
-            keyUserOwner = new KeyUser(key, userx);
-            continue;
+    if (isFirstList) {
+      isFirstList = false;
+      final DatabaseReference mDatabase = database.getReference("users");
+      mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+          for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+            String key = childDataSnapshot.getKey();
+            User userx = childDataSnapshot.getValue(User.class);
+            if (key.equals(user.getUid())) {
+              keyUserOwner = new KeyUser(key, userx);
+              continue;
+            }
+            KeyUser keyUser = new KeyUser(key, userx);
+            keyUserList.add(keyUser);
+            Timber.d("onDataChange(): key => " + key); //displays the key for the node (uid)
+            Timber.d("onDataChange(): value => "
+                + userx.getEmail());   //gives the value for given keyname (User)
           }
-          KeyUser keyUser = new KeyUser(key, userx);
-          keyUserList.add(keyUser);
-          Timber.d("onDataChange(): key => " + key); //displays the key for the node (uid)
-          Timber.d("onDataChange(): value => "
-              + userx.getEmail());   //gives the value for given keyname (User)
+          Timber.d("onDataChange(): finished");
+          listener.onSuccess();
+          mDatabase.removeEventListener(this);
         }
-        Timber.d("onDataChange(): finished");
-        listener.onSuccess();
-      }
 
-      @Override public void onCancelled(@NonNull DatabaseError databaseError) {
-        listener.onFailed(databaseError.getMessage());
-        Timber.e("onCancelled(): " + databaseError.getDetails());
-      }
-    });
+        @Override public void onCancelled(@NonNull DatabaseError databaseError) {
+          listener.onFailed(databaseError.getMessage());
+          Timber.e("onCancelled(): " + databaseError.getDetails());
+          mDatabase.removeEventListener(this);
+        }
+      });
+    } else {
+      listener.onSuccess();
+    }
   }
 
   @Nullable @Override public KeyUser getOwnerKey() {
@@ -498,8 +523,7 @@ import timber.log.Timber;
             }
           }, new Consumer<Throwable>() {
             @Override public void accept(
-                @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
-                throws Exception {
+                @NonNull @io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
               listener.onFailed(throwable.getMessage());
             }
           }, new Action() {
@@ -559,8 +583,7 @@ import timber.log.Timber;
             }
           }, new Consumer<Throwable>() {
             @Override public void accept(
-                @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
-                throws Exception {
+                @NonNull @io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
               listener.onFailed(throwable.getMessage());
             }
           }, new Action() {
@@ -619,8 +642,7 @@ import timber.log.Timber;
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(
-              @NonNull @io.reactivex.annotations.NonNull Throwable throwable)
-              throws Exception {
+              @NonNull @io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
             listener.onFailed(throwable.getMessage());
           }
         }, new Action() {

@@ -72,13 +72,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     String type = data.get("type");
 
     intent.putExtra("desc", desc);
-    intent.putExtra("linkdown", link);
+    intent.putExtra("linkDownload", link);
     intent.putExtra("origin", origin);
-    intent.putExtra("times", times);
+    intent.putExtra("timestamp", times);
     intent.putExtra("type", type);
     intent.putExtra("senderkey", senderKey);
 
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =
         PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
 

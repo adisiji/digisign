@@ -9,6 +9,8 @@ public interface ReceivedDocInteractor extends BaseInteractor {
 
   void setFileType(String type);
 
+  String getOriFileType();
+
   void downloadFile(String link, CommonRListener listener);
 
   void checkingFiles(CommonRListener listener);

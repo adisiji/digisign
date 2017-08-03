@@ -12,8 +12,8 @@ import nb.scode.digisign.data.remote.FireModel.Post;
  */
 public interface ApiTask {
 
-  public static final String PUBLIC_KEY = "pubkey.pbk";
-  public static final String PRIVATE_KEY = "privkey.pvk";
+  String PUBLIC_KEY = "pubkey.pbk";
+  String PRIVATE_KEY = "privkey.pvk";
 
   void register(String email, String pass, CommonAListener listener);
 
@@ -23,6 +23,19 @@ public interface ApiTask {
 
   void firebaseAuthWithGoogle(GoogleSignInAccount account, CommonAListener aListener);
 
+  /**
+   * this is used when app is received doc, and then get user again from token saved in pref
+   *
+   * @param token saved in prefs
+   * @param aListener callback to interactor
+   */
+  void firebaseReAuth(String token, CommonAListener aListener);
+
+  /**
+   * Save token to firebase daatabase
+   *
+   * @param token Token user
+   */
   void saveToken(String token);
 
   boolean isUserSignedIn();

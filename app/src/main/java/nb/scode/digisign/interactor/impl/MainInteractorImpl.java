@@ -43,6 +43,26 @@ public final class MainInteractorImpl implements MainInteractor {
     }
   }
 
+  @Override public boolean isUserNull() {
+    return dataTask.getEmailUser() == null;
+  }
+
+  @Override public void getUser(final MainListener listener) {
+    dataTask.firebaseReAuth(dataTask.getUserToken(), new ApiTask.CommonAListener() {
+      @Override public void onProcess() {
+        listener.onProcess();
+      }
+
+      @Override public void onSuccess() {
+        listener.onSuccess();
+      }
+
+      @Override public void onFailed(String message) {
+        listener.onFailed(message);
+      }
+    });
+  }
+
   @Override public void downloadKeyPair(@NonNull final MainListener listener) {
     File privkey = dataTask.getPrivateKey();
     File pubkey = dataTask.getPublicKey();

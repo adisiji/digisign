@@ -49,6 +49,7 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
       mView.showLoading();
       String downlink = mView.getDownloadLink();
       mInteractor.setFileType(mView.getTypeIntent());
+      Timber.d("initReceivedDoc(): filetype => " + mView.getTypeIntent());
       mInteractor.downloadFile(downlink, new ReceivedDocInteractor.CommonRListener() {
         @Override public void onProcess() {
 
@@ -60,7 +61,8 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
         }
 
         @Override public void onFailed(String message) {
-
+          mView.hideLoading();
+          mView.showDialog("Failed Download", "Cannot download zip file");
         }
       });
     }
@@ -114,6 +116,8 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
 
           @Override public void onFailed(String message) {
             Timber.d("onFailed(): download pubkey " + message);
+            mView.hideLoading();
+            mView.showDialog("Failed Download", "Cannot download public key");
           }
         });
   }
@@ -147,7 +151,12 @@ public final class ReceivedDocPresenterImpl extends BasePresenterImpl<ReceivedDo
       }
 
       @Override public void onSuccess(File file) {
-        mView.setPdfRenderer(file);
+        String filetype = mInteractor.getOriFileType();
+        if (filetype.equals("pdf")) {
+          mView.setPdfRenderer(file);
+        } else if (filetype.equals("jpg")) {
+          mView.setImageRenderer(file);
+        }
         mView.hideLoading();
       }
 

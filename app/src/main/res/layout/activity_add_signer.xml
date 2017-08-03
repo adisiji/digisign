@@ -55,7 +55,7 @@
         android:id="@+id/et_email_signer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_signer_email"
+        android:hint="@string/hint_receiver_email"
         android:inputType="textEmailAddress"
         android:maxLines="1"
         />
@@ -73,7 +73,7 @@
         android:id="@+id/et_name_signer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_signer_name"
+        android:hint="@string/hint_receiver_name"
         android:inputType="textPersonName"
         android:maxLines="1"
         />
