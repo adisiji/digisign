@@ -3,6 +3,7 @@ package nb.scode.digisign.injection;
 import android.support.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
+import nb.scode.digisign.data.DataTask;
 import nb.scode.digisign.interactor.SettingsInteractor;
 import nb.scode.digisign.interactor.impl.SettingsInteractorImpl;
 import nb.scode.digisign.presenter.SettingsPresenter;
@@ -10,8 +11,8 @@ import nb.scode.digisign.presenter.impl.SettingsPresenterImpl;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 
 @Module public final class SettingsViewModule {
-  @NonNull @Provides public SettingsInteractor provideInteractor() {
-    return new SettingsInteractorImpl();
+  @NonNull @Provides public SettingsInteractor provideInteractor(DataTask dataTask) {
+    return new SettingsInteractorImpl(dataTask);
   }
 
   @NonNull @Provides public PresenterFactory<SettingsPresenter> providePresenterFactory(

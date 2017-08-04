@@ -602,4 +602,56 @@ import timber.log.Timber;
       e.printStackTrace();
     }
   }
+
+  @Override public String getCacheFolderSize() {
+    long size = 0;
+    String suffix = " KB";
+    File file = context.getCacheDir();
+    File file1 = context.getExternalCacheDir();
+    size += getDirSize(file);
+    size += getDirSize(file1);
+    size = size / 1024; // in KB
+    if (size > 1024) {
+      size = size / 1024; // in MB
+      suffix = " MB";
+    }
+    if (size > 1024) {
+      size = size / 1024; // in GB
+      suffix = " GB";
+    }
+    return String.valueOf(size + suffix);
+  }
+
+  private long getDirSize(File dir) {
+    long size = 0;
+    for (File file : dir.listFiles()) {
+      if (file != null && file.isDirectory()) {
+        size += getDirSize(file);
+      } else if (file != null && file.isFile()) {
+        size += file.length();
+      }
+    }
+    return size;
+  }
+
+  @Override public void clearCacheFolder() {
+    File dir = context.getCacheDir();
+    if (dir != null && dir.isDirectory()) {
+      deleteDir(dir);
+    }
+  }
+
+  private boolean deleteDir(File dir) {
+    if (dir != null && dir.isDirectory()) {
+      String[] children = dir.list();
+      for (String aChildren : children) {
+        boolean success = deleteDir(new File(dir, aChildren));
+        if (!success) {
+          return false;
+        }
+      }
+    }
+    // The directory is now empty so delete it
+    return dir != null && dir.delete();
+  }
 }

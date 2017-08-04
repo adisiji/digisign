@@ -60,6 +60,10 @@ public interface LocalTask {
 
   void createCacheImage(String photoPath, CommonListener listener);
 
+  void clearCacheFolder();
+
+  String getCacheFolderSize();
+
   interface ListenerPrepPdf {
     void setFileName(String fileName);
 

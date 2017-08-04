@@ -7,8 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import javax.inject.Inject;
 import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AppComponent;
@@ -22,6 +25,8 @@ public final class SettingsFragment extends BaseFragment<SettingsPresenter, Sett
     implements SettingsView {
   @Inject PresenterFactory<SettingsPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.wv_credits) WebView webView;
+  @BindView(R.id.content_cache_size) TextView tvCacheSize;
+
   // Your presenter is available using the mPresenter variable
 
   public SettingsFragment() {
@@ -50,5 +55,17 @@ public final class SettingsFragment extends BaseFragment<SettingsPresenter, Sett
 
   @NonNull @Override protected PresenterFactory<SettingsPresenter> getPresenterFactory() {
     return mPresenterFactory;
+  }
+
+  @OnClick(R.id.btn_clear_cache) void clearCache() {
+    mPresenter.clearCache();
+  }
+
+  @Override public void showToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override public void setCacheSize(String cacheSize) {
+    tvCacheSize.setText(cacheSize);
   }
 }

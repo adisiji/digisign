@@ -206,4 +206,12 @@ import nb.scode.digisign.data.remote.FireModel.Post;
   @Override public void createCacheImage(String photoPath, CommonListener listener) {
     localTask.createCacheImage(photoPath, listener);
   }
+
+  @Override public void clearCacheFolder() {
+    localTask.clearCacheFolder();
+  }
+
+  @Override public String getCacheFolderSize() {
+    return localTask.getCacheFolderSize();
+  }
 }

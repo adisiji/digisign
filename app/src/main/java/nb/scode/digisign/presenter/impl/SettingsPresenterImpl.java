@@ -21,7 +21,9 @@ public final class SettingsPresenterImpl extends BasePresenterImpl<SettingsView>
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
-
+    if (mView != null) {
+      mView.setCacheSize(mInteractor.getCacheFolderSize());
+    }
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -38,5 +40,13 @@ public final class SettingsPresenterImpl extends BasePresenterImpl<SettingsView>
          */
 
     super.onPresenterDestroyed();
+  }
+
+  @Override public void clearCache() {
+    mInteractor.clearCache();
+    if (mView != null) {
+      mView.setCacheSize("0 KB");
+      mView.showToast("Cache has been cleared");
+    }
   }
 }
