@@ -11,43 +11,14 @@
     >
 
   <TextView
-      android:id="@+id/tv_title_notif"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Document Notification"
-      android:textColor="@color/dark_blue"
-      android:textStyle="bold"
-      />
-
-  <TextView
-      android:id="@+id/tv_title_vibrate"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="4dp"
-      android:text="Vibrate"
-      android:textColor="@android:color/black"
-      app:layout_constraintTop_toBottomOf="@id/tv_title_notif"
-      />
-
-  <TextView
-      android:id="@+id/tv_setting_vibrate"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginLeft="8dp"
-      android:text="Default"
-      app:layout_constraintBaseline_toBaselineOf="@id/tv_title_vibrate"
-      app:layout_constraintLeft_toRightOf="@id/tv_title_vibrate"
-      />
-
-  <TextView
       android:id="@+id/tv_title_cache"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="8dp"
       android:text="Document Cache"
       android:textColor="@color/dark_blue"
       android:textStyle="bold"
-      app:layout_constraintTop_toBottomOf="@id/tv_setting_vibrate"
+      app:layout_constraintTop_toTopOf="parent"
       />
 
   <TextView

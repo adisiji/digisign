@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -60,7 +59,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
       android:text="Status:"
-      app:layout_constraintBottom_toTopOf="@+id/btn_save_local"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintLeft_toLeftOf="@id/guide_v10"
       app:layout_constraintTop_toBottomOf="@+id/iv_file_preview"
       />
@@ -75,6 +74,8 @@
       app:layout_constraintTop_toBottomOf="@id/guide_h20"
       />
 
+  <!--
+  - disable function
   <mehdi.sakout.fancybuttons.FancyButton
       android:id="@+id/btn_save_local"
       android:layout_width="wrap_content"
@@ -95,5 +96,5 @@
       fancy:fb_textColor="#000000"
       />
 
-
+  -->
 </android.support.constraint.ConstraintLayout>
