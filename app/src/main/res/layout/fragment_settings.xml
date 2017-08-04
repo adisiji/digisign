@@ -17,6 +17,7 @@
       android:layout_marginTop="8dp"
       android:text="Document Cache"
       android:textColor="@color/dark_blue"
+      android:textSize="16sp"
       android:textStyle="bold"
       app:layout_constraintTop_toTopOf="parent"
       />
@@ -25,7 +26,7 @@
       android:id="@+id/tv_cache_size"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="4dp"
+      android:layout_marginTop="8dp"
       android:text="Cache Size"
       android:textColor="@android:color/black"
       app:layout_constraintTop_toBottomOf="@id/tv_title_cache"
@@ -111,15 +112,16 @@
       app:layout_constraintLeft_toRightOf="@id/tv_title_photo"
       />
 
-
   <TextView
       android:id="@+id/tv_title_credits"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="4dp"
+      android:layout_marginTop="16dp"
       android:text="Credits"
       android:textColor="@color/dark_blue"
+      android:textSize="16sp"
       android:textStyle="bold"
+      app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintTop_toBottomOf="@id/btn_clear_photo_cache"
       />
 
