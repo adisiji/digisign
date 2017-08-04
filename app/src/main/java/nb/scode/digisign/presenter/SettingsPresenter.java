@@ -6,4 +6,6 @@ public interface SettingsPresenter extends BasePresenter<SettingsView> {
 
   void clearCache();
 
+  void clearPhotoCache();
+
 }

@@ -26,6 +26,7 @@ public final class SettingsFragment extends BaseFragment<SettingsPresenter, Sett
   @Inject PresenterFactory<SettingsPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.wv_credits) WebView webView;
   @BindView(R.id.content_cache_size) TextView tvCacheSize;
+  @BindView(R.id.tv_content_photo_size) TextView tvPhotoSize;
 
   // Your presenter is available using the mPresenter variable
 
@@ -61,11 +62,19 @@ public final class SettingsFragment extends BaseFragment<SettingsPresenter, Sett
     mPresenter.clearCache();
   }
 
+  @OnClick(R.id.btn_clear_photo_cache) void clearPhotoCache() {
+    mPresenter.clearPhotoCache();
+  }
+
   @Override public void showToast(String message) {
     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
   }
 
   @Override public void setCacheSize(String cacheSize) {
     tvCacheSize.setText(cacheSize);
+  }
+
+  @Override public void setPhotoSize(String photoSize) {
+    tvPhotoSize.setText(photoSize);
   }
 }

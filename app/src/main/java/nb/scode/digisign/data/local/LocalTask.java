@@ -62,7 +62,11 @@ public interface LocalTask {
 
   void clearCacheFolder();
 
+  void clearPhotoFolder();
+
   String getCacheFolderSize();
+
+  String getPhotoFolderSize();
 
   interface ListenerPrepPdf {
     void setFileName(String fileName);

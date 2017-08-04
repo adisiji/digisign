@@ -214,4 +214,12 @@ import nb.scode.digisign.data.remote.FireModel.Post;
   @Override public String getCacheFolderSize() {
     return localTask.getCacheFolderSize();
   }
+
+  @Override public void clearPhotoFolder() {
+    localTask.clearPhotoFolder();
+  }
+
+  @Override public String getPhotoFolderSize() {
+    return localTask.getPhotoFolderSize();
+  }
 }

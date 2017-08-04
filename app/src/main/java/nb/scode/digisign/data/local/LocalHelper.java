@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.OpenableColumns;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -622,6 +623,23 @@ import timber.log.Timber;
     return String.valueOf(size + suffix);
   }
 
+  @Override public String getPhotoFolderSize() {
+    long size = 0;
+    String suffix = " KB";
+    File file = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    size += getDirSize(file);
+    size = size / 1024; // in KB
+    if (size > 1024) {
+      size = size / 1024; // in MB
+      suffix = " MB";
+    }
+    if (size > 1024) {
+      size = size / 1024; // in GB
+      suffix = " GB";
+    }
+    return String.valueOf(size + suffix);
+  }
+
   private long getDirSize(File dir) {
     long size = 0;
     for (File file : dir.listFiles()) {
@@ -636,6 +654,13 @@ import timber.log.Timber;
 
   @Override public void clearCacheFolder() {
     File dir = context.getCacheDir();
+    if (dir != null && dir.isDirectory()) {
+      deleteDir(dir);
+    }
+  }
+
+  @Override public void clearPhotoFolder() {
+    File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     if (dir != null && dir.isDirectory()) {
       deleteDir(dir);
     }

@@ -6,4 +6,8 @@ public interface SettingsInteractor extends BaseInteractor {
 
   void clearCache();
 
+  String getPhotoFolderSize();
+
+  void clearCachePhoto();
+
 }

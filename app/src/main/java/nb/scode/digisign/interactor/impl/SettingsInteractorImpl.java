@@ -19,4 +19,12 @@ public final class SettingsInteractorImpl implements SettingsInteractor {
   @Override public void clearCache() {
     dataTask.clearCacheFolder();
   }
+
+  @Override public String getPhotoFolderSize() {
+    return dataTask.getPhotoFolderSize();
+  }
+
+  @Override public void clearCachePhoto() {
+    dataTask.clearPhotoFolder();
+  }
 }

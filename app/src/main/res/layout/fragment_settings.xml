@@ -94,6 +94,53 @@
       fancy:fb_textColor="#FFFFFF"
       />
 
+  <mehdi.sakout.fancybuttons.FancyButton
+      android:id="@+id/btn_clear_photo_cache"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="12dp"
+      android:layout_marginTop="8dp"
+      android:paddingBottom="10dp"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:paddingTop="10dp"
+      app:layout_constraintLeft_toRightOf="@+id/content_cache_size"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/btn_clear_cache"
+      fancy:fb_borderColor="#FFFFFF"
+      fancy:fb_borderWidth="1dp"
+      fancy:fb_defaultColor="#3b5998"
+      fancy:fb_focusColor="#5474b8"
+      fancy:fb_fontIconResource="&#xf1f8;"
+      fancy:fb_iconPosition="left"
+      fancy:fb_radius="5dp"
+      fancy:fb_text="CLEAR PHOTO"
+      fancy:fb_textColor="#FFFFFF"
+      />
+
+  <TextView
+      android:id="@+id/tv_title_photo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="@string/photo_size"
+      android:textColor="@android:color/black"
+      app:layout_constraintBottom_toBottomOf="@id/btn_clear_photo_cache"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toTopOf="@id/btn_clear_photo_cache"
+      />
+
+  <TextView
+      android:id="@+id/tv_content_photo_size"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:text="-- MB"
+      app:layout_constraintBaseline_toBaselineOf="@id/tv_title_photo"
+      app:layout_constraintLeft_toRightOf="@id/tv_title_photo"
+      />
+
+
   <TextView
       android:id="@+id/tv_title_credits"
       android:layout_width="wrap_content"
@@ -102,7 +149,7 @@
       android:text="Credits"
       android:textColor="@color/dark_blue"
       android:textStyle="bold"
-      app:layout_constraintTop_toBottomOf="@id/btn_clear_cache"
+      app:layout_constraintTop_toBottomOf="@id/btn_clear_photo_cache"
       />
 
   <WebView

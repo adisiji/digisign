@@ -8,4 +8,6 @@ import android.support.annotation.UiThread;
 
   void setCacheSize(String cacheSize);
 
+  void setPhotoSize(String photoSize);
+
 }
