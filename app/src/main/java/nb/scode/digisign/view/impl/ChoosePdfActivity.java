@@ -22,6 +22,7 @@ import butterknife.OnClick;
 import java.io.File;
 import java.io.IOException;
 import javax.inject.Inject;
+import mehdi.sakout.fancybuttons.FancyButton;
 import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerPrepSignViewComponent;
@@ -40,11 +41,11 @@ public final class ChoosePdfActivity extends BaseActivity<ChoosePdfPresenter, Ch
   // the type of the original request.  Choose any value.
   private static final int READ_REQUEST_CODE = 1337;
   private static final int PERMISSIONS_REQUEST_EXT_STORAGE = 212;
-  private final String BUNDLE_KEY = "PREP_PDF_KEY";
   @Inject PresenterFactory<ChoosePdfPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.iv_file_preview) ImageView ivPreview;
   @Nullable @BindView(R.id.title_file_name) TextView tvFileName;
   @Nullable @BindView(R.id.title_size) TextView tvFileSize;
+  @BindView(R.id.btn_add_signer) FancyButton btnReceiver;
   @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
   @Nullable private String uripdf = null;
   @Nullable private String filename = null;
@@ -71,15 +72,6 @@ public final class ChoosePdfActivity extends BaseActivity<ChoosePdfPresenter, Ch
     // Setup toolbar
     setSupportActionBar(toolbar);
     setupToolbar(getString(R.string.title_page_choose_signer));
-    /*
-    if(savedInstanceState != null){
-      String uri = savedInstanceState.getString(BUNDLE_KEY);
-      openRenderer(Uri.parse(uri));
-    }
-    else {
-
-    }
-    */
     checkPermission();
     // Do not call mPresenter from here, it will be null! Wait for onStart or onPostCreate.
   }
@@ -176,6 +168,14 @@ public final class ChoosePdfActivity extends BaseActivity<ChoosePdfPresenter, Ch
     mPresenter.getFilePdf(uripdf);
   }
 
+  @Override protected void onResume() {
+    super.onResume();
+    Timber.d("onResume(): uripdf => " + uripdf);
+    if (uripdf != null) {
+      openRenderer(Uri.parse(uripdf));
+    }
+  }
+
   @Override public void setPdfRenderer(File file) {
     try {
       mFileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
@@ -220,14 +220,6 @@ public final class ChoosePdfActivity extends BaseActivity<ChoosePdfPresenter, Ch
     }
   }
 
-  @Override protected void onResume() {
-    super.onResume();
-    Timber.d("onResume(): uripdf => " + uripdf);
-    if (uripdf != null) {
-      openRenderer(Uri.parse(uripdf));
-    }
-  }
-
   @Override protected void onDestroy() {
     super.onDestroy();
     try {
@@ -255,5 +247,13 @@ public final class ChoosePdfActivity extends BaseActivity<ChoosePdfPresenter, Ch
     i.putExtra(URI_BUNDLE_KEY, uripdf);
     i.putExtra(BUNDLE_FILE_NAME, filename);
     startActivity(i);
+  }
+
+  @Override public void setEnableBtnReceiver() {
+    btnReceiver.setEnabled(true);
+  }
+
+  @Override public void setDisableBtnReceiver() {
+    btnReceiver.setEnabled(false);
   }
 }

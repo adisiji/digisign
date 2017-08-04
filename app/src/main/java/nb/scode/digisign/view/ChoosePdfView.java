@@ -10,4 +10,8 @@ import java.io.File;
   void setFileName(String fileName);
 
   void setFileSize(String fileSize);
+
+  void setEnableBtnReceiver();
+
+  void setDisableBtnReceiver();
 }

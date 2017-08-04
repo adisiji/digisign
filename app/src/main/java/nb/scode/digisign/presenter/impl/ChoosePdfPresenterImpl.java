@@ -22,6 +22,11 @@ public final class ChoosePdfPresenterImpl extends BasePresenterImpl<ChoosePdfVie
 
   @Override public void onStart(boolean viewCreated) {
     super.onStart(viewCreated);
+    if (viewCreated) {
+      if (mView != null) {
+        mView.setDisableBtnReceiver();
+      }
+    }
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
 
@@ -43,7 +48,10 @@ public final class ChoosePdfPresenterImpl extends BasePresenterImpl<ChoosePdfVie
   @Override public void getFilePdf(String uripdf) {
     mInteractor.getFilePdf(uripdf, new ChoosePdfInteractor.GetPdfListener() {
       @Override public void onComplete(File file) {
-        mView.setPdfRenderer(file);
+        if (mView != null) {
+          mView.setPdfRenderer(file);
+          mView.setEnableBtnReceiver();
+        }
       }
 
       @Override public void onGoing() {
