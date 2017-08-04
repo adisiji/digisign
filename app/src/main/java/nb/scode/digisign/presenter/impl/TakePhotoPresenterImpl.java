@@ -1,10 +1,12 @@
 package nb.scode.digisign.presenter.impl;
 
 import android.support.annotation.NonNull;
+import java.io.File;
 import javax.inject.Inject;
 import nb.scode.digisign.interactor.TakePhotoInteractor;
 import nb.scode.digisign.presenter.TakePhotoPresenter;
 import nb.scode.digisign.view.TakePhotoView;
+import timber.log.Timber;
 
 public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoView>
     implements TakePhotoPresenter {
@@ -55,6 +57,22 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
       }
       mInteractor.writeFileToCache(photoPath);
       mView.sendFile(photoPath, fileName);
+    }
+  }
+
+  @Override public void countFileSize(String imagePath) {
+    File file = new File(imagePath);
+    String prefix = " KB";
+    long fileSize = file.length() / 1024; // results in KB
+    if (fileSize > 1024) {
+      fileSize = fileSize / 1024; // results in MB
+      prefix = " MB";
+    }
+    Timber.d("countFileSize(): size => " + String.valueOf(fileSize));
+    if (mView != null) {
+      mView.setFileSize(String.valueOf(fileSize) + prefix);
+    } else {
+      Timber.e("countFileSize(): view is null");
     }
   }
 }

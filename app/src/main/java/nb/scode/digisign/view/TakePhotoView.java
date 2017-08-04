@@ -10,5 +10,7 @@ import android.support.annotation.UiThread;
 
   void dispatchTakePictureIntent();
 
+  void setFileSize(String fileSize);
+
   void sendFile(String photoPath, String fieleName);
 }

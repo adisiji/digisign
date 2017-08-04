@@ -106,10 +106,16 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    mPresenter.onViewAttached(this);
     if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
       //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
       ivPhoto.setImageBitmap(getBitmap(mCurrentPhotoPath));
+      mPresenter.countFileSize(mCurrentPhotoPath);
     }
+  }
+
+  @Override public void setFileSize(String fileSize) {
+    this.fileSize.setText(fileSize);
   }
 
   /**
