@@ -123,10 +123,7 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
       return;
     }
     String email = mView.getEmail();
-    if (email.length() == 0) {
-      mView.showErrorEmail("Email cannot be empty");
-      return;
-    }
+
     String desc = mView.getDesc();
     String token = null;
     String filename = mView.getFilename();

@@ -8,8 +8,6 @@ import java.util.List;
 
   void showListEmailUser(List<String> listEmail);
 
-  void showOwnerEmail(String email);
-
   void showOwnerName(String name);
 
   String getUriFile();
@@ -25,8 +23,6 @@ import java.util.List;
   void clearErrorEditText();
 
   void showErrorName(String message);
-
-  void showErrorEmail(String message);
 
   void showLoading();
 

@@ -8,8 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +24,6 @@ import nb.scode.digisign.injection.DaggerAddSignerViewComponent;
 import nb.scode.digisign.presenter.AddSignerPresenter;
 import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.AddSignerView;
-import nb.scode.digisign.view.adapter.AddSignerAdapter;
 import timber.log.Timber;
 
 import static nb.scode.digisign.view.impl.Constants.BUNDLE_FILE_NAME;
@@ -33,7 +33,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
     implements AddSignerView {
   @Inject PresenterFactory<AddSignerPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-  @Nullable @BindView(R.id.et_email_signer) AutoCompleteTextView etEmail;
+  @BindView(R.id.spinner_email) Spinner spinner;
   @Nullable @BindView(R.id.et_name_signer) EditText etName;
   @Nullable @BindView(R.id.et_desc_doc) EditText etDesc;
   private String uri;
@@ -93,24 +93,25 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   }
 
   @Override public void showListEmailUser(List<String> listEmail) {
-    AddSignerAdapter adapter = new AddSignerAdapter(this, listEmail);
-    etEmail.setAdapter(adapter);
-    etEmail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    //AddSignerAdapter adapter = new AddSignerAdapter(this, listEmail);
+    ArrayAdapter<String> adapter =
+        new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listEmail);
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         mPresenter.getUserName(i);
       }
+
+      @Override public void onNothingSelected(AdapterView<?> adapterView) {
+
+      }
     });
-    etEmail.setThreshold(1);
+    spinner.setAdapter(adapter);
+    mPresenter.getUserName(0);
   }
 
   private void clearText() {
-    etEmail.setText(null);
     etName.setText(null);
-  }
-
-  @Override public void showOwnerEmail(String email) {
-    etEmail.setAdapter(null);
-    etEmail.setText(email);
   }
 
   @Override public void showOwnerName(String name) {
@@ -118,7 +119,7 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   }
 
   @NonNull @Override public String getEmail() {
-    return etEmail.getText().toString();
+    return spinner.getSelectedItem().toString();
   }
 
   @NonNull @Override public String getName() {
@@ -134,16 +135,11 @@ public final class AddSignerActivity extends BaseActivity<AddSignerPresenter, Ad
   }
 
   @Override public void clearErrorEditText() {
-    etEmail.setError(null);
     etName.setError(null);
   }
 
   @Override public void showErrorName(String message) {
     etName.setError(message);
-  }
-
-  @Override public void showErrorEmail(String message) {
-    etEmail.setError(message);
   }
 
   @Override public void showLoading() {
