@@ -57,7 +57,6 @@ import timber.log.Timber;
   private FirebaseStorage storage;
   @NonNull private List<KeyUser> keyUserList = new ArrayList<>();
   @Nullable private KeyUser keyUserOwner;
-  private boolean isFirstList = true;
 
   /**
    * Instantiates a new Api helper.
@@ -337,8 +336,7 @@ import timber.log.Timber;
 
   @Override public void initListUser(@NonNull final CommonAListener listener) {
     listener.onProcess();
-    if (isFirstList) {
-      isFirstList = false;
+    if (keyUserList.size() == 0) {
       final DatabaseReference mDatabase = database.getReference("users");
       mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
         @Override public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
