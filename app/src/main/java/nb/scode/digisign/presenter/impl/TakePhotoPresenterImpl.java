@@ -14,6 +14,7 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
    * The interactor
    */
   @NonNull private final TakePhotoInteractor mInteractor;
+  private boolean isTaken = false;
 
   // The view is available using the mView variable
 
@@ -26,6 +27,7 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
     if (viewCreated) {
       if (mView != null) {
         mView.dispatchTakePictureIntent();
+        mView.disableBtnReceiver();
       }
     }
     // Your code here. Your view is available using mView and will not be null until next onStop()
@@ -47,7 +49,7 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
   }
 
   @Override public void addSigner() {
-    if (mView != null) {
+    if (mView != null && isTaken) {
       String photoPath = mView.getPhotoPath();
       String fileName = mView.getFileName();
       if (fileName.length() == 0) {
@@ -60,7 +62,7 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
     }
   }
 
-  @Override public void countFileSize(String imagePath) {
+  private void countFileSize(String imagePath) {
     File file = new File(imagePath);
     String prefix = " KB";
     long fileSize = file.length() / 1024; // results in KB
@@ -73,6 +75,16 @@ public final class TakePhotoPresenterImpl extends BasePresenterImpl<TakePhotoVie
       mView.setFileSize(String.valueOf(fileSize) + prefix);
     } else {
       Timber.e("countFileSize(): view is null");
+    }
+  }
+
+  @Override public void setupViewAfterResult() {
+    if (mView != null) {
+      String imagePath = mView.getPhotoPath();
+      countFileSize(imagePath);
+      mView.setImageFromPhoto(imagePath);
+      isTaken = true;
+      mView.enableBtnReceiver();
     }
   }
 }

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.inject.Inject;
+import mehdi.sakout.fancybuttons.FancyButton;
 import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AppComponent;
 import nb.scode.digisign.injection.DaggerTakePhotoViewComponent;
@@ -44,6 +45,7 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
   @BindView(R.id.title_size) TextView fileSize;
   @BindView(R.id.title_file_name) EditText etFileName;
   @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+  @BindView(R.id.btn_add_signer) FancyButton btnAddSigner;
   private String mCurrentPhotoPath;
 
   // Your presenter is available using the mPresenter variable
@@ -109,9 +111,12 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
     mPresenter.onViewAttached(this);
     if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
       //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-      ivPhoto.setImageBitmap(getBitmap(mCurrentPhotoPath));
-      mPresenter.countFileSize(mCurrentPhotoPath);
+      mPresenter.setupViewAfterResult();
     }
+  }
+
+  @Override public void setImageFromPhoto(String path) {
+    ivPhoto.setImageBitmap(getBitmap(path));
   }
 
   @Override public void setFileSize(String fileSize) {
@@ -205,10 +210,18 @@ public final class TakePhotoActivity extends BaseActivity<TakePhotoPresenter, Ta
     return etFileName.getText().toString();
   }
 
-  @Override public void sendFile(String photoPath, String fieleName) {
+  @Override public void sendFile(String photoPath, String fileName) {
     Intent i = new Intent(this, AddSignerActivity.class);
     i.putExtra(URI_BUNDLE_KEY, photoPath);
-    i.putExtra(BUNDLE_FILE_NAME, fieleName);
+    i.putExtra(BUNDLE_FILE_NAME, fileName);
     startActivity(i);
+  }
+
+  @Override public void disableBtnReceiver() {
+    btnAddSigner.setEnabled(false);
+  }
+
+  @Override public void enableBtnReceiver() {
+    btnAddSigner.setEnabled(true);
   }
 }

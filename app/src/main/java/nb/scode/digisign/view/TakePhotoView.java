@@ -12,5 +12,11 @@ import android.support.annotation.UiThread;
 
   void setFileSize(String fileSize);
 
+  void setImageFromPhoto(String path);
+
+  void disableBtnReceiver();
+
+  void enableBtnReceiver();
+
   void sendFile(String photoPath, String fieleName);
 }

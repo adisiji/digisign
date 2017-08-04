@@ -6,5 +6,7 @@ public interface TakePhotoPresenter extends BasePresenter<TakePhotoView> {
 
   void addSigner();
 
-  void countFileSize(String imagePath);
+  //void countFileSize(String imagePath);
+
+  void setupViewAfterResult();
 }
