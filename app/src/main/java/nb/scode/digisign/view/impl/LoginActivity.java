@@ -1,15 +1,9 @@
 package nb.scode.digisign.view.impl;
 
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.transition.Slide;
-import android.util.Pair;
-import android.view.Gravity;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -36,13 +30,10 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
     implements LoginView, GoogleApiClient.OnConnectionFailedListener {
   private final int RC_SIGN_IN = 9909;
   @Inject PresenterFactory<LoginPresenter> mPresenterFactory;
-  @Nullable @BindView(R.id.sign_in_google_button) SignInButton signInButton;
-  @Nullable @BindView(R.id.email) EditText etEmail;
-  @Nullable @BindView(R.id.password) EditText etPassword;
-  @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
-  @Nullable @BindView(R.id.logo_header) View logo;
-  private View vEmail;
-  private View vPass;
+  @BindView(R.id.sign_in_google_button) SignInButton signInButton;
+  @BindView(R.id.email) EditText etEmail;
+  @BindView(R.id.password) EditText etPassword;
+  @BindView(R.id.progressBar) ProgressBar progressBar;
   private GoogleApiClient googleApiClient;
   private ProgressDialog progressDialog;
 
@@ -59,10 +50,7 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
     googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this)
         .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
         .build();
-    vEmail = findViewById(R.id.email);
-    vPass = findViewById(R.id.password);
     setupProgress();
-    setupWindowAnimations();
     // Do not call mPresenter from here, it will be null! Wait for onStart or onPostCreate.
   }
 
@@ -93,21 +81,9 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
     return mPresenterFactory;
   }
 
-  private void setupWindowAnimations() {
-    Slide slide = new Slide();
-    slide.setDuration(1000);
-    slide.setSlideEdge(Gravity.START);
-    getWindow().setEnterTransition(slide);
-    getWindow().setExitTransition(slide);
-  }
-
   @OnClick(R.id.btn_signup) void register() {
-    Intent intent = new Intent(this, SignUpActivity.class);
-    ActivityOptions options =
-        ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(logo, "logo_header"),
-            Pair.create(vEmail, "email"), Pair.create(vPass, "password"));
-    startActivity(intent, options.toBundle());
-    supportFinishAfterTransition();
+    Intent i = new Intent(this, SignUpActivity.class);
+    startActivity(i);
   }
 
   @OnClick(R.id.btn_login) void login() {
@@ -134,7 +110,7 @@ public final class LoginActivity extends BaseActivity<LoginPresenter, LoginView>
   @Override public void gotoMain() {
     Intent i = new Intent(this, MainActivity.class);
     startActivity(i);
-    supportFinishAfterTransition();
+    finish();
   }
 
   @Override public void showToast(String message) {
