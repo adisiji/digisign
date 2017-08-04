@@ -76,7 +76,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     intent.putExtra("origin", origin);
     intent.putExtra("timestamp", times);
     intent.putExtra("type", type);
-    intent.putExtra("senderkey", senderKey);
+    intent.putExtra("senderKey", senderKey);
 
     //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =

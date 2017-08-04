@@ -263,7 +263,7 @@ public final class ReceivedDocActivity extends BaseActivity<ReceivedDocPresenter
   }
 
   @Override public String getSenderKeyIntent() {
-    return intent.getStringExtra("senderkey");
+    return intent.getStringExtra("senderKey");
   }
 
   @Override public String fileName() {

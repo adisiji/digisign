@@ -58,6 +58,8 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
 
         }
       });
+    } else {
+      mainStarter();
     }
   }
 
@@ -100,10 +102,6 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
     }
   }
 
-  @Override public void getPhotoUri() {
-    mInteractor.getUser();
-  }
-
   @Override public void logout() {
     mInteractor.logout();
   }
@@ -120,7 +118,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
 
       @Override public void onFailed(String message) {
-
+        showToastHideProgress(message);
       }
     });
   }
@@ -137,7 +135,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
 
       @Override public void onFailed(String message) {
-        mView.showToast(message);
+        showToastHideProgress(message);
       }
     });
   }
@@ -164,8 +162,7 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
 
       @Override public void onError(String message) {
-        mView.hideProgressDialog();
-        mView.showToast(message);
+        showToastHideProgress(message);
         Timber.d("onError(): GOOO");
       }
     });
@@ -174,8 +171,8 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
   private void initListUser() {
     mInteractor.initListUser(new MainInteractor.MainListener() {
       @Override public void onSuccess() {
-        mView.hideProgressDialog();
-        mView.showToast("You can sign document now");
+        mInteractor.getUser();
+        showToastHideProgress("You can sign document now");
       }
 
       @Override public void onProcess() {
@@ -183,11 +180,15 @@ public final class MainPresenterImpl extends BasePresenterImpl<MainView> impleme
       }
 
       @Override public void onFailed(String message) {
-        mView.hideProgressDialog();
-        mView.showToast(message);
+        showToastHideProgress(message);
         Timber.d("onError(): GOOO");
       }
     });
+  }
+
+  private void showToastHideProgress(String message) {
+    mView.hideProgressDialog();
+    mView.showToast(message);
   }
 
   @Override public void sendTokenToServer(String token) {

@@ -15,7 +15,7 @@ public final class LoginInteractorImpl implements LoginInteractor {
     this.dataTask = dataTask;
   }
 
-  @Override public void authWithGoogle(GoogleSignInAccount account,
+  @Override public void authWithGoogle(final GoogleSignInAccount account,
       @NonNull final CommonDListener listener) {
     dataTask.firebaseAuthWithGoogle(account, new ApiTask.CommonAListener() {
       @Override public void onProcess() {
@@ -23,6 +23,7 @@ public final class LoginInteractorImpl implements LoginInteractor {
       }
 
       @Override public void onSuccess() {
+        dataTask.setUserToken(account.getIdToken());
         listener.onSuccess();
       }
 

@@ -35,12 +35,7 @@ public final class MainInteractorImpl implements MainInteractor {
 
   @Override public boolean isRecentEmailSame() {
     String email = dataTask.getEmailUser();
-    if (email == null) {
-      EventBus.getDefault().post(new SignOutEvent());
-      return false;
-    } else {
-      return dataTask.isEmailSame(email);
-    }
+    return dataTask.isEmailSame(email);
   }
 
   @Override public boolean isUserNull() {

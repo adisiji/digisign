@@ -4,8 +4,6 @@ import nb.scode.digisign.view.MainView;
 
 public interface MainPresenter extends BasePresenter<MainView> {
 
-  void getPhotoUri();
-
   void logout();
 
   void sendTokenToServer(String token);

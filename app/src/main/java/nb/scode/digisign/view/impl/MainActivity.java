@@ -137,7 +137,6 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   @Override protected void onStart() {
     super.onStart();
     EventBus.getDefault().register(this);
-    mPresenter.getPhotoUri();
   }
 
   @Override protected void onStop() {

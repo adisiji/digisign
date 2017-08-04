@@ -411,6 +411,7 @@ import timber.log.Timber;
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override public void onFailure(@NonNull Exception e) {
+        e.printStackTrace();
         listener.onFailed(e.getMessage());
         Timber.e("onFailure(): " + e.getMessage());
       }
@@ -450,6 +451,7 @@ import timber.log.Timber;
         })
         .addOnFailureListener(new OnFailureListener() {
           @Override public void onFailure(@NonNull Exception e) {
+            e.printStackTrace();
             listener.onFailed(e.getMessage());
             Timber.e("onFailure(): download " + e.getMessage());
           }
@@ -459,6 +461,7 @@ import timber.log.Timber;
   @Override public void downloadPublicKey(@NonNull File filepub, String senderkey,
       @NonNull final CommonAListener listener) {
     listener.onProcess();
+    Timber.d("downloadPublicKey(): senderKey => " + senderkey);
     String publicFolderRef = USER_STORAGE_REF + senderkey + "/public/" + PUBLIC_KEY;
     StorageReference reference = storage.getReference().child(publicFolderRef);
     reference.getFile(filepub)
@@ -469,6 +472,7 @@ import timber.log.Timber;
         })
         .addOnFailureListener(new OnFailureListener() {
           @Override public void onFailure(@NonNull Exception e) {
+            e.printStackTrace();
             listener.onFailed(e.getMessage());
             Timber.e("onFailure(): " + e.toString());
           }
