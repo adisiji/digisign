@@ -1,6 +1,5 @@
 package nb.scode.digisign.interactor;
 
-import java.util.List;
 import nb.scode.digisign.view.model.ItemAllDoc;
 
 public interface AllDocInteractor extends BaseInteractor {
@@ -11,10 +10,14 @@ public interface AllDocInteractor extends BaseInteractor {
 
   void getAllPost(AllDocIntListener listener);
 
+  int getPostSize();
+
+  ItemAllDoc getItemDoc(int pos);
+
   interface AllDocIntListener {
     void onProcess();
 
-    void onSuccess(List<ItemAllDoc> postList);
+    void onSuccess();
 
     void onFailed(String message);
   }

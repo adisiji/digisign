@@ -22,6 +22,8 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
    */
   @NonNull private final AddSignerInteractor mInteractor;
   private List<KeyUser> keyUserList;
+  private Boolean isFinished = false;
+  //private Boolean isFailed = false;
 
   // The view is available using the mView variable
 
@@ -33,6 +35,10 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
     super.onStart(viewCreated);
     if (viewCreated) {
       getUserList();
+    }
+    if (isFinished && mView != null) {
+      mView.hideLoading();
+      mView.gotoMain();
     }
     // Your code here. Your view is available using mView and will not be null until next onStop()
   }
@@ -109,8 +115,12 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
 
       @Override public void onFailed(String message) {
         Timber.e("onFailed(): FIAASl");
-        mView.hideLoading();
-        mView.showToast(message);
+        if (mView != null) {
+          mView.hideLoading();
+          mView.showToast(message);
+        } else {
+          isFinished = true;
+        }
       }
     });
   }
@@ -147,21 +157,25 @@ public final class AddSignerPresenterImpl extends BasePresenterImpl<AddSignerVie
             }
 
             @Override public void onSuccess() {
-              mView.hideLoading();
-              mView.showToast("Doc has been sent");
-              Single.timer(1500, TimeUnit.MILLISECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(new Consumer<Long>() {
-                    @Override public void accept(@io.reactivex.annotations.NonNull Long aLong)
-                        throws Exception {
-                      mView.gotoMain();
-                    }
-                  });
               Timber.d("onSuccess(): post okay");
+              if (mView != null) {
+                mView.hideLoading();
+                mView.showToast("Doc has been sent");
+                Single.timer(1500, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Long>() {
+                      @Override public void accept(@io.reactivex.annotations.NonNull Long aLong)
+                          throws Exception {
+                        mView.gotoMain();
+                      }
+                    });
+              } else {
+                isFinished = true;
+              }
             }
 
             @Override public void onFailed(String message) {
-
+              isFinished = true;
             }
           });
     } else {

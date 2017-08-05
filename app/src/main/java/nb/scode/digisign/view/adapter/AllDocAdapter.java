@@ -10,9 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import java.util.List;
 import nb.scode.digisign.R;
-import nb.scode.digisign.view.model.ItemAllDoc;
+import nb.scode.digisign.presenter.AllDocPresenter;
 
 /**
  * Created by neobyte on 5/25/2017.
@@ -20,12 +19,10 @@ import nb.scode.digisign.view.model.ItemAllDoc;
 
 public class AllDocAdapter extends RecyclerView.Adapter<AllDocAdapter.MyViewHolder> {
 
-  private final List<ItemAllDoc> postList;
-  private final AllDocAdpListener listener;
+  private final AllDocPresenter presenter;
 
-  public AllDocAdapter(List<ItemAllDoc> postList, AllDocAdpListener listener) {
-    this.postList = postList;
-    this.listener = listener;
+  public AllDocAdapter(AllDocPresenter presenter) {
+    this.presenter = presenter;
   }
 
   @NonNull @Override public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
@@ -36,19 +33,27 @@ public class AllDocAdapter extends RecyclerView.Adapter<AllDocAdapter.MyViewHold
   }
 
   @Override public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-    holder.bind(postList.get(position), listener);
+    presenter.bindRowView(holder, position);
   }
 
   @Override public int getItemCount() {
-    return postList.size();
+    return presenter.getPostSize();
   }
 
   public interface AllDocAdpListener {
 
-    void onClick(String key);
+    //void onClick(String key);
+
+    void setFileName(String fileName);
+
+    void setFileFrom(String fileFrom);
+
+    void setFileDate(String fileDate);
+
+    void setIvStatus(boolean isSent);
   }
 
-  static class MyViewHolder extends RecyclerView.ViewHolder {
+  static class MyViewHolder extends RecyclerView.ViewHolder implements AllDocAdpListener {
 
     @Nullable @BindView(R.id.tv_file_name) TextView tvFilename;
     @Nullable @BindView(R.id.tv_file_from) TextView tvFilefrom;
@@ -56,25 +61,29 @@ public class AllDocAdapter extends RecyclerView.Adapter<AllDocAdapter.MyViewHold
     @Nullable @BindView(R.id.iv_status) ImageView ivStatus;
     @Nullable @BindView(R.id.view) View view;
 
-    public MyViewHolder(@NonNull View itemView) {
+    MyViewHolder(@NonNull View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
 
-    public void bind(@NonNull final ItemAllDoc post, @NonNull final AllDocAdpListener listener) {
-      tvFilename.setText(post.getFilename());
-      tvFilefrom.setText(post.getFromname());
-      tvFiledate.setText(post.getFiledate());
-      if (post.isSent()) {
+    @Override public void setFileName(String fileName) {
+      tvFilename.setText(fileName);
+    }
+
+    @Override public void setFileFrom(String fileFrom) {
+      tvFilefrom.setText(fileFrom);
+    }
+
+    @Override public void setFileDate(String fileDate) {
+      tvFiledate.setText(fileDate);
+    }
+
+    @Override public void setIvStatus(boolean isSent) {
+      if (isSent) {
         ivStatus.setImageResource(R.drawable.ic_arrow_upward_yellow_a700_36dp);
       } else {
         ivStatus.setImageResource(R.drawable.ic_arrow_downward_blue_700_36dp);
       }
-      view.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View view) {
-          listener.onClick(post.getFilekey());
-        }
-      });
     }
   }
 }

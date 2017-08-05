@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import java.util.List;
 import javax.inject.Inject;
 import nb.scode.digisign.R;
 import nb.scode.digisign.injection.AllDocViewModule;
@@ -23,28 +22,16 @@ import nb.scode.digisign.presenter.loader.PresenterFactory;
 import nb.scode.digisign.view.AllDocView;
 import nb.scode.digisign.view.adapter.AllDocAdapter;
 import nb.scode.digisign.view.busmodel.SpinnerMenu;
-import nb.scode.digisign.view.model.ItemAllDoc;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import timber.log.Timber;
-
-import static nb.scode.digisign.view.impl.Constants.MENU_ALL;
-import static nb.scode.digisign.view.impl.Constants.MENU_RECEIVE;
-import static nb.scode.digisign.view.impl.Constants.MENU_SENT;
 
 public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocView>
     implements AllDocView {
   @Inject PresenterFactory<AllDocPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.rv) RecyclerView recyclerView;
   private ProgressDialog progressDialog;
-
-  @NonNull private AllDocAdapter.AllDocAdpListener listener =
-      new AllDocAdapter.AllDocAdpListener() {
-    @Override public void onClick(String key) {
-      Timber.d("onClick(): key => " + key);
-    }
-  };
+  private AllDocAdapter adapter;
 
   public AllDocFragment() {
     // Required empty public constructor
@@ -77,17 +64,7 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
 
   @Subscribe(threadMode = ThreadMode.MAIN) public void MenuEvent(@NonNull SpinnerMenu spinnerMenu) {
     int i = spinnerMenu.getMenu();
-    switch (i) {
-      case MENU_ALL:
-        mPresenter.getAllPost();
-        break;
-      case MENU_SENT:
-        mPresenter.getSentPost();
-        break;
-      case MENU_RECEIVE:
-        mPresenter.getReceivedPost();
-        break;
-    }
+    mPresenter.processSpinnerMenu(i);
   }
 
   @Override public void onDestroy() {
@@ -109,8 +86,8 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     return mPresenterFactory;
   }
 
-  @Override public void showAllDocItems(List<ItemAllDoc> docList) {
-    final AllDocAdapter adapter = new AllDocAdapter(docList, listener);
+  @Override public void showFirstData() {
+    adapter = new AllDocAdapter(mPresenter);
     RecyclerView.LayoutManager layoutManager =
         new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
     recyclerView.setLayoutManager(layoutManager);
@@ -125,5 +102,9 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
 
   @Override public void hideLoading() {
     progressDialog.dismiss();
+  }
+
+  @Override public void notifyAdapter() {
+    adapter.notifyDataSetChanged();
   }
 }

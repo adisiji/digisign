@@ -17,6 +17,7 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
 
   @NonNull private final DataTask dataTask;
   private List<KeyUser> keyUserList;
+  private List<ItemAllDoc> allDocList = new ArrayList<>();
   private KeyUser keyUser;
 
   @Inject public AllDocInteractorImpl(@NonNull DataTask dataTask) {
@@ -36,7 +37,8 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
         for (Post post : postList) {
           itemAllDocs.add(convertPostToItem(post));
         }
-        listener.onSuccess(itemAllDocs);
+        allDocList = itemAllDocs;
+        listener.onSuccess();
       }
 
       @Override public void onFailed(String message) {
@@ -56,7 +58,8 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
         for (Post post : postList) {
           itemAllDocs.add(convertPostToItem(post));
         }
-        listener.onSuccess(itemAllDocs);
+        allDocList = itemAllDocs;
+        listener.onSuccess();
       }
 
       @Override public void onFailed(String message) {
@@ -76,7 +79,8 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
         for (Post post : postList) {
           itemAllDocs.add(convertPostToItem(post));
         }
-        listener.onSuccess(itemAllDocs);
+        allDocList = itemAllDocs;
+        listener.onSuccess();
       }
 
       @Override public void onFailed(String message) {
@@ -111,5 +115,13 @@ public final class AllDocInteractorImpl implements AllDocInteractor {
     }
     itemAllDoc.setFromname(from);
     return itemAllDoc;
+  }
+
+  @Override public int getPostSize() {
+    return allDocList.size();
+  }
+
+  @Override public ItemAllDoc getItemDoc(int pos) {
+    return allDocList.get(pos);
   }
 }

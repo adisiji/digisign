@@ -50,14 +50,17 @@ import static nb.scode.digisign.view.impl.Constants.MENU_RECEIVE;
 import static nb.scode.digisign.view.impl.Constants.MENU_SENT;
 
 public final class MainActivity extends BaseActivity<MainPresenter, MainView>
-    implements MainView, NavigationView.OnNavigationItemSelectedListener {
+    implements MainView, NavigationView.OnNavigationItemSelectedListener,
+    AdapterView.OnItemSelectedListener {
 
   @Inject PresenterFactory<MainPresenter> mPresenterFactory;
   @Nullable @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
   @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
   @Nullable @BindView(R.id.nvView) NavigationView nvDrawer;
+  Spinner navigationSpinner;
   @Nullable private ActionBarDrawerToggle drawerToggle;
   private ProgressDialog progressDialog;
+  private SpinnerAdapter spinnerAdapter;
   @NonNull private Boolean isFromAllDoc = false;
   private View view;
 
@@ -96,36 +99,35 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
   }
 
   private void setupSpinner() {
-    SpinnerAdapter spinnerAdapter =
-        ArrayAdapter.createFromResource(getApplicationContext(), R.array.category,
-            R.layout.spinner_dropdown_item);
+    spinnerAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.category,
+        R.layout.spinner_dropdown_item);
     LayoutInflater inflater = LayoutInflater.from(this);
     view = inflater.inflate(R.layout.toolbar_all_doc, null);
-    Spinner navigationSpinner = (Spinner) view.findViewById(R.id.spinner);
+    navigationSpinner = (Spinner) view.findViewById(R.id.spinner);
     navigationSpinner.setAdapter(spinnerAdapter);
-    navigationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-      @Override public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        Timber.d("onItemSelected(): i => " + i);
-        switch (i) {
-          case 0: { // All Doc
-            EventBus.getDefault().post(new SpinnerMenu(MENU_ALL));
-            break;
-          }
-          case 1: {
-            EventBus.getDefault().post(new SpinnerMenu(MENU_SENT));
-            break;
-          }
-          case 2: {
-            EventBus.getDefault().post(new SpinnerMenu(MENU_RECEIVE));
-            break;
-          }
-        }
-      }
+    navigationSpinner.setOnItemSelectedListener(this);
+  }
 
-      @Override public void onNothingSelected(AdapterView<?> adapterView) {
-
+  @Override public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    Timber.d("onItemSelected(): i => " + i);
+    switch (i) {
+      case 0: { // All Doc
+        EventBus.getDefault().post(new SpinnerMenu(MENU_ALL));
+        break;
       }
-    });
+      case 1: {
+        EventBus.getDefault().post(new SpinnerMenu(MENU_SENT));
+        break;
+      }
+      case 2: {
+        EventBus.getDefault().post(new SpinnerMenu(MENU_RECEIVE));
+        break;
+      }
+    }
+  }
+
+  @Override public void onNothingSelected(AdapterView<?> adapterView) {
+
   }
 
   private void setupProgress() {
@@ -171,20 +173,26 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
       case R.id.nav_first_fragment:
         fragmentClass = HomeFragment.class;
         if (isFromAllDoc) {
+          isFromAllDoc = false;
           toolbar.removeView(view);
+          navigationSpinner.setSelection(0);
         }
         pos = 0;
         break;
       case R.id.nav_second_fragment:
         fragmentClass = AllDocFragment.class;
-        toolbar.addView(view);
-        isFromAllDoc = true;
+        if (!isFromAllDoc) {
+          toolbar.addView(view);
+          isFromAllDoc = true;
+        }
         pos = 1;
         break;
       case R.id.nav_third_fragment:
         fragmentClass = SettingsFragment.class;
         if (isFromAllDoc) {
+          isFromAllDoc = false;
           toolbar.removeView(view);
+          navigationSpinner.setSelection(0);
         }
         pos = 2;
         break;
@@ -208,6 +216,7 @@ public final class MainActivity extends BaseActivity<MainPresenter, MainView>
     menuItem.setChecked(true);
     // Set action bar title
     setTitle(menuItem.getTitle());
+
     // Close the navigation drawer
     drawerLayout.closeDrawers();
   }
