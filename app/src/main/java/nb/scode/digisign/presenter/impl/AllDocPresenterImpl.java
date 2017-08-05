@@ -30,7 +30,7 @@ public final class AllDocPresenterImpl extends BasePresenterImpl<AllDocView>
     super.onStart(viewCreated);
     if (viewCreated) {
       if (mView != null) {
-        mView.showFirstData();
+        mView.setupRecycler();
         getAllPost();
       }
     }

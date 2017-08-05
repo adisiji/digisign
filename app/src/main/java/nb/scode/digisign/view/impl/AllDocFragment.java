@@ -86,7 +86,7 @@ public final class AllDocFragment extends BaseFragment<AllDocPresenter, AllDocVi
     return mPresenterFactory;
   }
 
-  @Override public void showFirstData() {
+  @Override public void setupRecycler() {
     adapter = new AllDocAdapter(mPresenter);
     RecyclerView.LayoutManager layoutManager =
         new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);

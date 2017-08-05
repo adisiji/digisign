@@ -4,7 +4,7 @@ import android.support.annotation.UiThread;
 
 @UiThread public interface AllDocView {
 
-  void showFirstData();
+  void setupRecycler();
 
   void notifyAdapter();
 
